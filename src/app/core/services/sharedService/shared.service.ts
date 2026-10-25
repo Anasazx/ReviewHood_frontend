@@ -5,12 +5,21 @@ import { Injectable } from '@angular/core';
 })
 export class SharedService {
 
-  publicUrl = "https://reviewhood.tech/api";
-  imageUrl = "https://reviewhood.tech/uploads";
+  localDev = true;
 
+  publicUrl!: string;
+  imageUrl!: string;
 
-
-  constructor() {}
+  constructor() {
+    if (this.localDev) {
+      this.publicUrl = "http://localhost:8080";
+      this.imageUrl = "http://localhost:9000/uploads";
+    }
+    else {
+      this.publicUrl = "https://reviewhood.tech/api";
+      this.imageUrl = "https://reviewhood.tech/uploads";
+    }
+  }
 
   getImageUrl(imageUrl?: string | null): string {
     if (!imageUrl) {
