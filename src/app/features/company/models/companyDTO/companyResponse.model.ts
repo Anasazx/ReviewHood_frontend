@@ -9,5 +9,7 @@ export interface CompanyResponse {
   bannerUrl?: string;
   country: Country;
   status: CompanyStatus;
+  // checked by ReviewHood, shows the verified badge
+  verified?: boolean;
 
 }

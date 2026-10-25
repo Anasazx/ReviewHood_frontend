@@ -67,7 +67,7 @@ export class AllCompaniesComponent implements OnInit {
 
     this.filteredCompanies = this.companies.filter(c => {
       const matchesTerm = !term || c.name.toLowerCase().includes(term);
-      const matchesVerified = !this.verifiedOnly || c.status === CompanyStatus.ACTIVE;
+      const matchesVerified = !this.verifiedOnly || c.verified;
       return matchesTerm && matchesVerified;
     });
   }

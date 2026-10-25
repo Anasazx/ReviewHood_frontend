@@ -186,11 +186,6 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
     return parts.length ? ((parts[0][0] ?? '') + (parts.length > 1 ? parts[parts.length - 1][0] : '')).toUpperCase() : '?';
   }
 
-  // "https://www.example.com/" -> "example.com"
-  displayUrl(url: string): string {
-    return url.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '');
-  }
-
   starIcon(star: number): string {
     const rating = this.company?.averageRating ?? 0;
     if (rating >= star) return 'fa-star';

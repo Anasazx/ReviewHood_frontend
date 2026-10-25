@@ -17,6 +17,8 @@ export interface CompanyDetailResponse {
   subcategories: SubcategoryResponse[];
   socialLinks: SocialLink[];
   status: CompanyStatus;
+  // checked by ReviewHood, shows the verified badge
+  verified?: boolean;
   averageRating?: number;
   reviewCount?: number;
   productCount?: number;

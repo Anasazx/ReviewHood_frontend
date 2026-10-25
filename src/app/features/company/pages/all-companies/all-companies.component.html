@@ -59,7 +59,7 @@
     <div class="min-w-0 flex-1">
       <div class="flex items-center gap-1.5">
         <h4 class="truncate text-sm font-semibold text-slate-900 transition group-hover:text-brand-600">{{ company.name }}</h4>
-        <svg *ngIf="company.status === CompanyStatus.ACTIVE" viewBox="0 0 24 24" class="h-3.5 w-3.5 flex-shrink-0 text-brand-600" fill="currentColor">
+        <svg *ngIf="company.verified" viewBox="0 0 24 24" class="h-3.5 w-3.5 flex-shrink-0 text-brand-600" fill="currentColor">
           <circle cx="12" cy="12" r="10"/><path d="M10 12.5 8.5 11 7 12.5 10 15.5 17 8.5 15.5 7z" fill="white"/>
         </svg>
       </div>
