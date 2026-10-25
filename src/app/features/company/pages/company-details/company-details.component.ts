@@ -1,3 +1,4 @@
+import { SocialLink } from '../../models/socialLink.model';
 import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -159,6 +160,42 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
     return url.startsWith('http://') || url.startsWith('https://')
       ? url
       : 'https://' + url;
+  }
+
+  // ── Header helpers ──
+
+  descriptionExpanded = false;
+
+  get websiteLink(): SocialLink | undefined {
+    return this.company?.socialLinks?.find(l => l.platform === 'WEBSITE');
+  }
+
+  get otherLinks(): SocialLink[] {
+    return (this.company?.socialLinks ?? []).filter(l => l.platform !== 'WEBSITE');
+  }
+
+  // "SAUDI_ARABIA" -> "Saudi arabia"
+  label(value: string | null | undefined): string {
+    if (!value) return '';
+    const text = value.replace(/_/g, ' ').toLowerCase();
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  }
+
+  initials(name: string | null | undefined): string {
+    const parts = (name ?? '').trim().split(/\s+/).filter(Boolean);
+    return parts.length ? ((parts[0][0] ?? '') + (parts.length > 1 ? parts[parts.length - 1][0] : '')).toUpperCase() : '?';
+  }
+
+  // "https://www.example.com/" -> "example.com"
+  displayUrl(url: string): string {
+    return url.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '');
+  }
+
+  starIcon(star: number): string {
+    const rating = this.company?.averageRating ?? 0;
+    if (rating >= star) return 'fa-star';
+    if (rating >= star - 0.5) return 'fa-star-half-stroke';
+    return 'fa-star text-slate-200';
   }
 
   protected readonly CompanyStatus = CompanyStatus;

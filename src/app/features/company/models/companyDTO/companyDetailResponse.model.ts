@@ -17,6 +17,9 @@ export interface CompanyDetailResponse {
   subcategories: SubcategoryResponse[];
   socialLinks: SocialLink[];
   status: CompanyStatus;
+  averageRating?: number;
+  reviewCount?: number;
+  productCount?: number;
 }
 
 

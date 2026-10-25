@@ -1,88 +1,138 @@
 <div class="max-w-7xl mx-auto p-3 sm:p-5 space-y-5">
 
   <!-- HEADER -->
-  <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+  <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white" aria-labelledby="company-name">
 
-    <!-- BANNER (only if present) -->
-    <div *ngIf="company?.bannerUrl" class="h-40 bg-slate-100 sm:h-56">
-      <img [src]="company?.bannerUrl | imageUrl" class="h-full w-full object-cover" alt="Company banner"/>
+    <!-- BANNER: the company's image, or a branded background when it has none -->
+    <div class="relative h-36 sm:h-52 lg:h-60">
+      @if (company?.bannerUrl) {
+        <img [src]="company?.bannerUrl | imageUrl" class="h-full w-full object-cover" alt="" />
+      } @else {
+        <div class="relative h-full w-full overflow-hidden bg-gradient-to-br from-ink via-brand-800 to-brand-600" aria-hidden="true">
+          <i class="fa-solid fa-star absolute -right-6 -top-8 text-[10rem] text-white/5"></i>
+          <i class="fa-solid fa-star absolute bottom-4 left-1/3 text-5xl text-white/10"></i>
+          <i class="fa-solid fa-star absolute right-1/4 top-6 text-2xl text-brand-300/30"></i>
+        </div>
+      }
     </div>
 
-    <div class="p-4 sm:p-6">
+    <div class="px-5 pb-6 sm:px-8 sm:pb-8">
 
-      <!-- LOGO -->
-      <img
-        [src]="company?.logoUrl | imageUrl"
-        class="h-20 w-20 rounded-full border-4 border-white bg-white object-cover shadow-sm sm:h-24 sm:w-24"
-        [class.-mt-14]="company?.bannerUrl"
-        [class.sm:-mt-16]="company?.bannerUrl"
-        alt="Company logo"
-      />
+      <!-- IDENTITY -->
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+        @if (company?.logoUrl) {
+          <img [src]="company?.logoUrl | imageUrl" alt="{{ company?.name }} logo"
+               class="relative z-10 -mt-12 h-24 w-24 shrink-0 rounded-2xl bg-white object-cover shadow-md ring-4 ring-white sm:-mt-14 sm:h-28 sm:w-28" />
+        } @else {
+          <span class="relative z-10 -mt-12 flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-brand-50 text-3xl font-semibold text-brand-700 shadow-md ring-4 ring-white sm:-mt-14 sm:h-28 sm:w-28">
+            {{ initials(company?.name) }}
+          </span>
+        }
 
-      <!-- NAME + SOCIALS -->
-      <div class="mt-3 flex flex-wrap items-start justify-between gap-4">
-
-        <div class="min-w-0">
-          <h1 class="flex items-center gap-2 text-xl font-bold text-slate-900 sm:text-2xl">
-            <span class="truncate">{{ company?.name }}</span>
-
-            <svg
-              *ngIf="company?.status === CompanyStatus.ACTIVE"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              class="h-5 w-5 flex-shrink-0 text-brand-600"
-              fill="currentColor"
-            >
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M10 12.5 8.5 11 7 12.5 10 15.5 17 8.5 15.5 7z" fill="white"/>
-            </svg>
-          </h1>
-        </div>
-
-        <div class="flex items-center gap-3">
-
-          <!-- SOCIALS -->
-          <div *ngIf="company?.socialLinks?.length" class="flex gap-2">
-            <a
-            *ngFor="let social of company?.socialLinks"
-            [href]="formatUrl(social.url)"
-            target="_blank"
-            class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 transition hover:border-brand-600/30 hover:bg-brand-600/5 sm:h-10 sm:w-10"
-            >
-            <img [src]="socialIconMap[social.platform]" class="h-5 w-5 sm:h-6 sm:w-6"/>
-            </a>
+        <div class="min-w-0 flex-1 sm:pt-4">
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            <h1 id="company-name" class="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">{{ company?.name }}</h1>
+            @if (company?.status === CompanyStatus.ACTIVE) {
+              <span class="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700"
+                    title="This company's identity was checked by ReviewHood">
+                <i class="fa-solid fa-circle-check"></i> Verified
+              </span>
+            }
           </div>
-
+          <p class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-500">
+            @if (company?.industry && company?.industry !== 'OTHER') {
+              <span><i class="fa-solid fa-briefcase mr-1.5 text-xs text-slate-400"></i>{{ label(company?.industry) }}</span>
+            }
+            @if (company?.country) {
+              <span><i class="fa-solid fa-location-dot mr-1.5 text-xs text-slate-400"></i>{{ label(company?.country) }}</span>
+            }
+          </p>
         </div>
 
+        @if (company?.socialLinks?.length) {
+          <div class="flex flex-wrap items-center gap-2 sm:pt-5">
+            @if (websiteLink; as site) {
+              <a [href]="formatUrl(site.url)" target="_blank" rel="noopener noreferrer"
+                 class="inline-flex items-center gap-2 rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i> Visit website
+              </a>
+            }
+            @for (social of otherLinks; track social.id) {
+              <a [href]="formatUrl(social.url)" target="_blank" rel="noopener noreferrer"
+                 [title]="label(social.platform)" [attr.aria-label]="label(social.platform)"
+                 class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 transition hover:border-brand-600/30 hover:bg-brand-50">
+                <img [src]="socialIconMap[social.platform]" class="h-5 w-5" alt="" />
+              </a>
+            }
+          </div>
+        }
       </div>
 
-      <!-- DESCRIPTION -->
-      <p class="mt-4 max-w-2xl text-sm leading-relaxed text-slate-500">
-        {{ company?.description || 'No description available' }}
-      </p>
+      <!-- REPUTATION -->
+      <dl class="mt-6 grid grid-cols-3 divide-x divide-slate-100 rounded-2xl border border-slate-200">
+        <div class="px-3 py-4 text-center sm:px-6">
+          <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Rating</dt>
+          <dd class="mt-1.5">
+            @if (company?.reviewCount) {
+              <span class="text-2xl font-semibold text-ink sm:text-3xl">{{ company?.averageRating | number: '1.1-1' }}</span>
+              <span class="mt-1 flex justify-center gap-0.5 text-xs text-rating sm:text-sm" [attr.aria-label]="(company?.averageRating | number: '1.1-1') + ' out of 5'">
+                @for (star of [1, 2, 3, 4, 5]; track star) {
+                  <i class="fa-solid" [ngClass]="starIcon(star)"></i>
+                }
+              </span>
+            } @else {
+              <span class="block pt-1 text-2xl font-semibold text-slate-300 sm:hidden" aria-label="No ratings yet">–</span><span class="hidden pt-1.5 text-sm text-slate-400 sm:block">No ratings yet</span>
+            }
+          </dd>
+        </div>
+        <div class="px-3 py-4 text-center sm:px-6">
+          <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Reviews</dt>
+          <dd class="mt-1.5 text-2xl font-semibold text-ink sm:text-3xl">{{ (company?.reviewCount ?? 0) | number }}</dd>
+        </div>
+        <div class="px-3 py-4 text-center sm:px-6">
+          <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Products</dt>
+          <dd class="mt-1.5 text-2xl font-semibold text-ink sm:text-3xl">{{ (company?.productCount ?? 0) | number }}</dd>
+        </div>
+      </dl>
 
-      <!-- META -->
-      <div class="mt-4 flex flex-wrap gap-2 text-xs">
-        <span *ngIf="company?.country" class="flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-slate-600">
-          <i class="fa-solid fa-location-dot text-[10px] text-slate-400"></i>
-          {{ company?.country }}
-        </span>
+      <!-- ABOUT + CONTACT -->
+      <div class="mt-6 grid gap-6 lg:grid-cols-3">
+        <div class="lg:col-span-2">
+          <h2 class="text-sm font-semibold text-slate-900">About {{ company?.name }}</h2>
+          @if (company?.description) {
+            <p class="mt-2 whitespace-pre-line text-[15px] leading-relaxed text-slate-600" [class.line-clamp-4]="!descriptionExpanded">{{ company?.description }}</p>
+            @if ((company?.description?.length ?? 0) > 280) {
+              <button type="button" (click)="descriptionExpanded = !descriptionExpanded" class="mt-1 text-sm font-semibold text-brand-700 hover:text-brand-800">
+                {{ descriptionExpanded ? 'Show less' : 'Read more' }}
+              </button>
+            }
+          } @else {
+            <p class="mt-2 text-sm text-slate-400">This company hasn't added a description yet.</p>
+          }
+        </div>
 
-        <span *ngIf="company?.industry" class="flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-slate-600">
-          <i class="fa-solid fa-briefcase text-[10px] text-slate-400"></i>
-          {{ company?.industry }}
-        </span>
-
-        <span *ngIf="company?.phoneNumber" class="flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-slate-600">
-          <i class="fa-solid fa-phone text-[10px] text-slate-400"></i>
-          {{ company?.phoneNumber }}
-        </span>
+        @if (company?.phoneNumber || company?.address || websiteLink) {
+          <div class="rounded-2xl bg-slate-50 p-4">
+            <h2 class="text-sm font-semibold text-slate-900">Contact</h2>
+            <ul class="mt-3 space-y-2.5 text-sm text-slate-600">
+              @if (company?.phoneNumber) {
+                <li class="flex items-start gap-3"><i class="fa-solid fa-phone mt-1 w-4 text-center text-xs text-slate-400"></i>
+                  <a [href]="'tel:' + company?.phoneNumber" class="hover:text-brand-700">{{ company?.phoneNumber }}</a></li>
+              }
+              @if (company?.address) {
+                <li class="flex items-start gap-3"><i class="fa-solid fa-location-dot mt-1 w-4 text-center text-xs text-slate-400"></i>
+                  <span>{{ company?.address }}</span></li>
+              }
+              @if (websiteLink; as site) {
+                <li class="flex items-start gap-3"><i class="fa-solid fa-globe mt-1 w-4 text-center text-xs text-slate-400"></i>
+                  <a [href]="formatUrl(site.url)" target="_blank" rel="noopener noreferrer" class="truncate hover:text-brand-700">{{ displayUrl(site.url) }}</a></li>
+              }
+            </ul>
+          </div>
+        }
       </div>
-
     </div>
-
-  </div>
+  </section>
 
   <!-- PRODUCTS -->
   <div class="bg-white border rounded-xl p-3 sm:p-5">
