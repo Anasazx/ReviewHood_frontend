@@ -44,8 +44,8 @@
     </div>
 
 
-    <!-- DESKTOP SEARCH -->
-    <div class="absolute left-1/2 hidden w-[min(40vw,420px)] -translate-x-1/2 min-[910px]:block">
+    <!-- DESKTOP SEARCH (the home page has its own big search in the hero) -->
+    <div *ngIf="!isHome" class="absolute left-1/2 hidden w-[min(40vw,420px)] -translate-x-1/2 min-[910px]:block">
       <app-search-bar></app-search-bar>
     </div>
 
@@ -92,7 +92,7 @@
           <button
             type="button"
             (click)="openLogin()"
-            class="rounded-full bg-[#079669] px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-[#067a56]"
+            class="rounded-full bg-brand-600 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-brand-700"
           >
             Sign in
           </button>
@@ -165,7 +165,7 @@
           <button
             type="button"
             (click)="openLogin()"
-            class="rounded-full bg-[#079669] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#067a56] lg:px-6 lg:text-base"
+            class="rounded-full bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700 lg:px-6 lg:text-base"
           >
             Log in
           </button>

@@ -1,4 +1,4 @@
-<article class="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white transition-all duration-300 hover:border-[#b69c41]/40 hover:shadow-lg hover:shadow-slate-200/60">
+<article class="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white transition-all duration-300 hover:border-brand-400/40 hover:shadow-lg hover:shadow-slate-200/60">
 
   <!-- IMAGE -->
   <div class="relative aspect-[4/3] overflow-hidden bg-slate-100">
@@ -17,7 +17,7 @@
 
     <!-- TITLE FIRST — this is what the user scans for, give it top priority -->
     <h2
-      class="text-base font-semibold leading-snug text-slate-900 transition hover:text-[#7e6907] line-clamp-2 cursor-pointer"
+      class="text-base font-semibold leading-snug text-slate-900 transition hover:text-brand-600 line-clamp-2 cursor-pointer"
       [routerLink]="['/p', product.id]"
     >
       {{ product.name }}
@@ -31,7 +31,7 @@
         class="h-5 w-5 flex-shrink-0 rounded-full border border-slate-200 object-cover"
       >
       <span
-        class="truncate text-sm text-slate-500 transition hover:text-[#7e6907] cursor-pointer"
+        class="truncate text-sm text-slate-500 transition hover:text-brand-600 cursor-pointer"
         [routerLink]="['/c', product.companyId]"
       >
         {{ product.companyName }}
@@ -40,7 +40,7 @@
         *ngIf="product.companyIsVerified"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
-        class="h-4 w-4 flex-shrink-0 text-[#7e6907]"
+        class="h-4 w-4 flex-shrink-0 text-brand-600"
         fill="currentColor"
       >
         <circle cx="12" cy="12" r="10"/>
@@ -65,7 +65,7 @@
         *ngIf="product.reviewCount > 0; else noReviews"
         class="flex flex-shrink-0 items-center gap-1"
       >
-        <i class="fa-solid fa-star text-xs text-[#f1d274]"></i>
+        <i class="fa-solid fa-star text-xs text-rating"></i>
         <span class="text-sm font-semibold text-slate-900">{{ product.reviewsAvg | number:'1.1-1' }}</span>
         <span class="text-xs text-slate-400">({{ product.reviewCount }})</span>
       </div>
@@ -76,7 +76,7 @@
       <!-- BUTTON — now shares the row instead of being a full-width slab -->
       <a
       [routerLink]="'/p/' + product.id"
-      class="ml-auto inline-flex items-center gap-1.5 rounded-xl bg-[#002b12] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#00190a]"
+      class="ml-auto inline-flex items-center gap-1.5 rounded-xl bg-ink px-4 py-2.5 text-sm font-medium text-white transition hover:bg-ink-light"
       >
       View details
       </a>

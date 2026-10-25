@@ -20,9 +20,9 @@
     <button
       *ngFor="let subcategory of subcategories"
       (click)="goToCategory(subcategory)"
-      class="group flex items-center gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 text-left transition-all duration-300 hover:border-[#b69c41]/40 hover:shadow-lg hover:shadow-slate-200/60"
+      class="group flex items-center gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 text-left transition-all duration-300 hover:border-brand-400/40 hover:shadow-lg hover:shadow-slate-200/60"
     >
-      <span class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 transition group-hover:bg-[#7e6907]/10 group-hover:text-[#7e6907]">
+      <span class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 transition group-hover:bg-brand-600/10 group-hover:text-brand-600">
         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             stroke-linecap="round"
@@ -34,12 +34,12 @@
       </span>
 
       <div class="min-w-0 flex-1">
-        <h3 class="truncate font-semibold text-slate-900 transition group-hover:text-[#7e6907]">
+        <h3 class="truncate font-semibold text-slate-900 transition group-hover:text-brand-600">
           {{ subcategory.name }}
         </h3>
       </div>
 
-      <i class="fa-solid fa-chevron-right flex-shrink-0 text-xs text-slate-300 transition group-hover:text-[#7e6907]"></i>
+      <i class="fa-solid fa-chevron-right flex-shrink-0 text-xs text-slate-300 transition group-hover:text-brand-600"></i>
     </button>
 
   </div>

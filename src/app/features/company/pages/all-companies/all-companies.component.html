@@ -19,7 +19,7 @@
         [value]="searchTerm"
         (input)="onSearchChange($any($event.target).value)"
         placeholder="Filter by name..."
-        class="w-full rounded-full border border-slate-200 bg-white py-2.5 pl-9 pr-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-[#7e6907]/40"
+        class="w-full rounded-full border border-slate-200 bg-white py-2.5 pl-9 pr-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-brand-600/40"
       />
     </div>
   </div>
@@ -30,7 +30,7 @@
       (click)="toggleVerifiedOnly()"
       class="flex items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-medium transition sm:px-4 sm:text-sm"
       [ngClass]="verifiedOnly
-        ? 'border-[#7e6907] bg-[#7e6907]/5 text-[#7e6907]'
+        ? 'border-brand-600 bg-brand-600/5 text-brand-600'
         : 'border-slate-200 text-slate-600 hover:border-slate-300'"
     >
       <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 sm:h-4 sm:w-4" [attr.fill]="verifiedOnly ? 'currentColor' : 'none'" [attr.stroke]="verifiedOnly ? 'none' : 'currentColor'" stroke-width="2">
@@ -53,19 +53,19 @@
     <a
     *ngFor="let company of filteredCompanies"
     [routerLink]="['/c', company.id]"
-    class="group flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-white p-3 transition-all duration-300 hover:border-[#b69c41]/40 hover:shadow-lg hover:shadow-slate-200/60 sm:gap-4 sm:p-4"
+    class="group flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-white p-3 transition-all duration-300 hover:border-brand-400/40 hover:shadow-lg hover:shadow-slate-200/60 sm:gap-4 sm:p-4"
     >
     <img [src]="company.logoUrl | imageUrl" class="h-12 w-12 flex-shrink-0 rounded-full border border-slate-200 object-cover sm:h-14 sm:w-14"/>
     <div class="min-w-0 flex-1">
       <div class="flex items-center gap-1.5">
-        <h4 class="truncate text-sm font-semibold text-slate-900 transition group-hover:text-[#7e6907]">{{ company.name }}</h4>
-        <svg *ngIf="company.status === CompanyStatus.ACTIVE" viewBox="0 0 24 24" class="h-3.5 w-3.5 flex-shrink-0 text-[#7e6907]" fill="currentColor">
+        <h4 class="truncate text-sm font-semibold text-slate-900 transition group-hover:text-brand-600">{{ company.name }}</h4>
+        <svg *ngIf="company.status === CompanyStatus.ACTIVE" viewBox="0 0 24 24" class="h-3.5 w-3.5 flex-shrink-0 text-brand-600" fill="currentColor">
           <circle cx="12" cy="12" r="10"/><path d="M10 12.5 8.5 11 7 12.5 10 15.5 17 8.5 15.5 7z" fill="white"/>
         </svg>
       </div>
       <p class="mt-0.5 truncate text-xs text-slate-500">{{ company.description || company.country }}</p>
     </div>
-    <i class="fa-solid fa-chevron-right flex-shrink-0 text-xs text-slate-300 transition group-hover:text-[#7e6907]"></i>
+    <i class="fa-solid fa-chevron-right flex-shrink-0 text-xs text-slate-300 transition group-hover:text-brand-600"></i>
     </a>
 
   </div>
@@ -75,7 +75,7 @@
     <button
       (click)="loadMore()"
       [disabled]="loadingMore"
-      class="inline-flex items-center gap-2 rounded-full border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-[#7e6907]/30 hover:text-[#7e6907] disabled:cursor-not-allowed disabled:opacity-50 sm:px-6 sm:py-3"
+      class="inline-flex items-center gap-2 rounded-full border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-brand-600/30 hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-50 sm:px-6 sm:py-3"
     >
       <i *ngIf="loadingMore" class="fa-solid fa-spinner animate-spin text-xs"></i>
       <span *ngIf="!loadingMore">Load more companies</span>

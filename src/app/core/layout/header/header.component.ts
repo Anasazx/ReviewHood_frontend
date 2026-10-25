@@ -59,6 +59,10 @@ export class HeaderComponent implements OnInit {
   mobileMenuOpen = false;
   suggestProductOpen = false;
 
+  get isHome(): boolean {
+    return this.router.url.split(/[?#]/)[0] === '/';
+  }
+
   constructor(
     public authService: AuthService,
     private router: Router,

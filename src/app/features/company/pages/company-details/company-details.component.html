@@ -30,7 +30,7 @@
               *ngIf="company?.status === CompanyStatus.ACTIVE"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
-              class="h-5 w-5 flex-shrink-0 text-[#7e6907]"
+              class="h-5 w-5 flex-shrink-0 text-brand-600"
               fill="currentColor"
             >
               <circle cx="12" cy="12" r="10"/>
@@ -47,7 +47,7 @@
             *ngFor="let social of company?.socialLinks"
             [href]="formatUrl(social.url)"
             target="_blank"
-            class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 transition hover:border-[#7e6907]/30 hover:bg-[#7e6907]/5 sm:h-10 sm:w-10"
+            class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 transition hover:border-brand-600/30 hover:bg-brand-600/5 sm:h-10 sm:w-10"
             >
             <img [src]="socialIconMap[social.platform]" class="h-5 w-5 sm:h-6 sm:w-6"/>
             </a>
@@ -100,7 +100,7 @@
           [(ngModel)]="searchTerm"
           (ngModelChange)="onSearchChange($event)"
           placeholder="Search products..."
-          class="w-full rounded-full border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-sm text-slate-700 outline-none transition focus:border-[#7e6907]/40 focus:bg-white"
+          class="w-full rounded-full border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-sm text-slate-700 outline-none transition focus:border-brand-600/40 focus:bg-white"
         />
       </div>
     </div>
@@ -160,7 +160,7 @@
       <button
         (click)="loadProducts()"
         [disabled]="loading"
-        class="inline-flex items-center gap-2 rounded-full border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-[#7e6907]/30 hover:text-[#7e6907] disabled:cursor-not-allowed disabled:opacity-50"
+        class="inline-flex items-center gap-2 rounded-full border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-brand-600/30 hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
       >
         <i *ngIf="loading" class="fa-solid fa-spinner animate-spin text-xs"></i>
         <span *ngIf="!loading">Load more products</span>

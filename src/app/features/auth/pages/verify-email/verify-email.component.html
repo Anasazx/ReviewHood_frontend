@@ -102,7 +102,7 @@
         (input)="moveNext($event, i)"
         (keydown)="backspace($event, i)"
         (paste)="paste($event)"
-        class="h-12 w-10 rounded-xl border border-slate-300 bg-white text-center text-xl font-semibold text-slate-900 outline-none transition-all duration-200 focus:border-[#7e6907] focus:ring-4 focus:ring-[#7e6907]/10 sm:h-14 sm:w-12 sm:text-2xl"
+        class="h-12 w-10 rounded-xl border border-slate-300 bg-white text-center text-xl font-semibold text-slate-900 outline-none transition-all duration-200 focus:border-brand-600 focus:ring-4 focus:ring-brand-600/10 sm:h-14 sm:w-12 sm:text-2xl"
       />
 
     </div>
@@ -123,7 +123,7 @@
       type="button"
       (click)="verify()"
       [disabled]="loading"
-      class="mt-7 flex w-full items-center justify-center rounded-xl bg-[#002b12] px-4 py-3 font-semibold text-white transition-all duration-200 hover:bg-[#00190a] focus:outline-none focus:ring-4 focus:ring-[#002b12]/15 disabled:cursor-not-allowed disabled:opacity-60"
+      class="mt-7 flex w-full items-center justify-center rounded-xl bg-ink px-4 py-3 font-semibold text-white transition-all duration-200 hover:bg-ink-light focus:outline-none focus:ring-4 focus:ring-ink/15 disabled:cursor-not-allowed disabled:opacity-60"
     >
 
       <span
@@ -200,7 +200,7 @@
         type="button"
         (click)="resend()"
         [disabled]="!canResend"
-        class="ml-1 font-semibold text-[#7e6907] transition-colors hover:text-[#5f4f05] disabled:cursor-not-allowed disabled:text-slate-400"
+        class="ml-1 font-semibold text-brand-600 transition-colors hover:text-brand-700 disabled:cursor-not-allowed disabled:text-slate-400"
       >
         {{ canResend ? 'Resend' : 'Resend in ' + resendCooldown + 's' }}
       </button>
@@ -272,7 +272,7 @@
       <button
         type="button"
         (click)="confirmSkip()"
-        class="flex-1 rounded-xl bg-[#002b12] px-4 py-2.5 font-semibold text-white transition hover:bg-[#00190a]"
+        class="flex-1 rounded-xl bg-ink px-4 py-2.5 font-semibold text-white transition hover:bg-ink-light"
       >
         Skip anyway
       </button>

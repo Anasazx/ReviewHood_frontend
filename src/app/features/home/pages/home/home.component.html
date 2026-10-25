@@ -1,21 +1,21 @@
 <div class="space-y-14">
 
   <!-- SEARCH -->
-  <section class="relative z-20 left-1/2 right-1/2 -mx-[50vw] w-screen bg-[#fdf6e3] py-20">
+  <section class="relative z-20 left-1/2 right-1/2 -mx-[50vw] w-screen bg-brand-50 py-20">
     <!-- FLOATING STARS (clipped separately so the search suggestions can overflow the section) -->
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
-      <i class="fa-solid fa-star absolute -right-4 -top-8 rotate-[18deg] text-[160px] text-[#f1d274]/60 animate-float-a md:right-10 md:top-2 md:text-[200px]"></i>
-      <i class="fa-solid fa-star absolute -left-10 bottom-0 -rotate-[15deg] text-[100px] text-[#b69c41]/20 animate-float-b md:left-4 md:bottom-4 md:text-[130px]"></i>
-      <i class="fa-solid fa-star absolute right-[18%] top-[70%] rotate-[8deg] text-3xl text-[#f1d274] animate-float-a-fast hidden md:block"></i>
-      <i class="fa-solid fa-star absolute left-[12%] top-[15%] -rotate-[10deg] text-2xl text-[#b69c41]/50 animate-float-b-fast hidden md:block"></i>
+      <i class="fa-solid fa-star absolute -right-4 -top-8 rotate-[18deg] text-[160px] text-brand-300/60 animate-float-a md:right-10 md:top-2 md:text-[200px]"></i>
+      <i class="fa-solid fa-star absolute -left-10 bottom-0 -rotate-[15deg] text-[100px] text-brand-400/20 animate-float-b md:left-4 md:bottom-4 md:text-[130px]"></i>
+      <i class="fa-solid fa-star absolute right-[18%] top-[70%] rotate-[8deg] text-3xl text-brand-300 animate-float-a-fast hidden md:block"></i>
+      <i class="fa-solid fa-star absolute left-[12%] top-[15%] -rotate-[10deg] text-2xl text-brand-400/50 animate-float-b-fast hidden md:block"></i>
     </div>
 
     <div class="relative mx-auto max-w-7xl px-4 text-center">
-      <h2 class="text-[48px] font-semibold tracking-[-0.02em] text-[#7e6907]">
+      <h2 class="text-[48px] font-semibold tracking-[-0.02em] text-ink">
         What are you looking for?
       </h2>
 
-      <p class="mt-2 text-lg text-[#7e6907]/60">
+      <p class="mt-2 text-lg text-brand-700">
         Search thousands of honest reviews from real customers
       </p>
 
@@ -45,14 +45,14 @@
           <button
             (click)="scrollCategories('left')"
             [disabled]="!canGoLeftCategories"
-            class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-[#7e6907]/30 hover:bg-[#7e6907]/5 hover:text-[#7e6907] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:bg-transparent"
+            class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-brand-600/30 hover:bg-brand-600/5 hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:bg-transparent"
           >
             <i class="fa-solid fa-chevron-left text-xs"></i>
           </button>
           <button
             (click)="scrollCategories('right')"
             [disabled]="!canGoRightCategories"
-            class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-[#7e6907]/30 hover:bg-[#7e6907]/5 hover:text-[#7e6907] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:bg-transparent"
+            class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-brand-600/30 hover:bg-brand-600/5 hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:bg-transparent"
           >
             <i class="fa-solid fa-chevron-right text-xs"></i>
           </button>
@@ -61,7 +61,7 @@
         <!-- SEE ALL (visible on all screens) -->
         <a
         routerLink="/categories"
-        class="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-[#002b11]/30 hover:text-[#002b11] sm:gap-2 sm:px-4 sm:text-sm"
+        class="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-ink/30 hover:text-ink sm:gap-2 sm:px-4 sm:text-sm"
         >
         <span class="hidden sm:inline">See all categories</span>
         <span class="sm:hidden">See all</span>
@@ -124,14 +124,14 @@
           <button
             (click)="scrollCompanies('left')"
             [disabled]="!canGoLeftCompanies"
-            class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-[#7e6907]/30 hover:bg-[#7e6907]/5 hover:text-[#7e6907] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:bg-transparent"
+            class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-brand-600/30 hover:bg-brand-600/5 hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:bg-transparent"
           >
             <i class="fa-solid fa-chevron-left text-xs"></i>
           </button>
           <button
             (click)="scrollCompanies('right')"
             [disabled]="!canGoRightCompanies"
-            class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-[#7e6907]/30 hover:bg-[#7e6907]/5 hover:text-[#7e6907] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:bg-transparent"
+            class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-brand-600/30 hover:bg-brand-600/5 hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:bg-transparent"
           >
             <i class="fa-solid fa-chevron-right text-xs"></i>
           </button>
@@ -140,7 +140,7 @@
         <!-- SEE ALL (visible on all screens) -->
         <a
         routerLink="/companies"
-        class="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-[#7e6907]/30 hover:text-[#7e6907] sm:gap-2 sm:px-4 sm:text-sm"
+        class="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-brand-600/30 hover:text-brand-600 sm:gap-2 sm:px-4 sm:text-sm"
         >
         <span class="hidden sm:inline">See all companies</span>
         <span class="sm:hidden">See all</span>
@@ -155,13 +155,13 @@
       <a
         *ngFor="let company of companies"
         [routerLink]="['/c', company.id]"
-        class="group flex w-[78vw] max-w-[300px] shrink-0 items-center gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 transition-all duration-300 hover:border-[#b69c41]/40 hover:shadow-lg hover:shadow-slate-200/60"
+        class="group flex w-[78vw] max-w-[300px] shrink-0 items-center gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 transition-all duration-300 hover:border-brand-400/40 hover:shadow-lg hover:shadow-slate-200/60"
       >
         <img [src]="company.logoUrl | imageUrl" class="h-14 w-14 flex-shrink-0 rounded-full border border-slate-200 object-cover"/>
         <div class="min-w-0 flex-1">
           <div class="flex items-center gap-1.5">
-            <h4 class="truncate text-sm font-semibold text-slate-900 transition group-hover:text-[#7e6907]">{{ company.name }}</h4>
-            <svg *ngIf="company.status === CompanyStatus.ACTIVE" viewBox="0 0 24 24" class="h-3.5 w-3.5 flex-shrink-0 text-[#7e6907]" fill="currentColor">
+            <h4 class="truncate text-sm font-semibold text-slate-900 transition group-hover:text-brand-600">{{ company.name }}</h4>
+            <svg *ngIf="company.status === CompanyStatus.ACTIVE" viewBox="0 0 24 24" class="h-3.5 w-3.5 flex-shrink-0 text-brand-600" fill="currentColor">
               <circle cx="12" cy="12" r="10"/><path d="M10 12.5 8.5 11 7 12.5 10 15.5 17 8.5 15.5 7z" fill="white"/>
             </svg>
           </div>
@@ -187,19 +187,19 @@
           <a
             *ngFor="let company of page"
             [routerLink]="['/c', company.id]"
-            class="group flex items-center gap-4 rounded-2xl border border-slate-200/80 bg-white p-4 transition-all duration-300 hover:border-[#b69c41]/40 hover:shadow-lg hover:shadow-slate-200/60"
+            class="group flex items-center gap-4 rounded-2xl border border-slate-200/80 bg-white p-4 transition-all duration-300 hover:border-brand-400/40 hover:shadow-lg hover:shadow-slate-200/60"
           >
             <img [src]="company.logoUrl | imageUrl" class="h-14 w-14 flex-shrink-0 rounded-full border border-slate-200 object-cover"/>
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-1.5">
-                <h4 class="truncate text-sm font-semibold text-slate-900 transition group-hover:text-[#7e6907]">{{ company.name }}</h4>
-                <svg *ngIf="company.status === CompanyStatus.ACTIVE" viewBox="0 0 24 24" class="h-3.5 w-3.5 flex-shrink-0 text-[#7e6907]" fill="currentColor">
+                <h4 class="truncate text-sm font-semibold text-slate-900 transition group-hover:text-brand-600">{{ company.name }}</h4>
+                <svg *ngIf="company.status === CompanyStatus.ACTIVE" viewBox="0 0 24 24" class="h-3.5 w-3.5 flex-shrink-0 text-brand-600" fill="currentColor">
                   <circle cx="12" cy="12" r="10"/><path d="M10 12.5 8.5 11 7 12.5 10 15.5 17 8.5 15.5 7z" fill="white"/>
                 </svg>
               </div>
               <p class="mt-0.5 truncate text-xs text-slate-500">{{ company.description || company.country }}</p>
             </div>
-            <i class="fa-solid fa-chevron-right flex-shrink-0 text-xs text-slate-300 transition group-hover:text-[#7e6907]"></i>
+            <i class="fa-solid fa-chevron-right flex-shrink-0 text-xs text-slate-300 transition group-hover:text-brand-600"></i>
           </a>
 
         </div>
@@ -209,7 +209,7 @@
     </div>  </section>
 
   <!-- AUTH BANNER -->
-  <section class="rounded-3xl bg-[#002b11] px-5 py-10 text-center">
+  <section class="rounded-3xl bg-ink px-5 py-10 text-center">
     <div class="mx-auto max-w-xl">
 
       <ng-container *ngIf="authService.currentUser$ | async; else guestBanner">
@@ -257,7 +257,7 @@
           <button
             (click)="scrollProducts('left')"
             [disabled]="!canGoLeftProducts"
-            class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-[#7e6907]/30 hover:bg-[#7e6907]/5 hover:text-[#7e6907] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:bg-transparent"
+            class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-brand-600/30 hover:bg-brand-600/5 hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:bg-transparent"
           >
             <i class="fa-solid fa-chevron-left text-xs"></i>
           </button>
@@ -265,7 +265,7 @@
           <button
             (click)="scrollProducts('right')"
             [disabled]="!canGoRightProducts"
-            class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-[#7e6907]/30 hover:bg-[#7e6907]/5 hover:text-[#7e6907] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:bg-transparent"
+            class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-brand-600/30 hover:bg-brand-600/5 hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:bg-transparent"
           >
             <i class="fa-solid fa-chevron-right text-xs"></i>
           </button>
@@ -275,7 +275,7 @@
         <!-- SEE ALL (visible on all screens) -->
         <a
         routerLink="/products"
-        class="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-[#7e6907]/30 hover:text-[#7e6907] sm:gap-2 sm:px-4 sm:text-sm"
+        class="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-brand-600/30 hover:text-brand-600 sm:gap-2 sm:px-4 sm:text-sm"
         >
         <span class="hidden sm:inline">See all products</span>
         <span class="sm:hidden">See all</span>
@@ -335,11 +335,11 @@
 
   <!-- TRUST STRIP -->
   <!--
-  <section class="rounded-2xl bg-[#fdf6e3] px-8 py-10 text-center">
-    <h2 class="text-2xl font-semibold tracking-tight text-[#7e6907] md:text-3xl">
+  <section class="rounded-2xl bg-brand-50 px-8 py-10 text-center">
+    <h2 class="text-2xl font-semibold tracking-tight text-brand-600 md:text-3xl">
       Honest reviews, from people who actually bought the thing
     </h2>
-    <p class="mx-auto mt-2 max-w-md text-sm text-[#7e6907]/60">
+    <p class="mx-auto mt-2 max-w-md text-sm text-brand-600/60">
       No fake ratings. No paid placements. Just real Tunisian shoppers.
     </p>
   </section>
@@ -365,7 +365,7 @@
         <button
           (click)="scrollReviews('left')"
           [disabled]="!canGoLeft"
-          class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-[#7e6907]/30 hover:bg-[#7e6907]/5 hover:text-[#7e6907] disabled:cursor-not-allowed disabled:opacity-30"
+          class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-brand-600/30 hover:bg-brand-600/5 hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-30"
         >
           <i class="fa-solid fa-chevron-left text-xs"></i>
         </button>
@@ -373,7 +373,7 @@
         <button
           (click)="scrollReviews('right')"
           [disabled]="!canGoRight"
-          class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-[#7e6907]/30 hover:bg-[#7e6907]/5 hover:text-[#7e6907] disabled:cursor-not-allowed disabled:opacity-30"
+          class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-brand-600/30 hover:bg-brand-600/5 hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-30"
         >
           <i class="fa-solid fa-chevron-right text-xs"></i>
         </button>
@@ -410,7 +410,7 @@
 
 
           <!-- RATING -->
-          <div class="inline-flex h-7 shrink-0 items-center gap-2 rounded-full bg-[#002b11] px-3">
+          <div class="inline-flex h-7 shrink-0 items-center gap-2 rounded-full bg-ink px-3">
 
             <div class="relative flex w-[54px] items-center text-[11px] leading-none">
 
@@ -423,7 +423,7 @@
               </div>
 
               <div
-                class="absolute inset-0 flex w-full justify-between overflow-hidden text-amber-400"
+                class="absolute inset-0 flex w-full justify-between overflow-hidden text-rating"
                 [style.width.%]="((review.rating || 0) / 5) * 100 | number:'1.0-0'"
               >
                 <i class="fa-solid fa-star"></i>
@@ -455,7 +455,7 @@
 
           <a
             [routerLink]="['/p', review.productId]"
-            class="block truncate text-xs font-medium text-sky-600 hover:text-sky-700"
+            class="block truncate text-xs font-medium text-brand-600 hover:text-brand-700"
           >
             {{ review.productName }}
           </a>
@@ -502,7 +502,7 @@
               </div>
 
               <!-- RATING -->
-              <div class="inline-flex h-7 shrink-0 items-center gap-2 rounded-full bg-[#002b11] px-3">
+              <div class="inline-flex h-7 shrink-0 items-center gap-2 rounded-full bg-ink px-3">
 
                 <div class="relative flex w-[54px] items-center text-[11px] leading-none">
 
@@ -515,7 +515,7 @@
                   </div>
 
                   <div
-                    class="absolute inset-0 flex w-full justify-between overflow-hidden text-amber-400"
+                    class="absolute inset-0 flex w-full justify-between overflow-hidden text-rating"
                     [style.width.%]="((review.rating || 0) / 5) * 100 | number:'1.0-0'"
                   >
                     <i class="fa-solid fa-star"></i>
@@ -547,7 +547,7 @@
 
               <a
                 [routerLink]="['/p', review.productId]"
-                class="block truncate text-xs font-medium text-sky-600 hover:text-sky-700"
+                class="block truncate text-xs font-medium text-brand-600 hover:text-brand-700"
               >
                 {{ review.productName }}
               </a>

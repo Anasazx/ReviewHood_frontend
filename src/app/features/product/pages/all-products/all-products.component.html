@@ -16,7 +16,7 @@
     <select
       [value]="sortBy"
       (change)="setSortBy($any($event.target).value)"
-      class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-[#b69c41]/40"
+      class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-brand-400/40"
     >
       <option value="relevance">Most relevant</option>
       <option value="rating">Highest rated</option>
@@ -98,7 +98,7 @@
         <button
           (click)="loadMore()"
           [disabled]="loadingMore"
-          class="inline-flex items-center gap-2 rounded-full border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-[#7e6907]/30 hover:text-[#7e6907] disabled:cursor-not-allowed disabled:opacity-50"
+          class="inline-flex items-center gap-2 rounded-full border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-brand-600/30 hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <i *ngIf="loadingMore" class="fa-solid fa-spinner animate-spin text-xs"></i>
           <span *ngIf="!loadingMore">Load more products</span>
