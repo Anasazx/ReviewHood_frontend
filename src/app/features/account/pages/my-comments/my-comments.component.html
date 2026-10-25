@@ -1,1 +1,42 @@
-<p>my-comments works!</p>
+<div class="space-y-6">
+  <div>
+    <h2 class="text-lg font-semibold text-slate-800">My comments</h2>
+    <p class="text-sm text-slate-500">Replies you wrote under reviews{{ total ? ' · ' + total : '' }}</p>
+  </div>
+
+  @if (!loading && !error && !comments.length) {
+    <div class="rounded-xl border border-dashed border-slate-200 px-6 py-12 text-center">
+      <i class="fa-regular fa-comments text-2xl text-slate-300"></i>
+      <p class="mt-3 font-medium text-slate-700">No comments yet</p>
+      <p class="mt-1 text-sm text-slate-500">Join a conversation under any review.</p>
+      <a routerLink="/products" class="mt-4 inline-flex rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">Browse products</a>
+    </div>
+  }
+
+  <ul class="space-y-3">
+    @for (c of comments; track c.id) {
+      <li class="rounded-xl border border-slate-200 p-4 transition hover:border-brand-600/30">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <a [routerLink]="['/p', c.productId]" class="font-medium text-slate-900 hover:text-brand-700">{{ c.productName }}</a>
+          <span class="text-xs text-slate-400">{{ c.createdAt | date: 'mediumDate' }}</span>
+        </div>
+        <p class="mt-1 text-xs text-slate-500">
+          <i class="fa-solid fa-reply mr-1 text-[10px]"></i>{{ c.repliedToName ? 'Reply to ' + c.repliedToName : 'Comment on a review' }}
+        </p>
+        <p class="mt-2 whitespace-pre-line text-sm text-slate-700">{{ c.content }}</p>
+        <p class="mt-2 text-xs text-slate-400"><i class="fa-regular fa-heart mr-1"></i>{{ c.likeCount }} {{ c.likeCount === 1 ? 'like' : 'likes' }}</p>
+      </li>
+    }
+  </ul>
+
+  @if (error) {
+    <p class="text-center text-sm text-red-600">Could not load your comments. <button type="button" class="font-semibold underline" (click)="loadMore()">Retry</button></p>
+  }
+  @if (loading) {
+    <p class="text-center text-sm text-slate-400"><i class="fa-solid fa-spinner animate-spin mr-1"></i> Loading…</p>
+  } @else if (!last && comments.length) {
+    <div class="flex justify-center">
+      <button type="button" class="rounded-full border border-slate-200 px-5 py-2 text-sm font-semibold text-slate-700 hover:border-brand-600/30 hover:text-brand-700" (click)="loadMore()">Load more</button>
+    </div>
+  }
+</div>

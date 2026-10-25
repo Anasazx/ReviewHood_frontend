@@ -49,12 +49,12 @@
           type="button"
           (click)="startEdit()"
           class="w-full rounded-xl
-           bg-slate-900
+           bg-brand-600
            py-2.5
            text-sm
            font-semibold
            text-white
-           hover:bg-slate-700
+           hover:bg-brand-700
            transition
            flex items-center justify-center gap-2">
 
@@ -183,7 +183,7 @@
             <button
               type="submit"
               [disabled]="submittingReview || selectedRating === 0 || !hasChanges"
-              class="flex-1 rounded-xl bg-slate-900 py-2.5 text-sm font-semibold text-white hover:bg-slate-700 transition disabled:opacity-40 disabled:cursor-not-allowed">
+              class="flex-1 rounded-xl bg-brand-600 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 transition disabled:opacity-40 disabled:cursor-not-allowed">
 
               {{ reviewFormButtonLabel }}
 

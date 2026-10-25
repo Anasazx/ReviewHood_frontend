@@ -1,1 +1,46 @@
-<p>security works!</p>
+<div class="max-w-lg space-y-6">
+  <div>
+    <h2 class="text-lg font-semibold text-slate-800">{{ hasPassword ? 'Change password' : 'Set a password' }}</h2>
+    <p class="text-sm text-slate-500">
+      {{ hasPassword ? 'Use at least 8 characters. You stay signed in on this device.' : 'You signed up with Google. Set a password to also sign in with your email.' }}
+    </p>
+  </div>
+
+  <form class="space-y-4" (ngSubmit)="save()" novalidate>
+    @if (hasPassword) {
+      <div>
+        <label for="current" class="mb-1.5 block text-sm font-medium text-slate-700">Current password</label>
+        <input id="current" name="current" [type]="show ? 'text' : 'password'" autocomplete="current-password" [(ngModel)]="currentPassword"
+               class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20" />
+      </div>
+    }
+    <div>
+      <label for="new" class="mb-1.5 block text-sm font-medium text-slate-700">New password</label>
+      <input id="new" name="new" [type]="show ? 'text' : 'password'" autocomplete="new-password" [(ngModel)]="newPassword"
+             class="w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition focus:ring-2"
+             [ngClass]="tooShort ? 'border-red-300 focus:border-red-400 focus:ring-red-500/20' : 'border-slate-200 focus:border-brand-500 focus:ring-brand-500/20'" />
+      @if (tooShort) { <p class="mt-1 text-xs text-red-600">Use at least 8 characters.</p> }
+    </div>
+    <div>
+      <label for="confirm" class="mb-1.5 block text-sm font-medium text-slate-700">Confirm new password</label>
+      <input id="confirm" name="confirm" [type]="show ? 'text' : 'password'" autocomplete="new-password" [(ngModel)]="confirmPassword"
+             class="w-full rounded-xl border px-3.5 py-2.5 text-sm outline-none transition focus:ring-2"
+             [ngClass]="mismatch ? 'border-red-300 focus:border-red-400 focus:ring-red-500/20' : 'border-slate-200 focus:border-brand-500 focus:ring-brand-500/20'" />
+      @if (mismatch) { <p class="mt-1 text-xs text-red-600">The passwords don't match.</p> }
+    </div>
+
+    <label class="flex items-center gap-2 text-sm text-slate-600">
+      <input type="checkbox" name="show" [(ngModel)]="show" class="rounded border-slate-300 text-brand-600 focus:ring-brand-500" /> Show passwords
+    </label>
+
+    @if (error) {
+      <div class="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700" role="alert">{{ error }}</div>
+    }
+
+    <button type="submit" [disabled]="saving"
+            class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:opacity-50">
+      @if (saving) { <i class="fa-solid fa-spinner animate-spin"></i> }
+      {{ hasPassword ? 'Change password' : 'Set password' }}
+    </button>
+  </form>
+</div>

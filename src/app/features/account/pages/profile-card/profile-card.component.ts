@@ -1,3 +1,4 @@
+import { AvatarComponent } from '../../../../core/sharedComponents/avatar/avatar.component';
 import { Component, OnInit } from '@angular/core';
 import { SharedService } from '../../../../core/services/sharedService/shared.service';
 import { UserService } from '../../../user/services/userService/user.service';
@@ -11,7 +12,7 @@ import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-profile-card',
-  imports: [CommonModule, FormsModule, ImageUrlPipe],
+  imports: [AvatarComponent, CommonModule, FormsModule],
   templateUrl: './profile-card.component.html',
   styleUrl: './profile-card.component.css'
 })

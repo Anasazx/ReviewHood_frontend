@@ -1,10 +1,9 @@
 import { CommonModule } from '@angular/common';
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProductCardComponent } from '../../../../core/sharedComponents/product-card/product-card.component';
-import { SubcategoryResponse } from '../../../../core/models/dto/subcategoryDTO/subcategoryResponse.model';
-import { SubcategoryService } from '../../../home/services/subcategoryService/subcategory.service';
-import {DEFAULT_SUBCATEGORY_ICON, SUBCATEGORY_ICONS} from '../../../../core/constants/subcategory-icons';
+import { CategoryNode, CategoryTreeService } from '../../../../core/services/categoryTreeService/category-tree.service';
+import { categoryIcon } from '../../../../core/constants/category-icons';
 import {ProductService} from '../../services/productService/product.service';
 import {ProductResponse} from '../../models/productDTO/productResponse.model';
 
@@ -13,7 +12,7 @@ type SortOption = 'relevance' | 'rating' | 'reviews' | 'newest';
 @Component({
   selector: 'app-all-products',
   standalone: true,
-  imports: [CommonModule, ProductCardComponent],
+  imports: [CommonModule, RouterLink, ProductCardComponent],
   templateUrl: './all-products.component.html',
   styleUrl: './all-products.component.css'
 })
@@ -21,23 +20,23 @@ export class AllProductsComponent implements OnInit {
 
   constructor(
     private productService: ProductService,
-    private subcategoryService: SubcategoryService,
+    private categoryTreeService: CategoryTreeService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
 
   products: ProductResponse[] = [];
-  subcategories: SubcategoryResponse[] = [];
+  categories: CategoryNode[] = [];
 
   loading = true;
   loadingMore = false;
   showFilters = false; // mobile toggle
 
-  protected readonly SUBCATEGORY_ICONS = SUBCATEGORY_ICONS;
-  protected readonly DEFAULT_SUBCATEGORY_ICON = DEFAULT_SUBCATEGORY_ICON;
+  protected readonly categoryIcon = categoryIcon;
 
+  // Filter: a whole category, or one subcategory (which implies its category)
+  selectedCategoryId?: number;
   selectedSubcategoryId?: number;
-  selectedSubcategory = 'All';
   sortBy: SortOption = 'relevance';
 
   currentPage = 0;
@@ -46,11 +45,11 @@ export class AllProductsComponent implements OnInit {
   isLastPage = false;
 
   ngOnInit(): void {
-    this.loadSubcategories();
+    this.categoryTreeService.tree$.subscribe(tree => this.categories = tree);
 
     this.route.queryParamMap.subscribe(params => {
       this.selectedSubcategoryId = params.get('subcategoryId') ? Number(params.get('subcategoryId')) : undefined;
-      this.selectedSubcategory = params.get('subcategory') || 'All';
+      this.selectedCategoryId = params.get('categoryId') ? Number(params.get('categoryId')) : undefined;
 
       this.products = [];
       this.currentPage = 0;
@@ -60,11 +59,20 @@ export class AllProductsComponent implements OnInit {
     });
   }
 
-  loadSubcategories() {
-    this.subcategoryService.getAllSubcategories().subscribe({
-      next: (response) => this.subcategories = response,
-      error: (err) => console.error(err)
-    });
+  // The category shown as open in the sidebar: the selected one, or the parent of the selected subcategory
+  get activeCategory(): CategoryNode | undefined {
+    if (this.selectedSubcategoryId) {
+      return this.categories.find(c => c.subcategories.some(s => s.id === this.selectedSubcategoryId));
+    }
+    return this.categories.find(c => c.id === this.selectedCategoryId);
+  }
+
+  get activeSubcategoryName(): string | undefined {
+    return this.activeCategory?.subcategories.find(s => s.id === this.selectedSubcategoryId)?.name;
+  }
+
+  get pageTitle(): string {
+    return this.activeSubcategoryName ?? this.activeCategory?.name ?? 'All products';
   }
 
   get sortParam(): string | undefined {
@@ -78,7 +86,7 @@ export class AllProductsComponent implements OnInit {
 
   loadProducts() {
     this.productService
-      .getProducts(this.currentPage, this.pageSize, undefined, this.selectedSubcategoryId, this.sortParam)
+      .getProducts(this.currentPage, this.pageSize, this.selectedSubcategoryId ? undefined : this.selectedCategoryId, this.selectedSubcategoryId, this.sortParam)
       .subscribe({
         next: (response) => {
           this.products.push(...response.content);
@@ -102,13 +110,14 @@ export class AllProductsComponent implements OnInit {
     this.loadProducts();
   }
 
-  selectSubcategory(subcategory: SubcategoryResponse | null) {
-    this.router.navigate(['/products'], {
-      queryParams: {
-        subcategoryId: subcategory?.id ?? null,
-        subcategory: subcategory?.name ?? null
-      }
-    });
+  selectCategory(category: CategoryNode | null) {
+    this.showFilters = false;
+    this.router.navigate(['/products'], { queryParams: { categoryId: category?.id ?? null } });
+  }
+
+  selectSubcategory(subcategoryId: number) {
+    this.showFilters = false;
+    this.router.navigate(['/products'], { queryParams: { subcategoryId } });
   }
 
   setSortBy(option: SortOption) {

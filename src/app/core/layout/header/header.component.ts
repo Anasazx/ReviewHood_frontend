@@ -1,3 +1,4 @@
+import { AvatarComponent } from '../../../core/sharedComponents/avatar/avatar.component';
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, HostListener, OnInit, Output } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
@@ -18,7 +19,7 @@ import {SearchBarComponent} from '../search-bar/search-bar.component';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, MobileSidebarComponent, ImageUrlPipe, AuthRequiredComponent, ConfirmModalComponent, SuggestProductModalComponent, SearchBarComponent],
+  imports: [AvatarComponent, CommonModule, RouterLink, FormsModule, MobileSidebarComponent, AuthRequiredComponent, ConfirmModalComponent, SuggestProductModalComponent, SearchBarComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
   animations: [

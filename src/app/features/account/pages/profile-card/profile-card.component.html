@@ -5,10 +5,7 @@
 
     <div class="relative group">
 
-      <img
-        [src]="user.avatarUrl | imageUrl"
-        class="w-16 h-16 rounded-full border object-cover"
-      />
+      <app-avatar class="h-16 w-16 text-[4rem]" [url]="user.avatarUrl" [name]="user.name" />
 
       <!-- overlay -->
       <label class="absolute inset-0 flex items-center justify-center

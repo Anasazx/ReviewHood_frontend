@@ -7,6 +7,8 @@ export interface DetailedProduct {
   description: string;
   category: string;
   subcategory: string;
+  categoryId?: number | null;
+  subcategoryId?: number | null;
   companyId?: number;
   companyName: string;
   companyIsVerified: boolean;

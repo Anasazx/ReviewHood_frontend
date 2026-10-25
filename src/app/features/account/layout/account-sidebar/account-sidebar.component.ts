@@ -1,3 +1,4 @@
+import { AvatarComponent } from '../../../../core/sharedComponents/avatar/avatar.component';
 import {Component, EventEmitter, Output} from '@angular/core';
 import {RouterLink, RouterLinkActive} from '@angular/router';
 import {SharedService} from '../../../../core/services/sharedService/shared.service';
@@ -7,11 +8,10 @@ import {ImageUrlPipe} from '../../../../core/pipes/image-url.pipe';
 
 @Component({
   selector: 'app-account-sidebar',
-  imports: [
+  imports: [AvatarComponent, 
     RouterLink,
     CommonModule,
-    RouterLinkActive,
-    ImageUrlPipe
+    RouterLinkActive
   ],
   templateUrl: './account-sidebar.component.html',
   styleUrl: './account-sidebar.component.css'

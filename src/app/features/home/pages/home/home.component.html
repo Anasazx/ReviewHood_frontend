@@ -27,81 +27,66 @@
   </section>
 
   <!-- CATEGORIES -->
-  <section>
-    <div class="mb-7 flex items-start justify-between gap-3">
+  <section aria-labelledby="categories-title">
+    <div class="mb-6 flex items-end justify-between gap-3">
       <div>
-        <h2 class="text-2xl font-semibold tracking-tight text-slate-900">
-          Explore categories
-        </h2>
-        <p class="mt-1.5 text-sm text-slate-500">
-          Browse products by category
-        </p>
+        <h2 id="categories-title" class="text-2xl font-semibold tracking-tight text-slate-900">Browse by category</h2>
+        <p class="mt-1 text-sm text-slate-500">Pick a category, or jump straight to what you need</p>
       </div>
-
-      <div class="flex items-center gap-2 sm:gap-4">
-
-        <!-- ARROWS (desktop only) -->
-        <div class="hidden items-center gap-2 sm:flex">
-          <button
-            (click)="scrollCategories('left')"
-            [disabled]="!canGoLeftCategories"
-            class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-brand-600/30 hover:bg-brand-600/5 hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:bg-transparent"
-          >
-            <i class="fa-solid fa-chevron-left text-xs"></i>
-          </button>
-          <button
-            (click)="scrollCategories('right')"
-            [disabled]="!canGoRightCategories"
-            class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-brand-600/30 hover:bg-brand-600/5 hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:bg-transparent"
-          >
-            <i class="fa-solid fa-chevron-right text-xs"></i>
-          </button>
-        </div>
-
-        <!-- SEE ALL (visible on all screens) -->
-        <a
-        routerLink="/categories"
-        class="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-ink/30 hover:text-ink sm:gap-2 sm:px-4 sm:text-sm"
-        >
-        <span class="hidden sm:inline">See all categories</span>
-        <span class="sm:hidden">See all</span>
+      <a routerLink="/categories"
+         class="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-brand-600/30 hover:text-brand-700 sm:gap-2 sm:px-4 sm:text-sm">
+        <span class="hidden sm:inline">All categories</span>
+        <span class="sm:hidden">All</span>
         <i class="fa-solid fa-arrow-right text-xs"></i>
-        </a>
+      </a>
+    </div>
 
+    @if (categoryTree === null) {
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        @for (i of [1, 2, 3]; track i) {
+          <div class="h-40 animate-pulse rounded-2xl border border-slate-100 bg-slate-50"></div>
+        }
       </div>
-    </div>
+    } @else if (categoryTree.length) {
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        @for (category of categoryTree.slice(0, 6); track category.id) {
+          <article class="group flex flex-col rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-brand-600/30 hover:shadow-[0_8px_30px_-12px_rgba(8,127,91,0.25)]">
+            <a [routerLink]="['/products']" [queryParams]="{ categoryId: category.id, category: category.name }" class="flex items-center gap-4">
+              <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 transition group-hover:bg-brand-600 group-hover:text-white">
+                <i class="fa-solid text-lg" [ngClass]="categoryIcon(category.name)"></i>
+              </span>
+              <span class="min-w-0 flex-1">
+                <span class="block truncate text-lg font-semibold text-slate-900">{{ category.name }}</span>
+                <span class="block text-sm text-slate-500">{{ category.productCount | number }} {{ category.productCount === 1 ? 'product' : 'products' }}</span>
+              </span>
+              <i class="fa-solid fa-arrow-right text-sm text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-brand-600"></i>
+            </a>
 
-    <!-- SCROLL CONTAINER (single row, no wrap) -->
-    <div
-      #categoriesScroll
-      (scroll)="onCategoriesScroll()"
-      class="flex w-full min-w-0 flex-nowrap gap-3 overflow-x-auto scroll-smooth pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-    >
-
-      <button
-
-        *ngFor="let category of categories"
-        (click)="goToCategory(category)"
-        class="flex flex-shrink-0 items-center gap-3 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
-      >
-        <svg
-          class="h-5 w-5 text-slate-500"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            [attr.d]="SUBCATEGORY_ICONS[category.id] || DEFAULT_SUBCATEGORY_ICON"
-          />
-        </svg>
-
-        {{ category.name }}
-      </button>
-
-    </div>
+            @if (category.subcategories.length) {
+              <ul class="mt-4 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
+                @for (sub of category.subcategories.slice(0, 5); track sub.id) {
+                  <li>
+                    <a [routerLink]="['/products']" [queryParams]="{ subcategoryId: sub.id, subcategory: sub.name }"
+                       class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-brand-50 hover:text-brand-700">
+                      {{ sub.name }}
+                      <span class="text-slate-400">{{ sub.productCount }}</span>
+                    </a>
+                  </li>
+                }
+                @if (category.subcategories.length > 5) {
+                  <li>
+                    <a routerLink="/categories" [fragment]="'category-' + category.id"
+                       class="inline-flex items-center rounded-full px-3 py-1.5 text-xs font-semibold text-brand-700 hover:bg-brand-50">
+                      +{{ category.subcategories.length - 5 }} more
+                    </a>
+                  </li>
+                }
+              </ul>
+            }
+          </article>
+        }
+      </div>
+    }
   </section>
 
 

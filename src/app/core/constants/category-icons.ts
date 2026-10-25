@@ -1,6 +1,29 @@
-export const CATEGORY_ICONS: Record<number, string> = {
-  1: 'M12 2l1.8 5.5L19 9l-5.2 1.5L12 16l-1.8-5.5L5 9l5.2-1.5L12 2z',
-  2: 'M12 18h.01M8 3h8a2 2 0 012 2v14a2 2 0 01-2 2H8a2 2 0 01-2-2V5a2 2 0 012-2z',
-  3: 'M3 10h18M5 10l1 10h12l1-10M9 6a3 3 0 016 0',
-  4: 'M5 17h14l-1.5-6h-11L5 17zm2 0v2m10-2v2M7 11l2-5h6l2 5'
-};
+// Font Awesome icon for a category or subcategory, picked from keywords in its name
+const ICONS: [RegExp, string][] = [
+  [/makeup|maquillage|lip|mascara/i, 'fa-wand-magic-sparkles'],
+  [/hair|cheveu|capill/i, 'fa-scissors'],
+  [/perfum|parfum|fragrance/i, 'fa-spray-can-sparkles'],
+  [/skin|soin|visage|face|serum|cream|crème/i, 'fa-droplet'],
+  [/nail|ongle/i, 'fa-hand-sparkles'],
+  [/body|corps|shower|douche|savon|soap|deodor|déodor/i, 'fa-pump-soap'],
+  [/\bmen\b|homme|beard|barbe/i, 'fa-user-tie'],
+  [/beauty|beauté|cosmet/i, 'fa-spa'],
+  [/oil|huile/i, 'fa-oil-can'],
+  [/tool|accessor|outil/i, 'fa-toolbox'],
+  [/gaming|game|console|jeu/i, 'fa-gamepad'],
+  [/phone|mobile|téléphone/i, 'fa-mobile-screen'],
+  [/tech|electro|computer|laptop|informatique/i, 'fa-laptop'],
+  [/food|aliment|snack|epicer|épicer|drink|boisson/i, 'fa-utensils'],
+  [/fashion|cloth|vêtement|mode|shoe|chaussure/i, 'fa-shirt'],
+  [/home|maison|furniture|meuble|kitchen|cuisine/i, 'fa-couch'],
+  [/health|santé|pharma|vitamin/i, 'fa-heart-pulse'],
+  [/baby|bébé|enfant|kid|child/i, 'fa-baby'],
+  [/sport|fitness|gym/i, 'fa-dumbbell'],
+  [/car|auto|moto/i, 'fa-car'],
+  [/book|livre/i, 'fa-book'],
+];
+
+export function categoryIcon(name: string | null | undefined): string {
+  if (!name) return 'fa-tag';
+  return ICONS.find(([pattern]) => pattern.test(name))?.[1] ?? 'fa-tag';
+}

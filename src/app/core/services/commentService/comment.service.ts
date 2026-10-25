@@ -1,3 +1,4 @@
+import { MyCommentResponse } from '../../models/dto/commentDTO/myCommentResponse.model';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -23,6 +24,11 @@ export class CommentService {
   }
 
   //Get all comments for a review
+  // The signed-in user's own comments, newest first
+  getMyComments(page = 0, size = 10): Observable<PageResponse<MyCommentResponse>> {
+    return this.http.get<PageResponse<MyCommentResponse>>(`${this.commentUrl}/my`, { params: { page, size } });
+  }
+
   getCommentsByReviewId(
     reviewId: number,
     page: number = 0,

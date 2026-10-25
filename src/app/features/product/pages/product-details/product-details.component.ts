@@ -1,3 +1,4 @@
+import { AvatarComponent } from '../../../../core/sharedComponents/avatar/avatar.component';
 import { CommonModule, Location } from '@angular/common';
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -37,7 +38,7 @@ type DeleteTarget =
 @Component({
   selector: 'app-product-details',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, ReviewFormComponent, AuthRequiredComponent, ImageUrlPipe, ConfirmModalComponent, ProductRatingOverviewComponent, ProductImageGalleryComponent],
+  imports: [AvatarComponent, CommonModule, FormsModule, RouterLink, ReviewFormComponent, AuthRequiredComponent, ImageUrlPipe, ConfirmModalComponent, ProductRatingOverviewComponent, ProductImageGalleryComponent],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.css',
 })

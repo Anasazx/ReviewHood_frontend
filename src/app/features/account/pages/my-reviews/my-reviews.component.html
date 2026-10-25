@@ -12,7 +12,7 @@
   <div class="space-y-4">
 
     <!-- EMPTY STATE -->
-    <div *ngIf="!reviews?.length" class="text-center py-10 border rounded-xl">
+    <div *ngIf="!loading && !reviews?.length" class="text-center py-10 border rounded-xl">
       <p class="text-gray-500 text-sm">
         You haven’t written any reviews yet.
       </p>

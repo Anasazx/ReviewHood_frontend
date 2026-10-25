@@ -23,6 +23,11 @@ export class UserService {
     return this.http.put<UserResponse>(`${this.userUrl}/me`, request);
   }
 
+  // currentPassword is not needed when the account has no password yet (Google sign-up)
+  changePassword(currentPassword: string | null, newPassword: string): Observable<void> {
+    return this.http.put<void>(`${this.userUrl}/me/password`, { currentPassword, newPassword });
+  }
+
   uploadAvatar(file: File) {
     const formData = new FormData();
     formData.append('file', file);

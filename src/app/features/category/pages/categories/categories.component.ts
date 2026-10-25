@@ -1,52 +1,34 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { SubcategoryResponse } from '../../../../core/models/dto/subcategoryDTO/subcategoryResponse.model';
-import { SUBCATEGORY_ICONS } from '../../../../core/constants/subcategory-icons';
-import { SubcategoryService } from '../../../home/services/subcategoryService/subcategory.service';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule, ViewportScroller } from '@angular/common';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { CategoryNode, CategoryTreeService } from '../../../../core/services/categoryTreeService/category-tree.service';
+import { categoryIcon } from '../../../../core/constants/category-icons';
 
+// Every category and its subcategories, so people can browse the whole catalog
 @Component({
   selector: 'app-categories',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './categories.component.html',
-  styleUrl: './categories.component.css'
 })
 export class CategoriesComponent implements OnInit {
+  private categoryTreeService = inject(CategoryTreeService);
+  private route = inject(ActivatedRoute);
+  private scroller = inject(ViewportScroller);
 
-  constructor(
-    private subcategoryService: SubcategoryService,
-    private router: Router
-  ) {}
+  categories: CategoryNode[] | null = null;
+  protected readonly categoryIcon = categoryIcon;
 
-  subcategories: SubcategoryResponse[] = [];
-  loading = true;
-
-  protected readonly SUBCATEGORY_ICONS = SUBCATEGORY_ICONS;
+  scrollTo(categoryId: number) {
+    this.scroller.scrollToAnchor('category-' + categoryId);
+  }
 
   ngOnInit(): void {
-    this.getSubcategories();
-  }
-
-  getSubcategories(): void {
-    this.subcategoryService.getAllSubcategories().subscribe({
-      next: (response) => {
-        this.subcategories = response;
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Failed to load subcategories:', err);
-        this.loading = false;
-      }
-    });
-  }
-
-  goToCategory(subcategory: SubcategoryResponse): void {
-    this.router.navigate(['/products'], {
-      queryParams: {
-        subcategoryId: subcategory.id,
-        subcategory: subcategory.name
-      }
+    this.categoryTreeService.tree$.subscribe(tree => {
+      this.categories = tree;
+      // Links like /categories#category-2 scroll to that category once it is rendered
+      const fragment = this.route.snapshot.fragment;
+      if (fragment) setTimeout(() => this.scroller.scrollToAnchor(fragment));
     });
   }
 }

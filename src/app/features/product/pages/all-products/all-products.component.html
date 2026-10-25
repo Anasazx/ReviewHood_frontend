@@ -1,76 +1,94 @@
 <section class="mx-auto max-w-7xl px-5 py-10">
 
+  <!-- BREADCRUMB -->
+  <nav class="mb-3 flex items-center gap-1.5 text-sm text-slate-500" aria-label="Breadcrumb">
+    <a routerLink="/products" class="hover:text-brand-700" [class.font-medium]="!activeCategory" [class.text-slate-900]="!activeCategory">All products</a>
+    @if (activeCategory; as c) {
+      <i class="fa-solid fa-chevron-right text-[10px] text-slate-300"></i>
+      <a [routerLink]="['/products']" [queryParams]="{ categoryId: c.id }" class="hover:text-brand-700" [class.font-medium]="!activeSubcategoryName" [class.text-slate-900]="!activeSubcategoryName">{{ c.name }}</a>
+    }
+    @if (activeSubcategoryName) {
+      <i class="fa-solid fa-chevron-right text-[10px] text-slate-300"></i>
+      <span class="font-medium text-slate-900">{{ activeSubcategoryName }}</span>
+    }
+  </nav>
+
   <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
     <div>
-      <h1 class="text-3xl font-semibold tracking-tight text-slate-900">
-        <span *ngIf="selectedSubcategory === 'All'">All products</span>
-        <span *ngIf="selectedSubcategory !== 'All'">{{ selectedSubcategory }}</span>
-      </h1>
+      <h1 class="text-3xl font-semibold tracking-tight text-ink">{{ pageTitle }}</h1>
       <p class="mt-1.5 text-sm text-slate-500">
-        <span *ngIf="!loading">{{ totalElements }} products</span>
-        <span *ngIf="loading">Loading products...</span>
+        @if (loading) { Loading products… } @else { {{ totalElements | number }} {{ totalElements === 1 ? 'product' : 'products' }} }
       </p>
     </div>
 
-    <!-- SORT -->
-    <select
-      [value]="sortBy"
-      (change)="setSortBy($any($event.target).value)"
-      class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-brand-400/40"
-    >
-      <option value="relevance">Most relevant</option>
-      <option value="rating">Highest rated</option>
-      <option value="reviews">Most reviewed</option>
-      <option value="newest">Newest first</option>
-    </select>
+    <label class="flex items-center gap-2 text-sm text-slate-500">
+      Sort by
+      <select
+        [value]="sortBy"
+        (change)="setSortBy($any($event.target).value)"
+        class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+      >
+        <option value="relevance">Most relevant</option>
+        <option value="rating">Highest rated</option>
+        <option value="reviews">Most reviewed</option>
+        <option value="newest">Newest first</option>
+      </select>
+    </label>
   </div>
 
   <div class="flex flex-col gap-8 lg:flex-row">
 
-    <!-- FILTERS SIDEBAR -->
+    <!-- CATEGORY TREE -->
     <aside class="flex-shrink-0 lg:w-64">
-
-      <!-- MOBILE TOGGLE -->
       <button
         (click)="showFilters = !showFilters"
         class="mb-4 flex w-full items-center justify-between rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 lg:hidden"
+        [attr.aria-expanded]="showFilters"
       >
-        <span class="flex items-center gap-2">
-          <i class="fa-solid fa-sliders text-xs"></i>
-          Categories
-        </span>
+        <span class="flex items-center gap-2"><i class="fa-solid fa-sliders text-xs"></i> {{ activeCategory ? pageTitle : 'Categories' }}</span>
         <i class="fa-solid fa-chevron-down text-xs transition-transform" [class.rotate-180]="showFilters"></i>
       </button>
 
-      <div class="space-y-1.5" [class.hidden]="!showFilters" [class.lg:block]="true">
-
+      <nav class="space-y-1 lg:sticky lg:top-24" [class.hidden]="!showFilters" [class.lg:block]="true" aria-label="Categories">
         <button
-          (click)="selectSubcategory(null)"
-          class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition"
-          [class.bg-slate-900]="selectedSubcategory === 'All'"
-          [class.text-white]="selectedSubcategory === 'All'"
-          [class.text-slate-600]="selectedSubcategory !== 'All'"
-          [class.hover:bg-slate-50]="selectedSubcategory !== 'All'"
+          (click)="selectCategory(null)"
+          class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium transition"
+          [ngClass]="!activeCategory ? 'bg-brand-600 text-white' : 'text-slate-700 hover:bg-slate-100'"
         >
-          All products
+          <i class="fa-solid fa-border-all w-4 text-center text-xs"></i> All products
         </button>
 
-        <button
-          *ngFor="let subcategory of subcategories"
-          (click)="selectSubcategory(subcategory)"
-          class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition"
-          [class.bg-slate-900]="selectedSubcategoryId === subcategory.id"
-          [class.text-white]="selectedSubcategoryId === subcategory.id"
-          [class.text-slate-600]="selectedSubcategoryId !== subcategory.id"
-          [class.hover:bg-slate-50]="selectedSubcategoryId !== subcategory.id"
-        >
-          <svg class="h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="SUBCATEGORY_ICONS[subcategory.id] || DEFAULT_SUBCATEGORY_ICON"/>
-          </svg>
-          {{ subcategory.name }}
-        </button>
+        @for (c of categories; track c.id) {
+          <div>
+            <button
+              (click)="selectCategory(c)"
+              class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium transition"
+              [ngClass]="activeCategory?.id === c.id && !selectedSubcategoryId ? 'bg-brand-600 text-white' : activeCategory?.id === c.id ? 'text-brand-700' : 'text-slate-700 hover:bg-slate-100'"
+            >
+              <i class="fa-solid w-4 text-center text-xs" [ngClass]="categoryIcon(c.name)"></i>
+              <span class="flex-1 truncate">{{ c.name }}</span>
+              <span class="text-xs opacity-70">{{ c.productCount }}</span>
+            </button>
 
-      </div>
+            @if (activeCategory?.id === c.id && c.subcategories.length) {
+              <ul class="mb-1 ml-5 mt-1 space-y-0.5 border-l border-slate-200 pl-3">
+                @for (s of c.subcategories; track s.id) {
+                  <li>
+                    <button
+                      (click)="selectSubcategory(s.id)"
+                      class="flex w-full items-center justify-between gap-2 rounded-md px-2 py-1.5 text-left text-sm transition"
+                      [ngClass]="selectedSubcategoryId === s.id ? 'bg-brand-50 font-medium text-brand-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
+                    >
+                      <span class="truncate">{{ s.name }}</span>
+                      <span class="text-xs text-slate-400">{{ s.productCount }}</span>
+                    </button>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        }
+      </nav>
     </aside>
 
     <!-- RESULTS -->
@@ -116,7 +134,7 @@
         <i class="fa-solid fa-box-open mb-4 text-3xl text-slate-300"></i>
         <h2 class="text-lg font-semibold text-slate-900">No products found</h2>
         <p class="mt-1 max-w-sm text-sm text-slate-500">
-          There are no products in this category yet.
+          There are no live products here yet. Try another category.
         </p>
       </div>
 

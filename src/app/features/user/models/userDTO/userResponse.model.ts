@@ -11,4 +11,6 @@ export interface UserResponse {
   country: Country;
   status: UserStatus;
   createdAt: string;
+  // false for Google accounts that never set a password
+  hasPassword?: boolean;
 }
