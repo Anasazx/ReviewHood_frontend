@@ -1,353 +1,337 @@
-<div class="w-full space-y-4 sm:space-y-5 px-0 sm:px-0 mt-8">
+<div class="mt-8 w-full space-y-5">
 
-  <!-- Breadcrumb -->
-  <nav class="flex flex-wrap items-center gap-1.5 text-sm text-slate-500" aria-label="Breadcrumb">
-    <a routerLink="/products" class="hover:text-brand-700">Products</a>
-    @if (product?.categoryId) {
-      <i class="fa-solid fa-chevron-right text-[10px] text-slate-300"></i>
-      <a [routerLink]="['/products']" [queryParams]="{ categoryId: product?.categoryId }" class="hover:text-brand-700">{{ product?.category }}</a>
-    }
-    @if (product?.subcategoryId) {
-      <i class="fa-solid fa-chevron-right text-[10px] text-slate-300"></i>
-      <a [routerLink]="['/products']" [queryParams]="{ subcategoryId: product?.subcategoryId }" class="hover:text-brand-700">{{ product?.subcategory }}</a>
-    }
-    <i class="fa-solid fa-chevron-right text-[10px] text-slate-300"></i>
-    <span class="max-w-[16rem] truncate font-medium text-slate-900">{{ product?.name }}</span>
-  </nav>
-
-  <!-- Product header card -->
-  <div class="w-full bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
-
-    <div class="flex flex-col lg:flex-row gap-5 items-start">
-
-      <app-product-image-gallery
-        [images]="product?.images ?? []">
-      </app-product-image-gallery>
-
-      <!-- Info -->
-      <div class="flex-1 min-w-0">
-        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight break-words">
-          {{ product?.name }}
-        </h1>
-        <!-- Company -->
-        <div class="flex flex-wrap items-center gap-3 my-3">
-          <img [src]="product?.companyLogoUrl | imageUrl" class="h-10 w-10 rounded-full border border-slate-200 object-cover shrink-0"/>
-          <span
-            [routerLink]="['/c', product?.companyId]"
-            class="text-base font-semibold text-gray-600 cursor-pointer hover:underline">
-            {{ product?.companyName }}
-          </span>
-          <svg
-            *ngIf="product?.companyIsVerified"
-            class="h-4 w-4 text-brand-500 shrink-0"
-            fill="currentColor"
-            title="Verified"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg">
-
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M10 12.5 8.5 11 7 12.5 10 15.5 17 8.5 15.5 7z" fill="white"/>
-
-          </svg>
-
+  @if (loadingProduct) {
+    <!-- SKELETON while the product loads -->
+    <div class="h-4 w-64 animate-pulse rounded bg-slate-200"></div>
+    <div class="flex animate-pulse flex-col gap-6 rounded-3xl border border-slate-200 bg-white p-5 sm:p-8 lg:flex-row">
+      <div class="aspect-square w-full rounded-2xl bg-slate-100 lg:w-[42%]"></div>
+      <div class="flex-1 space-y-4">
+        <div class="h-5 w-24 rounded-full bg-slate-100"></div>
+        <div class="h-9 w-3/4 rounded bg-slate-200"></div>
+        <div class="h-4 w-40 rounded bg-slate-100"></div>
+        <div class="h-16 w-full rounded-2xl bg-slate-100"></div>
+        <div class="space-y-2">
+          <div class="h-3 w-full rounded bg-slate-100"></div>
+          <div class="h-3 w-5/6 rounded bg-slate-100"></div>
+          <div class="h-3 w-2/3 rounded bg-slate-100"></div>
         </div>
+      </div>
+    </div>
+  } @else if (product) {
 
+    <!-- BREADCRUMB -->
+    <nav class="flex flex-wrap items-center gap-1.5 text-sm text-slate-500" aria-label="Breadcrumb">
+      <a routerLink="/products" class="hover:text-brand-700">Products</a>
+      @if (product.categoryId) {
+        <i class="fa-solid fa-chevron-right text-[10px] text-slate-300"></i>
+        <a [routerLink]="['/products']" [queryParams]="{ categoryId: product.categoryId }" class="hover:text-brand-700">{{ product.category }}</a>
+      }
+      @if (product.subcategoryId) {
+        <i class="fa-solid fa-chevron-right text-[10px] text-slate-300"></i>
+        <a [routerLink]="['/products']" [queryParams]="{ subcategoryId: product.subcategoryId }" class="hover:text-brand-700">{{ product.subcategory }}</a>
+      }
+      <i class="fa-solid fa-chevron-right text-[10px] text-slate-300"></i>
+      <span class="max-w-[16rem] truncate font-medium text-slate-900" aria-current="page">{{ product.name }}</span>
+    </nav>
 
-        <!-- Description -->
-        <div class="mt-4">
-          <p
-            [class.line-clamp-4]="!descExpanded"
-            class="
-            text-sm
-            sm:text-base
-            text-gray-600
-            leading-relaxed
-            ">
-            {{ product?.description }}
-          </p>
-          <button
-            (click)="descExpanded = !descExpanded"
-            *ngIf="hasLongDescription(product?.description || '')"
-            class="mt-1.5 text-xs font-medium text-brand-600 hover:text-brand-800 transition-colors">
-            {{ descExpanded ? 'Show less' : 'Read more' }}
+    <!-- HEADER -->
+    <section class="rounded-3xl border border-slate-200 bg-white p-4 sm:p-6 lg:p-8" aria-labelledby="product-name">
+      <div class="flex flex-col items-start gap-6 lg:flex-row lg:gap-8">
+
+        <app-product-image-gallery [images]="product.images || []" [name]="product.name"></app-product-image-gallery>
+
+        <div class="min-w-0 flex-1 space-y-5">
+
+          <!-- Title + quick rating -->
+          <div>
+            @if (product.subcategory || product.category) {
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700">
+                <i class="fa-solid fa-tag text-[10px]"></i>{{ product.subcategory || product.category }}
+              </span>
+            }
+            <h1 id="product-name" class="mt-3 break-words text-2xl font-semibold leading-tight tracking-tight text-ink sm:text-3xl lg:text-4xl">
+              {{ product.name }}
+            </h1>
+
+            <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+              @if (product.reviewsCount > 0) {
+                <button type="button" (click)="scrollToReviews()" class="group inline-flex items-center gap-2 text-sm">
+                  <span class="flex gap-0.5 text-rating" [attr.aria-label]="(product.averageRating | number: '1.1-1') + ' out of 5'">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                      <i class="fa-solid" [ngClass]="starIcon(product.averageRating ?? 0, star)"></i>
+                    }
+                  </span>
+                  <span class="font-semibold text-slate-900">{{ product.averageRating | number: '1.1-1' }}</span>
+                  <span class="text-slate-500 group-hover:text-brand-700 group-hover:underline">
+                    {{ product.reviewsCount | number }} {{ product.reviewsCount === 1 ? 'review' : 'reviews' }}
+                  </span>
+                </button>
+              } @else {
+                <span class="text-sm text-slate-500">No reviews yet</span>
+              }
+            </div>
+          </div>
+
+          <!-- Company -->
+          <a [routerLink]="['/c', product.companyId]"
+             class="group flex items-center gap-3 rounded-2xl border border-slate-200 p-3 transition hover:border-brand-600/30 hover:bg-brand-50/40">
+            @if (product.companyLogoUrl) {
+              <img [src]="product.companyLogoUrl | imageUrl" alt="" class="h-11 w-11 shrink-0 rounded-xl border border-slate-100 bg-white object-cover" />
+            } @else {
+              <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-sm font-semibold text-brand-700">
+                {{ initials(product.companyName) }}
+              </span>
+            }
+            <div class="min-w-0 flex-1">
+              <p class="text-xs text-slate-500">Made by</p>
+              <p class="flex items-center gap-1.5 truncate text-sm font-semibold text-slate-900">
+                {{ product.companyName }}
+                @if (product.companyIsVerified) {
+                  <i class="fa-solid fa-circle-check text-brand-600" title="Verified company" aria-label="Verified company"></i>
+                }
+              </p>
+            </div>
+            <span class="hidden shrink-0 text-xs font-semibold text-brand-700 sm:inline">
+              View company <i class="fa-solid fa-arrow-right ml-1 text-[10px] transition group-hover:translate-x-0.5"></i>
+            </span>
+            <i class="fa-solid fa-chevron-right text-xs text-slate-300 sm:hidden"></i>
+          </a>
+
+          <!-- Description -->
+          <div>
+            <h2 class="text-sm font-semibold text-slate-900">About this product</h2>
+            @if (product.description) {
+              <p class="mt-2 whitespace-pre-line text-[15px] leading-relaxed text-slate-600" [class.line-clamp-4]="!descExpanded">{{ product.description }}</p>
+              @if (hasLongDescription(product.description)) {
+                <button type="button" (click)="descExpanded = !descExpanded" class="mt-1 text-sm font-semibold text-brand-700 hover:text-brand-800">
+                  {{ descExpanded ? 'Show less' : 'Read more' }}
+                </button>
+              }
+            } @else {
+              <p class="mt-2 text-sm text-slate-400">No description yet.</p>
+            }
+          </div>
+
+          <!-- Rating summary -->
+          <app-product-rating-overview
+            (writeReview)="scrollToReviewForm()"
+            [averageRating]="product.averageRating ?? 0"
+            [ratingDistribution]="product.ratingDistribution ?? {}"
+            [reviewsCount]="product.reviewsCount">
+          </app-product-rating-overview>
+
+          <button type="button" (click)="scrollToReviewForm()"
+                  class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700 sm:w-auto">
+            <i class="fa-solid fa-pen text-xs"></i>
+            {{ myReview ? 'Edit your review' : 'Write a review' }}
           </button>
         </div>
+      </div>
+    </section>
 
+    <!-- REVIEWS + FORM -->
+    <div class="flex w-full flex-col-reverse items-start gap-5 lg:flex-row">
 
-        <app-product-rating-overview
-          [averageRating]="product?.averageRating ?? 0"
-          [ratingDistribution]="product?.ratingDistribution ?? {}"
-          [reviewsCount]="product?.reviewsCount ?? 0">
-        </app-product-rating-overview>
+      <!-- Reviews column -->
+      <section id="reviews" class="w-full min-w-0 flex-1 scroll-mt-28 space-y-3" aria-labelledby="reviews-heading">
 
-        <div
-          *ngIf="product?.reviewsCount === 0"
-          class="mt-6 pt-6 border-t border-slate-100 flex flex-col items-center justify-center text-center gap-3"
-        >
-          <!-- Icon -->
-          <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path d="M7 8h10M7 12h6m-6 4h8M5 6h14a2 2 0 012 2v10a2 2 0 01-2 2H7l-4 4V8a2 2 0 012-2z" stroke-linecap="round" stroke-linejoin="round"
-                  stroke-width="2"/>
-          </svg>
+        <div class="flex items-baseline justify-between px-0.5">
+          <h2 id="reviews-heading" class="text-lg font-semibold text-ink">
+            Reviews <span class="ml-1 text-sm font-normal text-slate-400">{{ totalReviews | number }}</span>
+          </h2>
+        </div>
 
-          <!-- Text -->
-          <div>
-            <p class="text-sm font-medium text-slate-700">
-              No reviews yet
-            </p>
-
+        @if (reviews.length === 0 && !loading) {
+          <div class="rounded-2xl border border-dashed border-slate-300 bg-white py-14 text-center">
+            <div class="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-slate-50 text-slate-300">
+              <i class="fa-regular fa-comments text-lg"></i>
+            </div>
+            <p class="text-sm font-medium text-slate-600">No reviews yet</p>
+            <p class="mt-1 text-xs text-slate-400">Be the first to share your thoughts on this product</p>
           </div>
+        }
 
-        </div>
+        @for (review of reviews; track review.id) {
+          <article class="overflow-hidden rounded-2xl border bg-white transition"
+                   [ngClass]="reviewIsMine(review.user.id) ? 'border-brand-200 ring-2 ring-brand-50' : 'border-slate-200 hover:border-slate-300'">
+            <div class="p-4 sm:p-5">
 
-      </div>
-
-    </div>
-
-  </div>
-
-  <!-- Reviews + form -->
-  <div class="w-full flex flex-col lg:flex-row gap-5 items-stretch">
-
-    <!-- Reviews column -->
-    <div class="basis-0 grow min-w-0 w-full space-y-4">
-
-      <!-- Section heading -->
-      <div class="flex items-center justify-between px-0.5">
-        <h2 class="text-xs font-semibold text-gray-400 uppercase tracking-widest">
-          Community reviews
-          <span class="ml-1 font-normal normal-case tracking-normal text-gray-400">({{ totalReviews }})</span>
-        </h2>
-      </div>
-
-      <!-- Empty state -->
-      <div *ngIf="(product?.reviews?.length ?? 0) === 0"
-           class="bg-white rounded-2xl border border-dashed border-slate-200 py-16 text-center">
-        <div class="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-slate-50">
-          <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-          </svg>
-        </div>
-        <p class="text-sm font-medium text-slate-500">No reviews yet</p>
-        <p class="mt-1 text-xs text-slate-400">Be the first to share your thoughts on this product</p>
-      </div>
-
-      <!-- Review list -->
-      <div class="space-y-3 w-full">
-        <div *ngFor="let review of reviews"
-             [class.ring-2]="reviewIsMine(review.user.id)"
-             [class.ring-brand-100]="reviewIsMine(review.user.id)"
-             [class.border-brand-100]="reviewIsMine(review.user.id)"
-             class="bg-white rounded-2xl border border-slate-200 overflow-hidden transition-all hover:border-slate-300 hover:shadow-sm">
-
-          <div class="p-4 sm:p-5">
-
-            <!-- Header -->
-            <div class="flex items-start justify-between gap-3">
-              <div class="flex items-start gap-3 min-w-0">
-                <app-avatar class="h-9 w-9 text-[2.25rem]" [url]="review.user.avatarUrl" [name]="review.user.name" />
-                <div class="min-w-0">
-                  <div class="flex items-center gap-1.5 flex-wrap">
-                <span class="text-sm font-semibold text-slate-900 truncate">
-                  {{ review.user.name }}
-                </span>
-                    <span *ngIf="reviewIsMine(review.user.id)"
-                          class="text-[10px] px-1.5 py-0.5 rounded-full bg-brand-50 text-brand-600 font-medium shrink-0">
-                  You
-                </span>
-                  </div>
-                  <div class="flex items-center gap-2 mt-0.5">
-                    <div class="flex gap-0.5 text-rating text-xs leading-none">
-                      <span *ngFor="let i of getSolidStars(review.rating)">★</span>
-                      <span *ngFor="let i of getOutlineStars(review.rating)" class="text-slate-200">★</span>
+              <!-- Header -->
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex min-w-0 items-center gap-3">
+                  <app-avatar class="h-10 w-10 text-[2.5rem]" [url]="review.user.avatarUrl" [name]="review.user.name" />
+                  <div class="min-w-0">
+                    <div class="flex flex-wrap items-center gap-1.5">
+                      <span class="truncate text-sm font-semibold text-slate-900">{{ review.user.name }}</span>
+                      @if (reviewIsMine(review.user.id)) {
+                        <span class="shrink-0 rounded-full bg-brand-50 px-1.5 py-0.5 text-[10px] font-semibold text-brand-700">You</span>
+                      }
                     </div>
-                    <span class="text-slate-300">·</span>
-                    <span class="text-xs text-gray-400">{{ review.createdAt | date:'MMM d, y' }}</span>
+                    <div class="mt-0.5 flex items-center gap-2">
+                      <span class="flex gap-0.5 text-xs text-rating" [attr.aria-label]="review.rating + ' out of 5'">
+                        @for (star of [1, 2, 3, 4, 5]; track star) {
+                          <i class="fa-solid" [ngClass]="starIcon(review.rating, star)"></i>
+                        }
+                      </span>
+                      <span class="text-slate-300">·</span>
+                      <time class="text-xs text-slate-400" [attr.datetime]="review.createdAt">{{ review.createdAt | date: 'MMM d, y' }}</time>
+                    </div>
                   </div>
                 </div>
+
+                @if (reviewIsMine(review.user.id)) {
+                  <div class="flex shrink-0 items-center gap-1">
+                    <button type="button" (click)="scrollToReviewForm()" aria-label="Edit review" title="Edit review"
+                            class="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700">
+                      <i class="fa-solid fa-pen text-xs"></i>
+                    </button>
+                    <button type="button" (click)="openDeleteModal(review)" aria-label="Delete review" title="Delete review"
+                            class="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition hover:bg-red-50 hover:text-red-500">
+                      <i class="fa-regular fa-trash-can text-xs"></i>
+                    </button>
+                  </div>
+                }
               </div>
 
-              <button
-                (click)="openDeleteModal(review)"
-                *ngIf="reviewIsMine(review.user.id)"
-                class="shrink-0 flex items-center justify-center w-7 h-7 rounded-full text-slate-300 hover:text-red-500 hover:bg-red-50 transition-colors"
-                aria-label="Delete review">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <polyline points="3 6 5 6 21 6"/>
-                  <path d="M19 6l-1 14H6L5 6"/>
-                  <path d="M10 11v6"/>
-                  <path d="M14 11v6"/>
-                </svg>
-              </button>
-            </div>
+              <!-- Body -->
+              @if (review.content) {
+                <p class="mt-3 whitespace-pre-line break-words text-[15px] leading-relaxed text-slate-700">{{ review.content }}</p>
+              }
 
-            <!-- Body -->
-            <p class="mt-2 text-md text-gray-600 leading-relaxed break-words">
-              {{ review.content }}
-            </p>
+              <!-- Actions -->
+              <div class="-ml-2 mt-3 flex items-center gap-1">
+                <button type="button" (click)="toggleReviewLike(review)" [attr.aria-pressed]="review.liked"
+                        class="flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-medium transition hover:bg-slate-50"
+                        [ngClass]="review.liked ? 'text-brand-700' : 'text-slate-500'">
+                  <i [ngClass]="review.liked ? 'fa-solid' : 'fa-regular'" class="fa-thumbs-up"></i>
+                  Helpful @if (review.likeCount) { <span>· {{ review.likeCount }}</span> }
+                </button>
 
-            <!-- Review actions -->
-            <div class="mt-3 flex items-center gap-1 -ml-2">
-
-              <button
-                (click)="toggleReviewLike(review)"
-                [class.text-brand-600]="review.liked"
-                [class.text-gray-400]="!review.liked"
-                class="flex items-center gap-1.5 px-2 py-1.5 rounded-full text-sm hover:bg-slate-50 transition-colors">
-                <svg class="w-4 h-4" [attr.fill]="review.liked ? 'currentColor' : 'none'"
-                     stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M12.001 20.727l-.717-.653C5.463 14.77 2 11.61 2 7.75 2 4.857 4.238 2.5 7.05 2.5c1.59 0 3.116.76 4.05 1.965C12.834 3.26 14.36 2.5 15.95 2.5 18.762 2.5 21 4.857 21 7.75c0 3.86-3.463 7.02-9.284 12.324l-.715.653z"/>
-                </svg>
-                <span class="text-xs font-medium">{{ review.likeCount }}</span>
-              </button>
-
-              <button
-                (click)="toggleComments(review)"
-                [class.text-slate-700]="review.showComments"
-                [class.text-gray-400]="!review.showComments"
-                class="flex items-center gap-1.5 px-2 py-1.5 rounded-full text-sm hover:bg-slate-50 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                </svg>
-                <span class="text-xs font-medium">{{ review.commentsCount }}</span>
-              </button>
-            </div>
-
-            <!-- Comments -->
-            <div *ngIf="review.showComments" class="mt-3 pt-3 border-t border-slate-100">
-
-              <div class="space-y-2">
-
-                <div *ngIf="review.comments?.length === 0"
-                     class="text-xs text-gray-400 text-center py-4 bg-slate-50 rounded-xl">
-                  No comments yet — be the first to reply
-                </div>
-
-                <div *ngFor="let c of review.comments"
-                     class="rounded-xl bg-slate-50 px-3 py-2.5 text-xs">
-
-                  <div class="flex items-start gap-2 mb-1">
-                    <app-avatar class="h-6 w-6 text-[1.5rem]" [url]="c.actorAvatarUrl" [name]="c.actorName" [company]="c.actorType === 'COMPANY'" />
-
-                    <div class="flex items-center gap-1.5 flex-wrap min-w-0 flex-1">
-      <span [ngClass]="c.actorType === 'COMPANY' ? 'font-semibold text-brand-700' : 'font-semibold text-slate-900'">
-        {{ c.actorName }}
-      </span>
-
-                      <span *ngIf="c.repliedToActorName"
-                            class="inline-flex items-center gap-0.5 text-gray-400 text-[10px]">
-        <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-          <path d="M5 12h12" stroke-linecap="round"/>
-          <path d="m13 6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-                        {{ c.repliedToActorName }}
-      </span>
-                    </div>
-
-                    <button
-                      *ngIf="commentIsMine(c) && !c.deleted"
-                      (click)="openDeleteCommentModal(review, c)"
-                      class="shrink-0 flex items-center justify-center w-5 h-5 rounded-full text-slate-300 hover:text-red-500 hover:bg-red-50 transition-colors"
-                      aria-label="Delete comment">
-                      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <polyline points="3 6 5 6 21 6"/>
-                        <path d="M19 6l-1 14H6L5 6"/>
-                        <path d="M10 11v6"/>
-                        <path d="M14 11v6"/>
-                      </svg>
-                    </button>
-                  </div>
-
-                  <p class="leading-snug text-sm py-0.5 break-words"
-                     [class.text-gray-400]="c.deleted"
-                     [class.italic]="c.deleted"
-                     [class.text-gray-600]="!c.deleted">
-                    {{ c.deleted ? 'This comment was deleted' : c.content }}
-                  </p>
-
-                  <div *ngIf="!c.deleted" class="mt-1.5 flex items-center gap-3">
-                    <button
-                      (click)="toggleCommentLike(c)"
-                      [class.text-brand-600]="c.liked"
-                      [class.text-gray-400]="!c.liked"
-                      class="inline-flex items-center gap-1 text-[11px] font-medium hover:text-brand-500 transition-colors">
-                      <svg class="w-3.5 h-3.5" [attr.fill]="c.liked ? 'currentColor' : 'none'"
-                           stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                              d="M12.001 20.727l-.717-.653C5.463 14.77 2 11.61 2 7.75 2 4.857 4.238 2.5 7.05 2.5c1.59 0 3.116.76 4.05 1.965C12.834 3.26 14.36 2.5 15.95 2.5 18.762 2.5 21 4.857 21 7.75c0 3.86-3.463 7.02-9.284 12.324l-.715.653z"/>
-                      </svg>
-                      <span>{{ c.likeCount }}</span>
-                    </button>
-                    <button
-                      (click)="startReply(c)"
-                      class="text-[11px] text-gray-400 hover:text-brand-500 font-medium transition-colors">
-                      Reply
-                    </button>
-                  </div>
-                </div>
-
-                <div *ngIf="review.comments && review.comments.length < review.commentsTotal!"
-                     class="flex justify-center pt-1">
-                  <button
-                    (click)="loadComments(review)"
-                    [disabled]="review.commentsLoading"
-                    class="text-xs font-medium text-brand-600 hover:underline disabled:opacity-50">
-                    {{ review.commentsLoading ? 'Loading...' : 'Show more comments' }}
-                  </button>
-                </div>
-
-                <!-- Reply context banner -->
-                <div *ngIf="replyingToCommentId" class="flex items-center justify-between rounded-lg bg-brand-50 px-3 py-1.5 text-[11px] text-brand-600">
-                  <span>Replying to <strong>{{ replyingToActorName }}</strong></span>
-                  <button (click)="cancelReply()" class="text-brand-400 hover:text-brand-600">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                  </button>
-                </div>
-
-                <div class="flex items-center gap-2 pt-1">
-                  <input
-                    [(ngModel)]="commentText"
-                    placeholder="Add a comment..."
-                    class="flex-1 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-100 focus:border-brand-200 transition-all"
-                  />
-                  <button
-                    (click)="replyingToCommentId ? sendReply(review) : addComment(review)"
-                    [disabled]="!commentText"
-                    class="shrink-0 rounded-full bg-brand-600 hover:bg-brand-700 disabled:opacity-40 disabled:hover:bg-brand-600 px-4 py-2 text-xs font-semibold text-white transition-colors">
-                    Send
-                  </button>
-                </div>
+                <button type="button" (click)="toggleComments(review)" [attr.aria-expanded]="!!review.showComments"
+                        class="flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-medium transition hover:bg-slate-50"
+                        [ngClass]="review.showComments ? 'text-slate-900' : 'text-slate-500'">
+                  @if (review.commentsLoading && !review.showComments) {
+                    <i class="fa-solid fa-spinner animate-spin"></i>
+                  } @else {
+                    <i class="fa-regular fa-comment"></i>
+                  }
+                  {{ review.commentsCount ? review.commentsCount + (review.commentsCount === 1 ? ' comment' : ' comments') : 'Comment' }}
+                </button>
               </div>
+
+              <!-- Comments -->
+              @if (review.showComments) {
+                <div class="mt-3 space-y-2 border-t border-slate-100 pt-3">
+
+                  @if (review.comments?.length === 0) {
+                    <p class="rounded-xl bg-slate-50 py-4 text-center text-xs text-slate-400">No comments yet — start the conversation</p>
+                  }
+
+                  @for (c of review.comments; track c.id) {
+                    <div class="flex gap-2.5">
+                      <app-avatar class="mt-0.5 h-7 w-7 text-[1.75rem]" [url]="c.actorAvatarUrl" [name]="c.actorName" [company]="c.actorType === 'COMPANY'" />
+
+                      <div class="min-w-0 flex-1">
+                        <div class="rounded-2xl rounded-tl-md px-3 py-2"
+                             [ngClass]="c.actorType === 'COMPANY' ? 'bg-brand-50/70' : 'bg-slate-50'">
+                          <div class="flex items-start gap-2">
+                            <div class="flex min-w-0 flex-1 flex-wrap items-center gap-1.5 text-xs">
+                              <span class="font-semibold" [ngClass]="c.actorType === 'COMPANY' ? 'text-brand-800' : 'text-slate-900'">{{ c.actorName }}</span>
+                              @if (c.actorType === 'COMPANY') {
+                                <span class="rounded-full bg-ink px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-white">Company</span>
+                              }
+                              @if (c.repliedToActorName) {
+                                <span class="inline-flex items-center gap-1 text-[11px] text-slate-400">
+                                  <i class="fa-solid fa-reply fa-flip-horizontal text-[9px]"></i>{{ c.repliedToActorName }}
+                                </span>
+                              }
+                            </div>
+                            @if (commentIsMine(c) && !c.deleted) {
+                              <button type="button" (click)="openDeleteCommentModal(review, c)" aria-label="Delete comment"
+                                      class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-slate-300 transition hover:bg-red-50 hover:text-red-500">
+                                <i class="fa-regular fa-trash-can text-[10px]"></i>
+                              </button>
+                            }
+                          </div>
+                          <p class="mt-0.5 break-words text-sm leading-snug"
+                             [ngClass]="c.deleted ? 'italic text-slate-400' : 'text-slate-700'">
+                            {{ c.deleted ? 'This comment was deleted' : c.content }}
+                          </p>
+                        </div>
+
+                        @if (!c.deleted) {
+                          <div class="mt-1 flex items-center gap-3 px-2 text-[11px] font-medium text-slate-400">
+                            <time [attr.datetime]="c.createdAt">{{ c.createdAt | date: 'MMM d' }}</time>
+                            <button type="button" (click)="toggleCommentLike(c)" [attr.aria-pressed]="c.liked"
+                                    class="inline-flex items-center gap-1 transition hover:text-brand-600"
+                                    [class.text-brand-700]="c.liked">
+                              <i [ngClass]="c.liked ? 'fa-solid' : 'fa-regular'" class="fa-thumbs-up"></i>
+                              @if (c.likeCount) { {{ c.likeCount }} }
+                            </button>
+                            <button type="button" (click)="startReply(review, c)" class="transition hover:text-brand-600">Reply</button>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+
+                  @if (review.comments && review.comments.length < (review.commentsTotal ?? 0)) {
+                    <div class="flex justify-center pt-1">
+                      <button type="button" (click)="loadComments(review)" [disabled]="review.commentsLoading"
+                              class="text-xs font-semibold text-brand-700 hover:underline disabled:opacity-50">
+                        {{ review.commentsLoading ? 'Loading...' : 'Show more comments' }}
+                      </button>
+                    </div>
+                  }
+
+                  <!-- Composer -->
+                  <form class="pt-1" (submit)="submitComment(review); $event.preventDefault()">
+                    @if (review.replyTo) {
+                      <div class="mb-1.5 flex items-center justify-between rounded-lg bg-brand-50 px-3 py-1.5 text-[11px] text-brand-700">
+                        <span>Replying to <strong>{{ review.replyTo.actorName }}</strong></span>
+                        <button type="button" (click)="cancelReply(review)" aria-label="Cancel reply" class="text-brand-400 hover:text-brand-700">
+                          <i class="fa-solid fa-xmark"></i>
+                        </button>
+                      </div>
+                    }
+                    <div class="flex items-center gap-2">
+                      <input [(ngModel)]="review.draft" [name]="'draft-' + review.id"
+                             [placeholder]="review.replyTo ? 'Write a reply...' : 'Add a comment...'"
+                             [attr.aria-label]="review.replyTo ? 'Reply' : 'Comment'"
+                             class="flex-1 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-800 placeholder-slate-400 outline-none transition focus:border-brand-600/40 focus:ring-2 focus:ring-brand-100" />
+                      <button type="submit" [disabled]="!review.draft?.trim()" aria-label="Send"
+                              class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-600 text-white transition hover:bg-brand-700 disabled:opacity-40 disabled:hover:bg-brand-600">
+                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              }
             </div>
+          </article>
+        }
+
+        @if (loading) {
+          <div class="flex items-center justify-center gap-2 pt-2 text-xs text-slate-400">
+            <i class="fa-solid fa-spinner animate-spin"></i> Loading reviews...
           </div>
-        </div>
+        }
+      </section>
 
-        <div *ngIf="loading" class="pt-2 flex items-center justify-center gap-2 text-xs text-gray-400">
-          <svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-          </svg>
-          Loading reviews...
-        </div>
-        <div #loadMoreTrigger class="h-10"></div>
-      </div>
+      <!-- Review form -->
+      <aside id="write-review" class="w-full shrink-0 scroll-mt-28 lg:sticky lg:top-28 lg:w-80">
+        <app-review-form
+          (reviewSubmitted)="submitReview($event)"
+          [myReview]="myReview"
+          [productId]="product.id"
+          [submittingReview]="submittingReview">
+        </app-review-form>
+      </aside>
     </div>
+  }
 
-    <!-- Review form -->
-    <div class="w-full lg:basis-72 shrink-0">
-      <app-review-form
-        (reviewSubmitted)="submitReview($event)"
-        [myReview]="myReview"
-        [productId]="product?.id"
-        [submittingReview]="submittingReview">
-      </app-review-form>
-    </div>
-  </div>
+  <!-- Infinite scroll trigger: kept outside the @if so it exists when the observer is set up -->
+  <div #loadMoreTrigger class="h-10"></div>
 </div>
 
 <app-auth-required
@@ -360,8 +344,8 @@
   (cancel)="closeDeleteModal()"
   (confirm)="confirmDelete()"
   *ngIf="showDeleteModal"
-  [loading]="deletingReviewId !== null"
+  [loading]="deleting"
   confirmText="Delete"
-  message="Are you sure you want to delete this review? This action cannot be undone."
-  title="Delete review?">
+  [message]="deleteModalMessage"
+  [title]="deleteModalTitle">
 </app-confirm-modal>

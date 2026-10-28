@@ -1,12 +1,12 @@
-import { Component, Input } from '@angular/core';
-import { NgForOf, NgIf } from '@angular/common';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { DecimalPipe, NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-product-rating-overview',
   standalone: true,
   imports: [
-    NgForOf,
-    NgIf
+    DecimalPipe,
+    NgClass
   ],
   templateUrl: './product-rating-overview.component.html',
   styleUrl: './product-rating-overview.component.css'
@@ -17,16 +17,12 @@ export class ProductRatingOverviewComponent {
   @Input() reviewsCount = 0;
   @Input() ratingDistribution: Record<number, number> = {};
 
-  getStarState(star: number): 'full' | 'half' | 'empty' {
-    if (this.averageRating >= star) {
-      return 'full';
-    }
+  @Output() writeReview = new EventEmitter<void>();
 
-    if (this.averageRating >= star - 0.5) {
-      return 'half';
-    }
-
-    return 'empty';
+  starIcon(star: number): string {
+    if (this.averageRating >= star) return 'fa-star';
+    if (this.averageRating >= star - 0.5) return 'fa-star-half-stroke';
+    return 'fa-star text-slate-200';
   }
 
   getStarPercent(star: number): number {

@@ -29,6 +29,9 @@ type ReviewWithComments = ReviewResponse & {
   commentsPage?: number;
   commentsTotal?: number;
   commentsLoading?: boolean;
+  // comment box and reply target are per review, so open threads don't share a draft
+  draft?: string;
+  replyTo?: CommentResponse | null;
 };
 
 type DeleteTarget =
@@ -63,21 +66,18 @@ export class ProductDetailsComponent implements OnInit {
   descExpanded = false;
   selectedImage: string | null = '';
 
-  replyingToCommentId: number | null = null;
-  replyingToActorName = '';
-
   totalReviews: number = 0;
 
   page = 0;
   size = 10;
   last = false;
   loading = false;
+  loadingProduct = true;
 
   productId!: number;
 
   currentImageIndex = 0;
   showAuthModal = false;
-  commentText = '';
 
   // ===================== DELETE (shared for review + comment) =====================
   showDeleteModal = false;
@@ -99,6 +99,7 @@ export class ProductDetailsComponent implements OnInit {
   ngOnInit() {
     const productId = this.route.snapshot.paramMap.get('id');
     if (productId) this.loadProduct(+productId);
+    else this.loadingProduct = false;
   }
 
   // ===================== LOAD PRODUCT =====================
@@ -109,6 +110,8 @@ export class ProductDetailsComponent implements OnInit {
       next: (data) => {
 
         this.product = data;
+        this.product.ratingDistribution ??= {};
+        this.loadingProduct = false;
         const mainIndex = data.images?.findIndex(i => i.isMain) ?? -1;
         this.currentImageIndex = mainIndex >= 0 ? mainIndex : 0;
         this.selectedImage = data.images?.[this.currentImageIndex]?.url ?? null;
@@ -116,6 +119,7 @@ export class ProductDetailsComponent implements OnInit {
         this.loadReviews();
       },
       error: (err) => {
+        this.loadingProduct = false;
         if (err.status === 404) {
           this.router.navigate(['/not-found'], { skipLocationChange: true });
         } else {
@@ -151,6 +155,8 @@ export class ProductDetailsComponent implements OnInit {
       next: (res) => {
         const saved = res as ReviewResponse;
 
+        this.applyRatingChange(this.myReview?.rating ?? null, saved.rating);
+
         if (this.myReview) {
           this.reviews = this.reviews.map(r =>
             r.id === this.myReview!.id
@@ -164,14 +170,16 @@ export class ProductDetailsComponent implements OnInit {
           ];
         }
 
+        if (!this.myReview) this.totalReviews++;
         this.myReview = saved;
-        this.product!.reviewsCount = this.reviews.length;
         this.product!.reviews = this.reviews;
         this.submittingReview = false;
+        this.toastService.show('Thanks! Your review is live', 'success');
       },
       error: err => {
         console.error(err);
         this.submittingReview = false;
+        this.toastService.show('Could not save your review', 'error');
       }
     });
 
@@ -215,6 +223,9 @@ export class ProductDetailsComponent implements OnInit {
       next: () => {
         this.reviews = this.reviews.filter(r => r.id !== review.id);
         this.product!.reviews = this.reviews;
+        this.applyRatingChange(review.rating, null);
+        this.totalReviews = Math.max(0, this.totalReviews - 1);
+        if (this.myReview?.id === review.id) this.myReview = null;
 
         this.closeDeleteModal();
         this.toastService.show('Review deleted', 'success');
@@ -224,6 +235,7 @@ export class ProductDetailsComponent implements OnInit {
         console.error(err);
         this.closeDeleteModal();
         this.deletingReviewId = null;
+        this.toastService.show('Could not delete review', 'error');
       }
     });
   }
@@ -252,8 +264,53 @@ export class ProductDetailsComponent implements OnInit {
     });
   }
 
+  get deleteModalTitle(): string {
+    return this.deleteTarget?.type === 'comment' ? 'Delete comment?' : 'Delete review?';
+  }
+
+  get deleteModalMessage(): string {
+    return `Are you sure you want to delete this ${this.deleteTarget?.type ?? 'review'}? This action cannot be undone.`;
+  }
+
+  get deleting(): boolean {
+    return this.deletingReviewId !== null || this.deletingCommentId !== null;
+  }
+
+  // Keeps the average, the count and the star bars in sync without refetching the product.
+  // oldRating null = new review, newRating null = deleted review.
+  private applyRatingChange(oldRating: number | null, newRating: number | null) {
+    const product = this.product;
+    if (!product) return;
+
+    const distribution = { ...(product.ratingDistribution ?? {}) };
+    const count = product.reviewsCount;
+    let total = (product.averageRating ?? 0) * count;
+
+    if (oldRating !== null) {
+      distribution[oldRating] = Math.max(0, (distribution[oldRating] ?? 0) - 1);
+      total -= oldRating;
+    }
+    if (newRating !== null) {
+      distribution[newRating] = (distribution[newRating] ?? 0) + 1;
+      total += newRating;
+    }
+
+    const newCount = count + (oldRating === null ? 1 : 0) - (newRating === null ? 1 : 0);
+    product.reviewsCount = Math.max(0, newCount);
+    product.averageRating = product.reviewsCount ? total / product.reviewsCount : 0;
+    product.ratingDistribution = distribution;
+  }
+
   hasLongDescription(description?: string): boolean {
     return (description?.length ?? 0) > 280;
+  }
+
+  scrollToReviewForm() {
+    document.getElementById('write-review')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  scrollToReviews() {
+    document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   // ===================== COMMENTS =====================
@@ -263,10 +320,11 @@ export class ProductDetailsComponent implements OnInit {
       return;
     }
 
-    if (!this.commentText.trim()) return;
+    const content = review.draft?.trim();
+    if (!content) return;
 
     this.commentService.createComment(review.id, {
-      content: this.commentText
+      content
     }).subscribe({
 
       next: (comment) => {
@@ -278,12 +336,15 @@ export class ProductDetailsComponent implements OnInit {
 
         review.commentsCount =
           (review.commentsCount || 0) + 1;
+        review.commentsTotal = (review.commentsTotal || 0) + 1;
 
-
-        this.commentText = '';
+        review.draft = '';
       },
 
-      error: console.error
+      error: err => {
+        console.error(err);
+        this.toastService.show('Could not post your comment', 'error');
+      }
     });
   }
 
@@ -329,12 +390,15 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   // ===================== UI HELPERS =====================
-  getSolidStars(rating: number) {
-    return Array(Math.floor(rating));
+  starIcon(rating: number, star: number): string {
+    if (rating >= star) return 'fa-star';
+    if (rating >= star - 0.5) return 'fa-star-half-stroke';
+    return 'fa-star text-slate-200';
   }
 
-  getOutlineStars(rating: number) {
-    return Array(5 - Math.floor(rating));
+  initials(name: string | null | undefined): string {
+    const parts = (name ?? '').trim().split(/\s+/).filter(Boolean);
+    return parts.length ? ((parts[0][0] ?? '') + (parts.length > 1 ? parts[parts.length - 1][0] : '')).toUpperCase() : '?';
   }
 
 
@@ -342,34 +406,38 @@ export class ProductDetailsComponent implements OnInit {
     this.location.back();
   }
 
-  startReply(comment: CommentResponse) {
+  startReply(review: ReviewWithComments, comment: CommentResponse) {
     if (this.showAuthModelIfNoAuthUser()) {
       return;
     }
-    this.replyingToCommentId = comment.id;
-    this.replyingToActorName = comment.actorName;
-    this.commentText = '';
+    review.replyTo = comment;
+    review.draft = '';
   }
 
-  cancelReply() {
-    this.replyingToCommentId = null;
-    this.replyingToActorName = '';
-    this.commentText = '';
+  cancelReply(review: ReviewWithComments) {
+    review.replyTo = null;
+    review.draft = '';
+  }
+
+  submitComment(review: ReviewWithComments) {
+    if (review.replyTo) this.sendReply(review);
+    else this.addComment(review);
   }
 
   sendReply(review: ReviewWithComments) {
 
-    if (!this.commentText.trim() || !this.replyingToCommentId) {
+    const content = review.draft?.trim();
+    if (!content || !review.replyTo) {
       return;
     }
 
     const request = {
-      content: this.commentText,
+      content,
       reviewId: review.id
     };
 
     this.commentService
-      .replyToComment(this.replyingToCommentId, request)
+      .replyToComment(review.replyTo.id, request)
       .subscribe({
 
         next: (newReply) => {
@@ -381,12 +449,16 @@ export class ProductDetailsComponent implements OnInit {
 
           review.commentsCount =
             (review.commentsCount || 0) + 1;
+          review.commentsTotal = (review.commentsTotal || 0) + 1;
 
-          this.cancelReply();
+          this.cancelReply(review);
 
         },
 
-        error: console.error
+        error: err => {
+          console.error(err);
+          this.toastService.show('Could not post your reply', 'error');
+        }
 
       });
   }
@@ -405,7 +477,7 @@ export class ProductDetailsComponent implements OnInit {
 
   private loadReviews() {
 
-    if (!this.productId || this.requestInProgress || this.last) return;
+    if (!this.product || this.requestInProgress || this.last) return;
 
     this.requestInProgress = true;
     this.loading = true;
@@ -484,6 +556,7 @@ export class ProductDetailsComponent implements OnInit {
 
 
   toggleReviewLike(review: ReviewResponse) {
+    if (this.showAuthModelIfNoAuthUser()) return;
     if (review.liked) {
       this.reviewService.removeLike(review.id).subscribe(() => {
         review.liked = false;
@@ -499,6 +572,7 @@ export class ProductDetailsComponent implements OnInit {
 
 
   toggleCommentLike(comment: CommentResponse) {
+    if (this.showAuthModelIfNoAuthUser()) return;
     if (comment.liked) {
       this.commentService.removeLike(comment.id).subscribe(() => {
         comment.liked = false;

@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { ImageUrlPipe } from '../../../../../../core/pipes/image-url.pipe';
 import { ProductImageResponse } from '../../../../models/productDTO/productImageResponse.model';
 
@@ -7,7 +7,7 @@ import { ProductImageResponse } from '../../../../models/productDTO/productImage
   selector: 'app-product-image-gallery',
   standalone: true,
   imports: [
-    NgIf,
+    NgClass,
     ImageUrlPipe
   ],
   templateUrl: './product-image-gallery.component.html',
@@ -16,6 +16,7 @@ import { ProductImageResponse } from '../../../../models/productDTO/productImage
 export class ProductImageGalleryComponent implements OnChanges {
 
   @Input() images: ProductImageResponse[] = [];
+  @Input() name = '';
 
   currentImageIndex = 0;
 
