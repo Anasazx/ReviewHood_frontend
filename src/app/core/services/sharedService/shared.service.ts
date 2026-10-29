@@ -1,25 +1,13 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SharedService {
 
-  localDev = false;
-
-  publicUrl!: string;
-  imageUrl!: string;
-
-  constructor() {
-    if (this.localDev) {
-      this.publicUrl = "http://localhost:8080";
-      this.imageUrl = "http://localhost:9000/uploads";
-    }
-    else {
-      this.publicUrl = "https://api.reviewhood.tech";
-      this.imageUrl = "https://api.reviewhood.tech/uploads";
-    }
-  }
+  publicUrl = environment.publicUrl;
+  imageUrl = environment.imageUrl;
 
   getImageUrl(imageUrl?: string | null): string {
     if (!imageUrl) {
