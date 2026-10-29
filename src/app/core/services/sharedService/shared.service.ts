@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class SharedService {
 
-  localDev = true;
+  localDev = false;
 
   publicUrl!: string;
   imageUrl!: string;
@@ -16,8 +16,8 @@ export class SharedService {
       this.imageUrl = "http://localhost:9000/uploads";
     }
     else {
-      this.publicUrl = "https://reviewhood.tech/api";
-      this.imageUrl = "https://reviewhood.tech/uploads";
+      this.publicUrl = "https://api.reviewhood.tech";
+      this.imageUrl = "https://api.reviewhood.tech/uploads";
     }
   }
 
