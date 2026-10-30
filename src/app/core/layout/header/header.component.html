@@ -1,15 +1,21 @@
-<header class="sticky top-0 z-50 border-b border-slate-200 bg-white">
+<header
+  class="sticky top-0 z-50 border-b bg-white/95 backdrop-blur transition-shadow duration-200"
+  [ngClass]="scrolled ? 'border-slate-200 shadow-[0_4px_20px_-12px_rgba(14,51,25,0.25)]' : 'border-slate-200/70'"
+>
 
-  <div class="mx-auto flex min-h-[64px] max-w-7xl items-center px-3 sm:px-5 md:h-[76px] md:px-5">
+  <div
+    class="mx-auto flex max-w-7xl items-center gap-3 px-3 transition-[height] duration-200 sm:px-5 lg:gap-6"
+    [ngClass]="scrolled ? 'h-14 md:h-16' : 'h-16 md:h-[76px]'"
+  >
 
-    <!-- LEFT: MOBILE MENU + LOGO / DESKTOP LOGO -->
-    <div class="flex min-w-0 items-center">
+    <!-- LEFT: MOBILE MENU + LOGO -->
+    <div class="flex shrink-0 items-center">
 
-      <!-- MOBILE BURGER -->
+      <!-- BURGER (until the desktop nav links fit) -->
       <button
         type="button"
         (click)="toggleMobileMenu()"
-        class="mr-1 rounded-lg p-2 transition hover:bg-slate-100 md:hidden"
+        class="mr-1 rounded-lg p-2 transition hover:bg-slate-100 lg:hidden"
         aria-label="Open menu"
       >
         <svg
@@ -36,7 +42,8 @@
         <img
           src="/logo.png"
           alt="ReviewHood"
-          class="h-10 w-auto object-contain sm:h-11 md:h-12"
+          class="w-auto object-contain transition-[height] duration-200"
+          [ngClass]="scrolled ? 'h-9 md:h-10' : 'h-10 sm:h-11 md:h-12'"
           loading="eager"
         />
       </a>
@@ -44,14 +51,40 @@
     </div>
 
 
-    <!-- DESKTOP SEARCH (the home page has its own big search in the hero) -->
-    <div *ngIf="!isHome" class="absolute left-1/2 hidden w-[min(40vw,420px)] -translate-x-1/2 min-[910px]:block">
-      <app-search-bar></app-search-bar>
+    <!-- DESKTOP SEARCH: takes the free space between logo and nav, so it shrinks instead of overlapping.
+         On the home page it only fades in once the hero search has scrolled away. -->
+    <div class="hidden min-w-0 flex-1 justify-center md:flex">
+      <div
+        class="w-full max-w-md transition duration-200"
+        [ngClass]="showHeaderSearch ? 'opacity-100' : 'pointer-events-none invisible -translate-y-1 opacity-0'"
+      >
+        <app-search-bar></app-search-bar>
+      </div>
     </div>
 
 
+    <!-- DESKTOP NAV -->
+    <nav class="hidden shrink-0 items-center gap-1 lg:flex">
+      <a
+        routerLink="/products"
+        routerLinkActive="!bg-brand-50 !text-brand-700"
+        class="rounded-full px-3.5 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+      >Products</a>
+      <a
+        routerLink="/companies"
+        routerLinkActive="!bg-brand-50 !text-brand-700"
+        class="rounded-full px-3.5 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+      >Companies</a>
+      <a
+        routerLink="/categories"
+        routerLinkActive="!bg-brand-50 !text-brand-700"
+        class="rounded-full px-3.5 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+      >Categories</a>
+    </nav>
+
+
     <!-- RIGHT SIDE -->
-    <div class="ml-auto flex items-center">
+    <div class="ml-auto flex shrink-0 items-center md:ml-0">
 
       <!-- MOBILE ACTIONS -->
       <div class="flex items-center gap-1 sm:gap-2 md:hidden">
@@ -157,7 +190,7 @@
           <button
             type="button"
             (click)="openLogin()"
-            class="rounded-full bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700 lg:px-6 lg:text-base"
+            class="rounded-full bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700"
           >
             Log in
           </button>
@@ -171,16 +204,17 @@
   </div>
 
 
-  <!-- MOBILE SIDEBAR -->
-  <div class="md:hidden">
-    <app-mobile-sidebar
-      [open]="mobileMenuOpen"
-      (close)="mobileMenuOpen = false"
-    >
-    </app-mobile-sidebar>
-  </div>
-
 </header>
+
+
+<!-- MOBILE SIDEBAR (outside <header>: its backdrop-blur would trap this fixed overlay inside the header box) -->
+<div class="lg:hidden">
+  <app-mobile-sidebar
+    [open]="mobileMenuOpen"
+    (close)="mobileMenuOpen = false"
+  >
+  </app-mobile-sidebar>
+</div>
 
 
 <!-- LOGOUT CONFIRMATION MODAL -->

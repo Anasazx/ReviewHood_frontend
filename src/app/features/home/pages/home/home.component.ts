@@ -9,7 +9,7 @@ import { MinimizedReviewResponse } from '../../../../core/models/dto/reviewDTO/m
 import { SubcategoryResponse } from '../../../../core/models/dto/subcategoryDTO/subcategoryResponse.model';
 import {DEFAULT_SUBCATEGORY_ICON, SUBCATEGORY_ICONS} from '../../../../core/constants/subcategory-icons';
 import { categoryIcon } from '../../../../core/constants/category-icons';
-import { CategoryNode, CategoryTreeService } from '../../../../core/services/categoryTreeService/category-tree.service';
+import { CategoryNode, CategoryTreeService, SubcategoryNode } from '../../../../core/services/categoryTreeService/category-tree.service';
 import { FeedService } from '../../../../core/services/feedService/feed.service';
 import { SearchBarComponent } from '../../../../core/layout/search-bar/search-bar.component';
 import {CompanyResponse} from '../../../company/models/companyDTO/companyResponse.model';
@@ -55,8 +55,17 @@ export class HomeComponent implements OnInit {
   // Categories with their subcategories for the "Browse by category" grid; null while loading
   categoryTree: CategoryNode[] | null = null;
 
+  // Biggest subcategories across all categories, shown as quick links under the hero search
+  popularSubcategories: SubcategoryNode[] = [];
+
   ngOnInit(): void {
-    this.categoryTreeService.tree$.subscribe(tree => this.categoryTree = tree);
+    this.categoryTreeService.tree$.subscribe(tree => {
+      this.categoryTree = tree;
+      this.popularSubcategories = tree
+        .flatMap(c => c.subcategories)
+        .sort((a, b) => b.productCount - a.productCount)
+        .slice(0, 5);
+    });
 
     this.route.queryParamMap.subscribe(params => {
       this.selectedCategoryId = params.get('categoryId') ? Number(params.get('categoryId')) : undefined;
@@ -72,12 +81,12 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  // ========================== REVIEWS CAROUSEL (3x3 pages) ==========================
+  // ========================== REVIEWS CAROUSEL (3x2 pages) ==========================
   reviewPages: MinimizedReviewResponse[][] = [];
   currentPage = 0;
 
   buildReviewPages() {
-    const pageSize = 9;
+    const pageSize = 6;
     this.reviewPages = [];
     for (let i = 0; i < this.reviews.length; i += pageSize) {
       this.reviewPages.push(this.reviews.slice(i, i + pageSize));

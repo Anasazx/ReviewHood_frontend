@@ -1,224 +1,76 @@
-<div class="space-y-14">
+<div class="space-y-12 pb-4">
 
   <!-- SEARCH -->
-  <section class="relative z-20 left-1/2 right-1/2 -mx-[50vw] w-screen bg-brand-50 py-20">
+  <section class="relative z-20 left-1/2 right-1/2 -mx-[50vw] w-screen bg-brand-50 py-10 md:py-14">
     <!-- FLOATING STARS (clipped separately so the search suggestions can overflow the section) -->
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
-      <i class="fa-solid fa-star absolute -right-4 -top-8 rotate-[18deg] text-[160px] text-brand-300/60 animate-float-a md:right-10 md:top-2 md:text-[200px]"></i>
-      <i class="fa-solid fa-star absolute -left-10 bottom-0 -rotate-[15deg] text-[100px] text-brand-400/20 animate-float-b md:left-4 md:bottom-4 md:text-[130px]"></i>
-      <i class="fa-solid fa-star absolute right-[18%] top-[70%] rotate-[8deg] text-3xl text-brand-300 animate-float-a-fast hidden md:block"></i>
-      <i class="fa-solid fa-star absolute left-[12%] top-[15%] -rotate-[10deg] text-2xl text-brand-400/50 animate-float-b-fast hidden md:block"></i>
+      <i class="fa-solid fa-star absolute -right-6 -top-6 rotate-[18deg] text-[110px] text-brand-300/50 animate-float-a md:right-16 md:top-4 md:text-[150px]"></i>
+      <i class="fa-solid fa-star absolute -left-8 bottom-2 -rotate-[15deg] text-[80px] text-brand-400/15 animate-float-b md:left-10 md:text-[100px]"></i>
+      <i class="fa-solid fa-star absolute left-[14%] top-[18%] -rotate-[10deg] text-xl text-brand-400/40 animate-float-b-fast hidden md:block"></i>
     </div>
 
     <div class="relative mx-auto max-w-7xl px-4 text-center">
-      <h2 class="text-[48px] font-semibold tracking-[-0.02em] text-ink">
+      <h1 class="text-3xl font-semibold tracking-[-0.02em] text-ink md:text-[40px] md:leading-tight">
         What are you looking for?
-      </h2>
+      </h1>
 
-      <p class="mt-2 text-lg text-brand-700">
-        Search thousands of honest reviews from real customers
+      <p class="mt-2 text-sm text-brand-700 md:text-base">
+        Honest reviews from real customers, before you buy
       </p>
 
-      <div class="mx-auto mt-8 max-w-2xl">
+      <div class="mx-auto mt-6 max-w-2xl">
         <app-search-bar variant="hero"></app-search-bar>
       </div>
 
+      <!-- POPULAR SUBCATEGORIES: one-tap shortcuts so the hero is useful without typing -->
+      @if (popularSubcategories.length) {
+        <div class="mx-auto mt-4 flex max-w-2xl flex-wrap items-center justify-center gap-2">
+          <span class="text-xs font-medium text-brand-700/70">Popular:</span>
+          @for (sub of popularSubcategories; track sub.id) {
+            <a [routerLink]="['/products']" [queryParams]="{ subcategoryId: sub.id, subcategory: sub.name }"
+               class="rounded-full border border-brand-600/15 bg-white/70 px-3 py-1 text-xs font-medium text-slate-700 transition hover:border-brand-600/40 hover:bg-white hover:text-brand-700">
+              {{ sub.name }}
+            </a>
+          }
+        </div>
+      }
     </div>
   </section>
 
   <!-- CATEGORIES -->
   <section aria-labelledby="categories-title">
-    <div class="mb-6 flex items-end justify-between gap-3">
-      <div>
-        <h2 id="categories-title" class="text-2xl font-semibold tracking-tight text-slate-900">Browse by category</h2>
-        <p class="mt-1 text-sm text-slate-500">Pick a category, or jump straight to what you need</p>
-      </div>
+    <div class="mb-4 flex items-center justify-between gap-3">
+      <h2 id="categories-title" class="text-xl font-semibold tracking-tight text-slate-900">Browse by category</h2>
       <a routerLink="/categories"
-         class="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-brand-600/30 hover:text-brand-700 sm:gap-2 sm:px-4 sm:text-sm">
-        <span class="hidden sm:inline">All categories</span>
-        <span class="sm:hidden">All</span>
+         class="flex flex-shrink-0 items-center gap-1.5 text-sm font-semibold text-brand-700 transition hover:text-brand-600">
+        All categories
         <i class="fa-solid fa-arrow-right text-xs"></i>
       </a>
     </div>
 
+    <!-- Compact pills: wrap on desktop, single swipeable row on mobile -->
     @if (categoryTree === null) {
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        @for (i of [1, 2, 3]; track i) {
-          <div class="h-40 animate-pulse rounded-2xl border border-slate-100 bg-slate-50"></div>
+      <div class="flex gap-2 overflow-hidden sm:flex-wrap">
+        @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+          <div class="h-11 w-36 shrink-0 animate-pulse rounded-full bg-slate-100"></div>
         }
       </div>
     } @else if (categoryTree.length) {
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        @for (category of categoryTree.slice(0, 6); track category.id) {
-          <article class="group flex flex-col rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-brand-600/30 hover:shadow-[0_8px_30px_-12px_rgba(8,127,91,0.25)]">
-            <a [routerLink]="['/products']" [queryParams]="{ categoryId: category.id, category: category.name }" class="flex items-center gap-4">
-              <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 transition group-hover:bg-brand-600 group-hover:text-white">
-                <i class="fa-solid text-lg" [ngClass]="categoryIcon(category.name)"></i>
-              </span>
-              <span class="min-w-0 flex-1">
-                <span class="block truncate text-lg font-semibold text-slate-900">{{ category.name }}</span>
-                <span class="block text-sm text-slate-500">{{ category.productCount | number }} {{ category.productCount === 1 ? 'product' : 'products' }}</span>
-              </span>
-              <i class="fa-solid fa-arrow-right text-sm text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-brand-600"></i>
-            </a>
-
-            @if (category.subcategories.length) {
-              <ul class="mt-4 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
-                @for (sub of category.subcategories.slice(0, 5); track sub.id) {
-                  <li>
-                    <a [routerLink]="['/products']" [queryParams]="{ subcategoryId: sub.id, subcategory: sub.name }"
-                       class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-brand-50 hover:text-brand-700">
-                      {{ sub.name }}
-                      <span class="text-slate-400">{{ sub.productCount }}</span>
-                    </a>
-                  </li>
-                }
-                @if (category.subcategories.length > 5) {
-                  <li>
-                    <a routerLink="/categories" [fragment]="'category-' + category.id"
-                       class="inline-flex items-center rounded-full px-3 py-1.5 text-xs font-semibold text-brand-700 hover:bg-brand-50">
-                      +{{ category.subcategories.length - 5 }} more
-                    </a>
-                  </li>
-                }
-              </ul>
-            }
-          </article>
+      <div class="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        @for (category of categoryTree.slice(0, 10); track category.id) {
+          <a [routerLink]="['/products']" [queryParams]="{ categoryId: category.id, category: category.name }"
+             class="group flex shrink-0 items-center gap-2.5 rounded-full border border-slate-200 bg-white py-1.5 pl-1.5 pr-4 transition hover:border-brand-600/30 hover:bg-brand-50/50">
+            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-brand-50 text-sm text-brand-600 transition group-hover:bg-brand-600 group-hover:text-white">
+              <i class="fa-solid" [ngClass]="categoryIcon(category.name)"></i>
+            </span>
+            <span class="whitespace-nowrap text-sm font-semibold text-slate-800">{{ category.name }}</span>
+            <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500 transition group-hover:bg-white">{{ category.productCount | number }}</span>
+          </a>
         }
       </div>
     }
   </section>
 
-
-  <!-- COMPANIES -->
-  <section>
-    <div class="mb-6 flex items-end justify-between gap-3">
-      <div>
-        <h2 class="text-2xl font-semibold tracking-tight text-slate-900">
-          Trusted companies
-        </h2>
-        <p class="mt-1 text-sm text-slate-500">
-          Businesses building their reputation on real reviews
-        </p>
-      </div>
-
-      <div class="flex items-center gap-2 sm:gap-4">
-
-        <!-- ARROWS (desktop only) -->
-        <div class="hidden items-center gap-2 sm:flex">
-          <button
-            (click)="scrollCompanies('left')"
-            [disabled]="!canGoLeftCompanies"
-            class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-brand-600/30 hover:bg-brand-600/5 hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:bg-transparent"
-          >
-            <i class="fa-solid fa-chevron-left text-xs"></i>
-          </button>
-          <button
-            (click)="scrollCompanies('right')"
-            [disabled]="!canGoRightCompanies"
-            class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-brand-600/30 hover:bg-brand-600/5 hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:bg-transparent"
-          >
-            <i class="fa-solid fa-chevron-right text-xs"></i>
-          </button>
-        </div>
-
-        <!-- SEE ALL (visible on all screens) -->
-        <a
-        routerLink="/companies"
-        class="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-brand-600/30 hover:text-brand-600 sm:gap-2 sm:px-4 sm:text-sm"
-        >
-        <span class="hidden sm:inline">See all companies</span>
-        <span class="sm:hidden">See all</span>
-        <i class="fa-solid fa-arrow-right text-xs"></i>
-        </a>
-
-      </div>
-    </div>
-
-    <!-- MOBILE: HORIZONTAL SCROLL -->
-    <div class="flex gap-4 overflow-x-auto pb-2 sm:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      <a
-        *ngFor="let company of companies"
-        [routerLink]="['/c', company.id]"
-        class="group flex w-[78vw] max-w-[300px] shrink-0 items-center gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 transition-all duration-300 hover:border-brand-400/40 hover:shadow-lg hover:shadow-slate-200/60"
-      >
-        <img [src]="company.logoUrl | imageUrl" class="h-14 w-14 flex-shrink-0 rounded-full border border-slate-200 object-cover"/>
-        <div class="min-w-0 flex-1">
-          <div class="flex items-center gap-1.5">
-            <h4 class="truncate text-sm font-semibold text-slate-900 transition group-hover:text-brand-600">{{ company.name }}</h4>
-            <svg *ngIf="company.verified" viewBox="0 0 24 24" class="h-3.5 w-3.5 flex-shrink-0 text-brand-600" fill="currentColor">
-              <circle cx="12" cy="12" r="10"/><path d="M10 12.5 8.5 11 7 12.5 10 15.5 17 8.5 15.5 7z" fill="white"/>
-            </svg>
-          </div>
-          <p class="mt-0.5 truncate text-xs text-slate-500">{{ company.description || company.country }}</p>
-        </div>
-      </a>
-
-    </div>
-
-    <!-- DESKTOP: PAGINATED GRID -->
-    <div class="hidden overflow-hidden sm:block">
-
-      <div
-        class="flex transition-transform duration-300 ease-out"
-        [style.transform]="'translateX(-' + (currentCompanyPage * 100) + '%)'"
-      >
-
-        <div
-          *ngFor="let page of companyPages"
-          class="grid w-full flex-shrink-0 grid-cols-2 gap-4 lg:grid-cols-3 lg:gap-5"
-        >
-
-          <a
-            *ngFor="let company of page"
-            [routerLink]="['/c', company.id]"
-            class="group flex items-center gap-4 rounded-2xl border border-slate-200/80 bg-white p-4 transition-all duration-300 hover:border-brand-400/40 hover:shadow-lg hover:shadow-slate-200/60"
-          >
-            <img [src]="company.logoUrl | imageUrl" class="h-14 w-14 flex-shrink-0 rounded-full border border-slate-200 object-cover"/>
-            <div class="min-w-0 flex-1">
-              <div class="flex items-center gap-1.5">
-                <h4 class="truncate text-sm font-semibold text-slate-900 transition group-hover:text-brand-600">{{ company.name }}</h4>
-                <svg *ngIf="company.verified" viewBox="0 0 24 24" class="h-3.5 w-3.5 flex-shrink-0 text-brand-600" fill="currentColor">
-                  <circle cx="12" cy="12" r="10"/><path d="M10 12.5 8.5 11 7 12.5 10 15.5 17 8.5 15.5 7z" fill="white"/>
-                </svg>
-              </div>
-              <p class="mt-0.5 truncate text-xs text-slate-500">{{ company.description || company.country }}</p>
-            </div>
-            <i class="fa-solid fa-chevron-right flex-shrink-0 text-xs text-slate-300 transition group-hover:text-brand-600"></i>
-          </a>
-
-        </div>
-
-      </div>
-
-    </div>  </section>
-
-  <!-- AUTH BANNER -->
-  <section class="rounded-3xl bg-ink px-5 py-10 text-center">
-    <div class="mx-auto max-w-xl">
-
-      <ng-container *ngIf="authService.currentUser$ | async; else guestBanner">
-        <h2 class="text-2xl font-semibold leading-tight tracking-tight text-white md:text-3xl">
-          Bought something recently?
-        </h2>
-        <p class="mt-3 text-sm leading-relaxed text-white/60 md:text-base">
-          Tell others what you thought — it only takes a minute, and it really helps.
-        </p>
-      </ng-container>
-
-      <ng-template #guestBanner>
-        <h2 class="text-2xl font-semibold leading-tight tracking-tight text-white md:text-3xl">
-          Help thousands make the right choice
-        </h2>
-        <p class="mt-3 text-sm leading-relaxed text-white/60 md:text-base">
-          <a routerLink="/auth/login" class="font-semibold text-white underline underline-offset-4 hover:text-white/80">
-            Log in
-          </a> to share your experience on ReviewHood.
-        </p>
-      </ng-template>
-
-    </div>
-  </section>
 
   <!-- PRODUCTS -->
   <section>
@@ -316,19 +168,6 @@
     </div>
 
   </section>
-
-
-  <!-- TRUST STRIP -->
-  <!--
-  <section class="rounded-2xl bg-brand-50 px-8 py-10 text-center">
-    <h2 class="text-2xl font-semibold tracking-tight text-brand-600 md:text-3xl">
-      Honest reviews, from people who actually bought the thing
-    </h2>
-    <p class="mx-auto mt-2 max-w-md text-sm text-brand-600/60">
-      No fake ratings. No paid placements. Just real Tunisian shoppers.
-    </p>
-  </section>
-  -->
 
   <!-- RECENT REVIEWS -->
   <section>
@@ -549,5 +388,137 @@
 
   </section>
 
+  <!-- COMPANIES -->
+  <section>
+    <div class="mb-6 flex items-end justify-between gap-3">
+      <div>
+        <h2 class="text-2xl font-semibold tracking-tight text-slate-900">
+          Trusted companies
+        </h2>
+        <p class="mt-1 text-sm text-slate-500">
+          Businesses building their reputation on real reviews
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-4">
+
+        <!-- ARROWS (desktop only) -->
+        <div class="hidden items-center gap-2 sm:flex">
+          <button
+            (click)="scrollCompanies('left')"
+            [disabled]="!canGoLeftCompanies"
+            class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-brand-600/30 hover:bg-brand-600/5 hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:bg-transparent"
+          >
+            <i class="fa-solid fa-chevron-left text-xs"></i>
+          </button>
+          <button
+            (click)="scrollCompanies('right')"
+            [disabled]="!canGoRightCompanies"
+            class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:border-brand-600/30 hover:bg-brand-600/5 hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-200 disabled:hover:bg-transparent"
+          >
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </button>
+        </div>
+
+        <!-- SEE ALL (visible on all screens) -->
+        <a
+        routerLink="/companies"
+        class="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-brand-600/30 hover:text-brand-600 sm:gap-2 sm:px-4 sm:text-sm"
+        >
+        <span class="hidden sm:inline">See all companies</span>
+        <span class="sm:hidden">See all</span>
+        <i class="fa-solid fa-arrow-right text-xs"></i>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- MOBILE: HORIZONTAL SCROLL -->
+    <div class="flex gap-4 overflow-x-auto pb-2 sm:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <a
+        *ngFor="let company of companies"
+        [routerLink]="['/c', company.id]"
+        class="group flex w-[78vw] max-w-[300px] shrink-0 items-center gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 transition-all duration-300 hover:border-brand-400/40 hover:shadow-lg hover:shadow-slate-200/60"
+      >
+        <img [src]="company.logoUrl | imageUrl" class="h-14 w-14 flex-shrink-0 rounded-full border border-slate-200 object-cover"/>
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-1.5">
+            <h4 class="truncate text-sm font-semibold text-slate-900 transition group-hover:text-brand-600">{{ company.name }}</h4>
+            <svg *ngIf="company.verified" viewBox="0 0 24 24" class="h-3.5 w-3.5 flex-shrink-0 text-brand-600" fill="currentColor">
+              <circle cx="12" cy="12" r="10"/><path d="M10 12.5 8.5 11 7 12.5 10 15.5 17 8.5 15.5 7z" fill="white"/>
+            </svg>
+          </div>
+          <p class="mt-0.5 truncate text-xs text-slate-500">{{ company.description || company.country }}</p>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- DESKTOP: PAGINATED GRID -->
+    <div class="hidden overflow-hidden sm:block">
+
+      <div
+        class="flex transition-transform duration-300 ease-out"
+        [style.transform]="'translateX(-' + (currentCompanyPage * 100) + '%)'"
+      >
+
+        <div
+          *ngFor="let page of companyPages"
+          class="grid w-full flex-shrink-0 grid-cols-2 gap-4 lg:grid-cols-3 lg:gap-5"
+        >
+
+          <a
+            *ngFor="let company of page"
+            [routerLink]="['/c', company.id]"
+            class="group flex items-center gap-4 rounded-2xl border border-slate-200/80 bg-white p-4 transition-all duration-300 hover:border-brand-400/40 hover:shadow-lg hover:shadow-slate-200/60"
+          >
+            <img [src]="company.logoUrl | imageUrl" class="h-14 w-14 flex-shrink-0 rounded-full border border-slate-200 object-cover"/>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-1.5">
+                <h4 class="truncate text-sm font-semibold text-slate-900 transition group-hover:text-brand-600">{{ company.name }}</h4>
+                <svg *ngIf="company.verified" viewBox="0 0 24 24" class="h-3.5 w-3.5 flex-shrink-0 text-brand-600" fill="currentColor">
+                  <circle cx="12" cy="12" r="10"/><path d="M10 12.5 8.5 11 7 12.5 10 15.5 17 8.5 15.5 7z" fill="white"/>
+                </svg>
+              </div>
+              <p class="mt-0.5 truncate text-xs text-slate-500">{{ company.description || company.country }}</p>
+            </div>
+            <i class="fa-solid fa-chevron-right flex-shrink-0 text-xs text-slate-300 transition group-hover:text-brand-600"></i>
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>  </section>
+
+  <!-- AUTH BANNER -->
+  <section class="rounded-3xl bg-ink px-5 py-10 text-center">
+    <div class="mx-auto max-w-xl">
+
+      <ng-container *ngIf="authService.currentUser$ | async; else guestBanner">
+        <h2 class="text-2xl font-semibold leading-tight tracking-tight text-white md:text-3xl">
+          Bought something recently?
+        </h2>
+        <p class="mt-3 text-sm leading-relaxed text-white/60 md:text-base">
+          Tell others what you thought — it only takes a minute, and it really helps.
+        </p>
+      </ng-container>
+
+      <ng-template #guestBanner>
+        <h2 class="text-2xl font-semibold leading-tight tracking-tight text-white md:text-3xl">
+          Help thousands make the right choice
+        </h2>
+        <p class="mt-3 text-sm leading-relaxed text-white/60 md:text-base">
+          Share your experience on ReviewHood. It only takes a minute.
+        </p>
+        <a routerLink="/auth/login"
+           class="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-ink transition hover:bg-brand-50">
+          Log in to write a review
+          <i class="fa-solid fa-arrow-right text-xs"></i>
+        </a>
+      </ng-template>
+
+    </div>
+  </section>
 
 </div>

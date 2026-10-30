@@ -1,7 +1,7 @@
 import { AvatarComponent } from '../../../core/sharedComponents/avatar/avatar.component';
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, HostListener, OnInit, Output } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../features/auth/services/authService/auth.service';
 import { SharedService } from '../../services/sharedService/shared.service';
@@ -19,7 +19,7 @@ import {SearchBarComponent} from '../search-bar/search-bar.component';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [AvatarComponent, CommonModule, RouterLink, FormsModule, MobileSidebarComponent, AuthRequiredComponent, ConfirmModalComponent, SuggestProductModalComponent, SearchBarComponent],
+  imports: [AvatarComponent, CommonModule, RouterLink, RouterLinkActive, FormsModule, MobileSidebarComponent, AuthRequiredComponent, ConfirmModalComponent, SuggestProductModalComponent, SearchBarComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
   animations: [
@@ -60,8 +60,22 @@ export class HeaderComponent implements OnInit {
   mobileMenuOpen = false;
   suggestProductOpen = false;
 
+  // Compact header + shadow once the page moves; past the hero, the home page gets the header search back
+  scrolled = false;
+  pastHero = false;
+
   get isHome(): boolean {
     return this.router.url.split(/[?#]/)[0] === '/';
+  }
+
+  get showHeaderSearch(): boolean {
+    return !this.isHome || this.pastHero;
+  }
+
+  @HostListener('window:scroll')
+  onScroll(): void {
+    this.scrolled = window.scrollY > 8;
+    this.pastHero = window.scrollY > 260;
   }
 
   constructor(
