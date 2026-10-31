@@ -1,135 +1,59 @@
 <div class="space-y-6">
 
   <div>
-    <h2 class="text-xl font-semibold text-slate-900">
-      My Suggestions
-    </h2>
-
-    <p class="text-sm text-slate-500 mt-1">
-      Products you've suggested to ReviewHood.
-    </p>
+    <h2 class="text-xl font-semibold tracking-tight text-ink">My suggestions</h2>
+    <p class="mt-1 text-sm text-slate-500">Products you asked us to add to ReviewHood.</p>
   </div>
 
-
-  <div
-    *ngIf="loading"
-    class="text-center py-10 text-slate-500">
-
-    Loading...
-
-  </div>
-
-
-  <div
-    *ngIf="!loading && suggestions.length === 0"
-    class="rounded-xl border border-dashed border-slate-300 p-10 text-center">
-
-    <i class="fa-regular fa-lightbulb text-5xl text-slate-300"></i>
-
-    <p class="mt-4 text-slate-600 font-medium">
-      No suggestions yet
-    </p>
-
-    <p class="text-sm text-slate-400 mt-1">
-      If a product isn't available, you can suggest it from the search page.
-    </p>
-
-  </div>
-
-
-  <div
-    *ngFor="let suggestion of suggestions"
-    class="rounded-xl border border-slate-200 p-5 hover:shadow-sm transition">
-
-    <div class="flex items-start justify-between">
-
-      <div>
-
-        <h3 class="font-semibold text-slate-900">
-          {{ suggestion.name }}
-        </h3>
-
-        <p class="text-sm text-slate-500">
-          {{ suggestion.companyName }}
-        </p>
-
-      </div>
-
-
-      <span
-        class="px-3 py-1 rounded-full text-xs font-semibold"
-
-        [ngClass]="{
-          'bg-yellow-100 text-yellow-700': suggestion.status === 'PENDING',
-          'bg-green-100 text-green-700': suggestion.status === 'APPROVED',
-          'bg-red-100 text-red-700': suggestion.status === 'REJECTED'
-        }">
-
-        {{ suggestion.status }}
-
+  @if (loading) {
+    <div class="space-y-3">
+      @for (i of [1, 2]; track i) {
+        <div class="h-24 animate-pulse rounded-2xl bg-slate-100"></div>
+      }
+    </div>
+  } @else if (!suggestions.length) {
+    <div class="rounded-2xl border border-dashed border-slate-300 px-6 py-12 text-center">
+      <span class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-brand-600">
+        <i class="fa-regular fa-lightbulb text-lg"></i>
       </span>
-
+      <p class="mt-3 font-medium text-slate-800">No suggestions yet</p>
+      <p class="mt-1 text-sm text-slate-500">Can't find a product? Search for it and suggest it from the results page.</p>
+      <a routerLink="/search" class="mt-4 inline-flex rounded-full bg-brand-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Search products</a>
     </div>
+  } @else {
+    <ul class="space-y-3">
+      @for (suggestion of suggestions; track suggestion.id) {
+        <li class="rounded-2xl border border-slate-200 p-4 sm:p-5">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="truncate font-semibold text-slate-900">{{ suggestion.name }}</p>
+              <p class="mt-0.5 text-xs text-slate-500">
+                {{ suggestion.companyName }}
+                <span class="text-slate-300">·</span>
+                <time [attr.datetime]="suggestion.createdAt">{{ suggestion.createdAt | date: 'MMM d, y' }}</time>
+              </p>
+            </div>
+            <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold" [ngClass]="status(suggestion.status).classes">
+              <i class="fa-solid text-[10px]" [ngClass]="status(suggestion.status).icon"></i>
+              {{ status(suggestion.status).label }}
+            </span>
+          </div>
 
+          @if (suggestion.description) {
+            <p class="mt-3 line-clamp-3 text-sm text-slate-600">{{ suggestion.description }}</p>
+          }
 
-    <!-- DESCRIPTION -->
-    <p
-      *ngIf="suggestion.description"
-      class="mt-3 text-sm text-slate-600">
-
-      {{ suggestion.description }}
-
-    </p>
-
-
-    <!-- APPROVED PRODUCT -->
-    <div
-      *ngIf="suggestion.status === 'APPROVED' && suggestion.productId"
-      class="
-    mt-4
-    p-4
-    rounded-xl
-    bg-green-50
-    border
-    border-green-200
-  ">
-
-      <div class="flex items-center gap-2">
-
-        <i class="fa-solid fa-circle-check text-green-600"></i>
-
-        <span class="text-sm font-medium text-green-700">
-      Your suggestion has been added!
-    </span>
-
-      </div>
-
-
-      <a
-        [routerLink]="['/p', suggestion.productId]"
-        class="
-      block
-      mt-2
-      text-sm
-      font-semibold
-      text-brand-600
-      hover:underline
-    ">
-
-        View product: {{ suggestion.productName }}
-
-      </a>
-
-    </div>
-
-
-    <!-- DATE -->
-    <div class="mt-4 text-xs text-slate-400">
-
-      {{ suggestion.createdAt | date:'mediumDate' }}
-
-    </div>
-
-  </div>
-
+          @if (suggestion.status === 'APPROVED' && suggestion.productId) {
+            <a [routerLink]="['/p', suggestion.productId]"
+               class="group mt-4 flex items-center justify-between gap-3 rounded-xl bg-brand-50 px-4 py-3 text-sm transition hover:bg-brand-100">
+              <span class="min-w-0 truncate text-brand-800">
+                It's live: <span class="font-semibold">{{ suggestion.productName }}</span>
+              </span>
+              <i class="fa-solid fa-arrow-right shrink-0 text-xs text-brand-700 transition group-hover:translate-x-0.5"></i>
+            </a>
+          }
+        </li>
+      }
+    </ul>
+  }
 </div>

@@ -1,7 +1,7 @@
 <div class="max-w-lg space-y-6">
   <div>
-    <h2 class="text-lg font-semibold text-slate-800">{{ hasPassword ? 'Change password' : 'Set a password' }}</h2>
-    <p class="text-sm text-slate-500">
+    <h2 class="text-xl font-semibold tracking-tight text-ink">{{ hasPassword ? 'Change password' : 'Set a password' }}</h2>
+    <p class="mt-1 text-sm text-slate-500">
       {{ hasPassword ? 'Use at least 8 characters. You stay signed in on this device.' : 'You signed up with Google. Set a password to also sign in with your email.' }}
     </p>
   </div>
@@ -38,7 +38,7 @@
     }
 
     <button type="submit" [disabled]="saving"
-            class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:opacity-50">
+            class="inline-flex items-center gap-2 rounded-full bg-brand-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:opacity-50">
       @if (saving) { <i class="fa-solid fa-spinner animate-spin"></i> }
       {{ hasPassword ? 'Change password' : 'Set password' }}
     </button>

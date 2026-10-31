@@ -7,7 +7,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Country } from '../../../../core/models/enums/country.enum.model';
 import {UpdateUserRequest} from '../../../user/models/userDTO/updateUserRequest.model';
-import {ImageUrlPipe} from '../../../../core/pipes/image-url.pipe';
+import {AuthService} from '../../../auth/services/authService/auth.service';
+import {ToastService} from '../../../../core/services/toastService/toast.service';
 import {Router} from '@angular/router';
 
 @Component({
@@ -25,7 +26,9 @@ export class ProfileCardComponent implements OnInit {
   constructor(
     private userService: UserService,
     public sharedService: SharedService,
-    private router: Router
+    private router: Router,
+    private toast: ToastService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -36,64 +39,72 @@ export class ProfileCardComponent implements OnInit {
     });
   }
 
-  editingMode = false;
-
-  editingField: 'phone' | 'country'| 'email' | null = null;
+  editing = false;
+  saving = false;
+  uploadingAvatar = false;
 
   editModel: {
     phoneNumber: string;
-    email: string;
     country: Country | null;
   } = {
     phoneNumber: '',
-    email: '',
     country: null
   };
 
-  enableEditMode() {
-    this.editingMode = true;
+  // One edit mode for the whole card: every editable field switches to an input at once
+  startEdit() {
+    if (!this.user) return;
+    this.editModel.phoneNumber = this.user.phoneNumber || '';
+    this.editModel.country = this.user.country ?? null;
+    this.editing = true;
   }
 
   cancelEdit() {
-    this.editingMode = false;
-    this.editingField = null;
-  }
-
-  startEdit(field: 'phone' | 'email' | 'country') {
-    this.editingField = field;
-    if (!this.user) return;
-    this.editModel.phoneNumber = this.user.phoneNumber || '';
-    this.editModel.email = this.user.email || '';
-    this.editModel.country = this.user.country ?? null;
+    this.editing = false;
   }
 
   save() {
     if (!this.user) return;
 
+    // Email is shown read only, so it's sent back unchanged
     const payload: UpdateUserRequest = {
       phoneNumber: this.editModel.phoneNumber?.trim() || '',
-      email: this.editModel.email?.trim() || '',
+      email: this.user.email,
       country: this.editModel.country ?? this.user.country
     };
 
+    this.saving = true;
     this.userService.updateMyProfile(payload).subscribe({
       next: (res) => {
         this.user = res;
-        this.editingMode = false;
-        this.editingField = null;
+        this.editing = false;
+        this.saving = false;
+        this.toast.show('Profile updated.');
+      },
+      error: () => {
+        this.saving = false;
+        this.toast.show('Could not save your changes. Please try again.', 'error');
       }
     });
   }
 
-  onAvatarSelected(event: any) {
-    const file: File = event.target.files[0];
+  onAvatarSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
     if (!file || !this.user) return;
+    this.uploadingAvatar = true;
     this.userService.uploadAvatar(file).subscribe({
       next: (updatedUser: UserResponse) => {
         this.user = updatedUser; // instant UI update
+        this.uploadingAvatar = false;
+        this.authService.loadCurrentUser().subscribe(); // header + greeting pick up the new photo
+        this.toast.show('Photo updated.');
       },
       error: (err) => {
         console.error('Avatar upload failed', err);
+        this.uploadingAvatar = false;
+        this.toast.show('Could not upload that photo. Try another image.', 'error');
       }
     });
   }

@@ -1,6 +1,6 @@
 import { AvatarComponent } from '../../../../core/sharedComponents/avatar/avatar.component';
 import { CommonModule, Location } from '@angular/common';
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import { ReviewResponse } from '../../../../core/models/dto/reviewDTO/reviewResponse.model';
@@ -14,7 +14,6 @@ import { ReviewRequest } from '../../../../core/models/dto/reviewDTO/reviewReque
 import {ReviewFormComponent} from './components/review-form/review-form.component';
 import {AuthService} from '../../../auth/services/authService/auth.service';
 import {AuthRequiredComponent} from '../../../../core/sharedComponents/auth-required/auth-required.component';
-import {ImageUrlPipe} from '../../../../core/pipes/image-url.pipe';
 import {finalize} from 'rxjs';
 import {ConfirmModalComponent} from '../../../../core/sharedComponents/confirm-modal/confirm-modal.component';
 import {ToastService} from '../../../../core/services/toastService/toast.service';
@@ -41,7 +40,7 @@ type DeleteTarget =
 @Component({
   selector: 'app-product-details',
   standalone: true,
-  imports: [AvatarComponent, CommonModule, FormsModule, RouterLink, ReviewFormComponent, AuthRequiredComponent, ImageUrlPipe, ConfirmModalComponent, ProductRatingOverviewComponent, ProductImageGalleryComponent],
+  imports: [AvatarComponent, CommonModule, FormsModule, RouterLink, ReviewFormComponent, AuthRequiredComponent, ConfirmModalComponent, ProductRatingOverviewComponent, ProductImageGalleryComponent],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.css',
 })
@@ -301,11 +300,23 @@ export class ProductDetailsComponent implements OnInit {
     product.ratingDistribution = distribution;
   }
 
-  hasLongDescription(description?: string): boolean {
-    return (description?.length ?? 0) > 280;
+  // "Read more" only when the clamped description is actually cut off, measured on the rendered text
+  descOverflows = false;
+  private descEl?: HTMLElement;
+
+  @ViewChild('descText') set descText(ref: ElementRef<HTMLElement> | undefined) {
+    this.descEl = ref?.nativeElement;
+    setTimeout(() => this.measureDescription());
+  }
+
+  @HostListener('window:resize')
+  measureDescription() {
+    if (!this.descEl || this.descExpanded) return;
+    this.descOverflows = this.descEl.scrollHeight > this.descEl.clientHeight + 1;
   }
 
   scrollToReviewForm() {
+    if (this.myReview) this.reviewForm?.startEdit();
     document.getElementById('write-review')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -394,11 +405,6 @@ export class ProductDetailsComponent implements OnInit {
     if (rating >= star) return 'fa-star';
     if (rating >= star - 0.5) return 'fa-star-half-stroke';
     return 'fa-star text-slate-200';
-  }
-
-  initials(name: string | null | undefined): string {
-    const parts = (name ?? '').trim().split(/\s+/).filter(Boolean);
-    return parts.length ? ((parts[0][0] ?? '') + (parts.length > 1 ? parts[parts.length - 1][0] : '')).toUpperCase() : '?';
   }
 
 
@@ -585,6 +591,8 @@ export class ProductDetailsComponent implements OnInit {
       });
     }
   }
+
+  @ViewChild(ReviewFormComponent) reviewForm?: ReviewFormComponent;
 
   @ViewChild('loadMoreTrigger')
   loadMoreTrigger?: ElementRef;

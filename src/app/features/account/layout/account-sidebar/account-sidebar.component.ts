@@ -1,32 +1,32 @@
-import { AvatarComponent } from '../../../../core/sharedComponents/avatar/avatar.component';
-import {Component, EventEmitter, Output} from '@angular/core';
-import {RouterLink, RouterLinkActive} from '@angular/router';
-import {SharedService} from '../../../../core/services/sharedService/shared.service';
-import {AuthService} from '../../../auth/services/authService/auth.service';
-import {CommonModule} from '@angular/common';
-import {ImageUrlPipe} from '../../../../core/pipes/image-url.pipe';
+import { Component } from '@angular/core';
+import { NgClass } from '@angular/common';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../../auth/services/authService/auth.service';
+import { ConfirmModalComponent } from '../../../../core/sharedComponents/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-account-sidebar',
-  imports: [AvatarComponent, 
-    RouterLink,
-    CommonModule,
-    RouterLinkActive
-  ],
+  imports: [NgClass, RouterLink, RouterLinkActive, ConfirmModalComponent],
   templateUrl: './account-sidebar.component.html',
   styleUrl: './account-sidebar.component.css'
 })
 export class AccountSidebarComponent {
 
-  @Output() closeSidebar = new EventEmitter<void>();
+  readonly items = [
+    { path: '/account/profile', label: 'Profile', icon: 'fa-user' },
+    { path: '/account/reviews', label: 'Reviews', icon: 'fa-star' },
+    { path: '/account/comments', label: 'Comments', icon: 'fa-comment' },
+    { path: '/account/suggestions', label: 'Suggestions', icon: 'fa-lightbulb' },
+    { path: '/account/security', label: 'Security', icon: 'fa-shield-halved' },
+  ];
 
-  close() {
-    this.closeSidebar.emit();
+  logoutConfirmOpen = false;
+
+  constructor(private authService: AuthService, private router: Router) {}
+
+  logout() {
+    this.logoutConfirmOpen = false;
+    this.authService.logout();
+    this.router.navigate(['/']);
   }
-
-  constructor(
-    public sharedService: SharedService,
-    public authService: AuthService
-  ) {}
-
 }

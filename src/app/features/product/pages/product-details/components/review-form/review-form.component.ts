@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnChanges, Output} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {NgForOf, NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
+import {NgClass} from '@angular/common';
 import {ReviewResponse} from '../../../../../../core/models/dto/reviewDTO/reviewResponse.model';
 import {ReviewRequest} from '../../../../../../core/models/dto/reviewDTO/reviewRequest.model';
 
@@ -8,10 +8,7 @@ import {ReviewRequest} from '../../../../../../core/models/dto/reviewDTO/reviewR
   selector: 'app-review-form',
   imports: [
     FormsModule,
-    NgForOf,
-    NgIf,
-    NgSwitchCase,
-    NgSwitch
+    NgClass
   ],
   templateUrl: './review-form.component.html',
   styleUrl: './review-form.component.css'
@@ -21,8 +18,13 @@ export class ReviewFormComponent implements OnChanges{
   @Input() productId?: number;
   @Input() myReview: ReviewResponse | null = null;
   @Input() submittingReview = false;
+  @Input() loggedIn = false;
 
   @Output() reviewSubmitted = new EventEmitter<ReviewRequest>();
+  @Output() loginRequested = new EventEmitter<void>();
+
+  readonly stars = [1, 2, 3, 4, 5];
+  readonly ratingLabels = ['', 'Terrible', 'Poor', 'Okay', 'Good', 'Excellent'];
 
   reviewContent = '';
   selectedRating = 0;
@@ -62,12 +64,25 @@ export class ReviewFormComponent implements OnChanges{
     this.reviewSubmitted.emit(request);
   }
 
-  get reviewFormTitle() {
-    return this.myReview ? 'Update Your Review' : 'Share Your Thoughts';
+  rate(star: number) {
+    this.selectedRating = star;
   }
 
-  get reviewFormButtonLabel() {
-    return this.myReview ? 'Update Review' : 'Submit Review';
+  get displayRating(): number {
+    return this.hoveredRating || this.selectedRating;
+  }
+
+  // The writing prompt follows the rating, so people know what's worth saying
+  get contentPrompt(): string {
+    if (this.selectedRating <= 2) return 'What went wrong?';
+    if (this.selectedRating === 3) return 'What could be better?';
+    return 'What did you like most?';
+  }
+
+  get contentPlaceholder(): string {
+    if (this.selectedRating <= 2) return 'Quality, delivery, did it match the description...';
+    if (this.selectedRating === 3) return 'What was fine, and what let you down?';
+    return 'Quality, value for money, how long you have used it...';
   }
 
   startEdit() {

@@ -45,7 +45,7 @@ export class MyReviewsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
     }, {
-      threshold: 1.0
+      rootMargin: '200px'
     });
 
 

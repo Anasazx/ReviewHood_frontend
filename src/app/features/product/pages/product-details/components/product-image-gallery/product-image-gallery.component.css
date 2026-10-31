@@ -3,8 +3,18 @@
   width: 100%;
   flex-shrink: 0;
 }
+@media (min-width: 768px) {
+  :host {
+    width: 44%;
+  }
+}
 @media (min-width: 1024px) {
   :host {
-    width: 42%;
+    width: 420px;
+  }
+}
+@media (min-width: 1280px) {
+  :host {
+    width: 460px;
   }
 }

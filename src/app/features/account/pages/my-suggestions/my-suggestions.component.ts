@@ -29,6 +29,15 @@ export class MySuggestionsComponent {
     this.loadSuggestions();
   }
 
+  // Human wording for the backend status codes
+  status(code: string): { label: string; icon: string; classes: string } {
+    switch (code) {
+      case 'APPROVED': return { label: 'Added', icon: 'fa-circle-check', classes: 'bg-brand-50 text-brand-700' };
+      case 'REJECTED': return { label: 'Not added', icon: 'fa-circle-xmark', classes: 'bg-red-50 text-red-600' };
+      default: return { label: 'In review', icon: 'fa-clock', classes: 'bg-amber-50 text-amber-700' };
+    }
+  }
+
   loadSuggestions(): void {
     this.loading = true;
     this.suggestProductService.getMySuggestions().subscribe({

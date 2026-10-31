@@ -1,59 +1,59 @@
 <div class="space-y-6">
 
-  <!-- HEADER -->
   <div>
-    <h2 class="text-lg font-semibold text-gray-800">My Reviews</h2>
-    <p class="text-sm text-gray-500">
-      All reviews you’ve written
-    </p>
+    <h2 class="text-xl font-semibold tracking-tight text-ink">My reviews</h2>
+    <p class="mt-1 text-sm text-slate-500">Everything you've reviewed{{ reviews.length ? ' · ' + reviews.length + (last ? '' : '+') : '' }}</p>
   </div>
 
-  <!-- REVIEWS LIST -->
-  <div class="space-y-4">
-
-    <!-- EMPTY STATE -->
-    <div *ngIf="!loading && !reviews?.length" class="text-center py-10 border rounded-xl">
-      <p class="text-gray-500 text-sm">
-        You haven’t written any reviews yet.
-      </p>
+  @if (!loading && !reviews.length) {
+    <div class="rounded-2xl border border-dashed border-slate-300 px-6 py-12 text-center">
+      <span class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-brand-600">
+        <i class="fa-regular fa-star text-lg"></i>
+      </span>
+      <p class="mt-3 font-medium text-slate-800">No reviews yet</p>
+      <p class="mt-1 text-sm text-slate-500">Bought something lately? Your review helps others decide.</p>
+      <a routerLink="/products" class="mt-4 inline-flex rounded-full bg-brand-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Find a product to review</a>
     </div>
+  }
 
-    <!-- REVIEW ITEM -->
-    <div
-      *ngFor="let review of reviews"
-      class="border rounded-xl p-4 space-y-2 hover:shadow-sm transition">
+  <ul class="space-y-3">
+    @for (review of reviews; track review.id) {
+      <li>
+        <a [routerLink]="['/p', review.productId]"
+           class="group block rounded-2xl border border-slate-200 p-4 transition hover:border-brand-600/30 hover:bg-brand-50/30 sm:p-5">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="truncate font-semibold text-slate-900 group-hover:text-brand-700">{{ review.productName }}</p>
+              <div class="mt-1 flex items-center gap-2">
+                <span class="flex gap-0.5 text-xs" [attr.aria-label]="review.rating + ' out of 5'">
+                  @for (i of [1, 2, 3, 4, 5]; track i) {
+                    <i class="fa-solid fa-star" [ngClass]="i <= review.rating ? 'text-rating' : 'text-slate-200'"></i>
+                  }
+                </span>
+                <span class="text-slate-300">·</span>
+                <time class="text-xs text-slate-400" [attr.datetime]="review.createdAt">{{ review.createdAt | date: 'MMM d, y' }}</time>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right mt-1 shrink-0 text-xs text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-brand-600"></i>
+          </div>
+          @if (review.content) {
+            <p class="mt-3 line-clamp-3 whitespace-pre-line text-sm leading-relaxed text-slate-600">{{ review.content }}</p>
+          } @else {
+            <p class="mt-3 text-sm italic text-slate-400">Rating only, no written review</p>
+          }
+        </a>
+      </li>
+    }
+  </ul>
 
-      <!-- TOP -->
-      <div class="flex justify-between items-start">
-
-        <div>
-          <p class="font-medium text-gray-800 cursor-pointer hover:underline hover:text-gray-900 transition" [routerLink]="['/p', review.productId]">
-            {{ review.productName }}
-          </p>
-
-          <p class="text-xs text-gray-500">
-            {{ review.createdAt | date:'mediumDate' }}
-          </p>
-        </div>
-
-        <!-- RATING -->
-        <div class="text-rating text-sm font-medium">
-          ★ {{ review.rating }}/5
-        </div>
-
-      </div>
-
-      <!-- CONTENT -->
-      <p class="text-sm text-gray-600">
-        {{ review.content }}
-      </p>
-
+  @if (loading) {
+    <div class="space-y-3">
+      @for (i of [1, 2]; track i) {
+        <div class="h-28 animate-pulse rounded-2xl bg-slate-100"></div>
+      }
     </div>
+  }
 
-    <div #loadMoreTrigger></div>
-
-  </div>
-
-  <div class="flex justify-center divide-gray-400" *ngIf="loading">Loading reviews...</div>
-
+  <!-- Infinite scroll trigger -->
+  <div #loadMoreTrigger class="h-1"></div>
 </div>

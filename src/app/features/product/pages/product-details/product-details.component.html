@@ -3,8 +3,8 @@
   @if (loadingProduct) {
     <!-- SKELETON while the product loads -->
     <div class="h-4 w-64 animate-pulse rounded bg-slate-200"></div>
-    <div class="flex animate-pulse flex-col gap-6 rounded-3xl border border-slate-200 bg-white p-5 sm:p-8 lg:flex-row">
-      <div class="aspect-square w-full rounded-2xl bg-slate-100 lg:w-[42%]"></div>
+    <div class="flex animate-pulse flex-col gap-6 rounded-3xl border border-slate-200 bg-white p-4 sm:p-6 md:flex-row lg:gap-10">
+      <div class="aspect-[4/3] w-full rounded-2xl bg-slate-100 md:aspect-square md:w-[44%] lg:w-[420px] xl:w-[460px]"></div>
       <div class="flex-1 space-y-4">
         <div class="h-5 w-24 rounded-full bg-slate-100"></div>
         <div class="h-9 w-3/4 rounded bg-slate-200"></div>
@@ -34,75 +34,53 @@
       <span class="max-w-[16rem] truncate font-medium text-slate-900" aria-current="page">{{ product.name }}</span>
     </nav>
 
-    <!-- HEADER -->
-    <section class="rounded-3xl border border-slate-200 bg-white p-4 sm:p-6 lg:p-8" aria-labelledby="product-name">
-      <div class="flex flex-col items-start gap-6 lg:flex-row lg:gap-8">
+    <!-- HEADER: only what you need to decide; the rating breakdown lives with the reviews below -->
+    <section class="rounded-3xl border border-slate-200 bg-white p-4 sm:p-6" aria-labelledby="product-name">
+      <div class="flex flex-col gap-6 md:flex-row md:items-start lg:gap-10">
 
         <app-product-image-gallery [images]="product.images || []" [name]="product.name"></app-product-image-gallery>
 
-        <div class="min-w-0 flex-1 space-y-5">
+        <div class="flex min-w-0 flex-1 flex-col md:py-2">
 
-          <!-- Title + quick rating -->
-          <div>
-            @if (product.subcategory || product.category) {
-              <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700">
-                <i class="fa-solid fa-tag text-[10px]"></i>{{ product.subcategory || product.category }}
+          <h1 id="product-name" class="break-words text-2xl font-semibold leading-tight tracking-tight text-ink sm:text-[28px] lg:text-[32px]">
+            {{ product.name }}
+          </h1>
+
+          <!-- Rating + company on one line (wraps on narrow screens) -->
+          <div class="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+            @if (product.reviewsCount > 0) {
+              <button type="button" (click)="scrollToReviews()" class="group inline-flex items-center gap-1.5"
+                      [attr.aria-label]="(product.averageRating | number: '1.1-1') + ' out of 5, ' + product.reviewsCount + ' reviews'">
+                <i class="fa-solid fa-star text-rating"></i>
+                <span class="font-semibold text-slate-900">{{ product.averageRating | number: '1.1-1' }}</span>
+                <span class="text-slate-300">·</span>
+                <span class="text-slate-500 group-hover:text-brand-700 group-hover:underline">
+                  {{ product.reviewsCount | number }} {{ product.reviewsCount === 1 ? 'review' : 'reviews' }}
+                </span>
+              </button>
+            } @else {
+              <span class="inline-flex items-center gap-1.5 text-slate-500">
+                <i class="fa-regular fa-star text-xs text-slate-400"></i>No reviews yet
               </span>
             }
-            <h1 id="product-name" class="mt-3 break-words text-2xl font-semibold leading-tight tracking-tight text-ink sm:text-3xl lg:text-4xl">
-              {{ product.name }}
-            </h1>
 
-            <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-              @if (product.reviewsCount > 0) {
-                <button type="button" (click)="scrollToReviews()" class="group inline-flex items-center gap-2 text-sm">
-                  <span class="flex gap-0.5 text-rating" [attr.aria-label]="(product.averageRating | number: '1.1-1') + ' out of 5'">
-                    @for (star of [1, 2, 3, 4, 5]; track star) {
-                      <i class="fa-solid" [ngClass]="starIcon(product.averageRating ?? 0, star)"></i>
-                    }
-                  </span>
-                  <span class="font-semibold text-slate-900">{{ product.averageRating | number: '1.1-1' }}</span>
-                  <span class="text-slate-500 group-hover:text-brand-700 group-hover:underline">
-                    {{ product.reviewsCount | number }} {{ product.reviewsCount === 1 ? 'review' : 'reviews' }}
-                  </span>
-                </button>
-              } @else {
-                <span class="text-sm text-slate-500">No reviews yet</span>
+            <span class="text-slate-300" aria-hidden="true">·</span>
+
+            <span class="text-slate-500">
+              by
+              <a [routerLink]="['/c', product.companyId]" class="font-semibold text-slate-900 hover:text-brand-700 hover:underline">{{ product.companyName }}</a>
+              @if (product.companyIsVerified) {
+                <i class="fa-solid fa-circle-check ml-0.5 text-brand-600" title="Verified company" aria-label="Verified company"></i>
               }
-            </div>
+            </span>
           </div>
 
-          <!-- Company -->
-          <a [routerLink]="['/c', product.companyId]"
-             class="group flex items-center gap-3 rounded-2xl border border-slate-200 p-3 transition hover:border-brand-600/30 hover:bg-brand-50/40">
-            @if (product.companyLogoUrl) {
-              <img [src]="product.companyLogoUrl | imageUrl" alt="" class="h-11 w-11 shrink-0 rounded-xl border border-slate-100 bg-white object-cover" />
-            } @else {
-              <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-sm font-semibold text-brand-700">
-                {{ initials(product.companyName) }}
-              </span>
-            }
-            <div class="min-w-0 flex-1">
-              <p class="text-xs text-slate-500">Made by</p>
-              <p class="flex items-center gap-1.5 truncate text-sm font-semibold text-slate-900">
-                {{ product.companyName }}
-                @if (product.companyIsVerified) {
-                  <i class="fa-solid fa-circle-check text-brand-600" title="Verified company" aria-label="Verified company"></i>
-                }
-              </p>
-            </div>
-            <span class="hidden shrink-0 text-xs font-semibold text-brand-700 sm:inline">
-              View company <i class="fa-solid fa-arrow-right ml-1 text-[10px] transition group-hover:translate-x-0.5"></i>
-            </span>
-            <i class="fa-solid fa-chevron-right text-xs text-slate-300 sm:hidden"></i>
-          </a>
-
           <!-- Description -->
-          <div>
-            <h2 class="text-sm font-semibold text-slate-900">About this product</h2>
+          <div class="mt-5 border-t border-slate-100 pt-5">
+            <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400">About this product</h2>
             @if (product.description) {
-              <p class="mt-2 whitespace-pre-line text-[15px] leading-relaxed text-slate-600" [class.line-clamp-4]="!descExpanded">{{ product.description }}</p>
-              @if (hasLongDescription(product.description)) {
+              <p #descText class="mt-2 whitespace-pre-line text-[15px] leading-relaxed text-slate-700" [class.line-clamp-5]="!descExpanded">{{ product.description }}</p>
+              @if (descOverflows || descExpanded) {
                 <button type="button" (click)="descExpanded = !descExpanded" class="mt-1 text-sm font-semibold text-brand-700 hover:text-brand-800">
                   {{ descExpanded ? 'Show less' : 'Read more' }}
                 </button>
@@ -112,44 +90,66 @@
             }
           </div>
 
-          <!-- Rating summary -->
-          <app-product-rating-overview
-            (writeReview)="scrollToReviewForm()"
-            [averageRating]="product.averageRating ?? 0"
-            [ratingDistribution]="product.ratingDistribution ?? {}"
-            [reviewsCount]="product.reviewsCount">
-          </app-product-rating-overview>
-
-          <button type="button" (click)="scrollToReviewForm()"
-                  class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700 sm:w-auto">
-            <i class="fa-solid fa-pen text-xs"></i>
-            {{ myReview ? 'Edit your review' : 'Write a review' }}
-          </button>
+          <!-- Actions -->
+          <div class="mt-6 flex flex-col gap-2 sm:flex-row">
+            <button type="button" (click)="scrollToReviewForm()"
+                    class="inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-brand-700">
+              <i class="fa-solid fa-pen text-xs"></i>
+              {{ myReview ? 'Edit your review' : 'Write a review' }}
+            </button>
+            @if (product.reviewsCount > 0) {
+              <button type="button" (click)="scrollToReviews()"
+                      class="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-brand-600/30 hover:text-brand-700">
+                Read {{ product.reviewsCount | number }} {{ product.reviewsCount === 1 ? 'review' : 'reviews' }}
+                <i class="fa-solid fa-arrow-down text-xs"></i>
+              </button>
+            }
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- REVIEWS + FORM -->
-    <div class="flex w-full flex-col-reverse items-start gap-5 lg:flex-row">
+    <!-- RATINGS + REVIEW FORM side by side -->
+    <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
 
-      <!-- Reviews column -->
-      <section id="reviews" class="w-full min-w-0 flex-1 scroll-mt-28 space-y-3" aria-labelledby="reviews-heading">
-
-        <div class="flex items-baseline justify-between px-0.5">
-          <h2 id="reviews-heading" class="text-lg font-semibold text-ink">
-            Reviews <span class="ml-1 text-sm font-normal text-slate-400">{{ totalReviews | number }}</span>
-          </h2>
-        </div>
-
-        @if (reviews.length === 0 && !loading) {
-          <div class="rounded-2xl border border-dashed border-slate-300 bg-white py-14 text-center">
-            <div class="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-slate-50 text-slate-300">
-              <i class="fa-regular fa-comments text-lg"></i>
-            </div>
-            <p class="text-sm font-medium text-slate-600">No reviews yet</p>
-            <p class="mt-1 text-xs text-slate-400">Be the first to share your thoughts on this product</p>
+      @if (product.reviewsCount > 0) {
+        <app-product-rating-overview
+          class="block h-full rounded-2xl bg-white"
+          (writeReview)="scrollToReviewForm()"
+          [averageRating]="product.averageRating ?? 0"
+          [ratingDistribution]="product.ratingDistribution ?? {}"
+          [reviewsCount]="product.reviewsCount">
+        </app-product-rating-overview>
+      } @else {
+        <div class="flex h-full flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-10 text-center">
+          <div class="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-slate-50 text-slate-300">
+            <i class="fa-regular fa-comments text-lg"></i>
           </div>
-        }
+          <p class="text-sm font-medium text-slate-600">No reviews yet</p>
+        </div>
+      }
+
+      <div id="write-review" class="scroll-mt-28">
+        <app-review-form
+          class="block h-full"
+          (reviewSubmitted)="submitReview($event)"
+          (loginRequested)="showAuthModal = true"
+          [loggedIn]="!!(authService.currentUser$ | async)"
+          [myReview]="myReview"
+          [productId]="product.id"
+          [submittingReview]="submittingReview">
+        </app-review-form>
+      </div>
+    </div>
+
+    <!-- REVIEWS -->
+    <section id="reviews" class="scroll-mt-28 space-y-3" aria-labelledby="reviews-heading">
+
+      @if (product.reviewsCount > 0) {
+        <h2 id="reviews-heading" class="px-0.5 pt-2 text-lg font-semibold text-ink">
+          Reviews <span class="ml-1 text-sm font-normal text-slate-400">{{ totalReviews | number }}</span>
+        </h2>
+      }
 
         @for (review of reviews; track review.id) {
           <article class="overflow-hidden rounded-2xl border bg-white transition"
@@ -316,18 +316,7 @@
             <i class="fa-solid fa-spinner animate-spin"></i> Loading reviews...
           </div>
         }
-      </section>
-
-      <!-- Review form -->
-      <aside id="write-review" class="w-full shrink-0 scroll-mt-28 lg:sticky lg:top-28 lg:w-80">
-        <app-review-form
-          (reviewSubmitted)="submitReview($event)"
-          [myReview]="myReview"
-          [productId]="product.id"
-          [submittingReview]="submittingReview">
-        </app-review-form>
-      </aside>
-    </div>
+    </section>
   }
 
   <!-- Infinite scroll trigger: kept outside the @if so it exists when the observer is set up -->

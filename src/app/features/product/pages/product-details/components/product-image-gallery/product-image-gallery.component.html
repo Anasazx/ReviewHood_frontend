@@ -1,11 +1,11 @@
 <div class="w-full" (keydown.arrowLeft)="prevImage()" (keydown.arrowRight)="nextImage()">
-  <div class="group relative aspect-square overflow-hidden rounded-2xl border border-slate-100 bg-slate-50">
+  <div class="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-slate-100 bg-white md:aspect-square">
 
     @if (selectedImage) {
-      <img [src]="selectedImage | imageUrl" [alt]="name || 'Product image'" class="h-full w-full object-cover" />
+      <img [src]="selectedImage | imageUrl" [alt]="name || 'Product image'" class="h-full w-full object-contain p-3" />
     } @else {
       <!-- No image: branded placeholder instead of an empty gray box -->
-      <div class="flex h-full w-full flex-col items-center justify-center gap-2 text-slate-300" aria-hidden="true">
+      <div class="flex h-full w-full flex-col items-center justify-center gap-2 bg-slate-50 text-slate-300" aria-hidden="true">
         <i class="fa-regular fa-image text-5xl"></i>
         <span class="text-xs font-medium text-slate-400">No image yet</span>
       </div>
@@ -32,8 +32,8 @@
       @for (image of images; track image.id; let i = $index) {
         <button type="button" (click)="currentImageIndex = i" [attr.aria-label]="'Show image ' + (i + 1)"
                 [attr.aria-current]="i === currentImageIndex"
-                class="h-16 w-16 shrink-0 overflow-hidden rounded-xl border-2 bg-slate-50 transition"
-                [ngClass]="i === currentImageIndex ? 'border-brand-600' : 'border-transparent opacity-70 hover:opacity-100'">
+                class="h-14 w-14 shrink-0 overflow-hidden rounded-xl border-2 bg-white transition"
+                [ngClass]="i === currentImageIndex ? 'border-brand-600' : 'border-slate-100 opacity-70 hover:opacity-100'">
           <img [src]="image.url | imageUrl" alt="" class="h-full w-full object-cover" />
         </button>
       }
