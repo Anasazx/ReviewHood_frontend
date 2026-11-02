@@ -9,9 +9,10 @@ Cloudflare -> nginx :443 -> static file if one exists, otherwise Node :4000 -> a
 
 ## Don't merge to `main` yet
 
-An SSR build makes `browser/index.html` the prerendered home page. A static host with an SPA
-fallback (Cloudflare Pages, or the current nginx setup) would then serve the home page for every
-URL. Follow the order below so `main` only changes after the site has moved.
+The site is on Cloudflare Pages today. An SSR build makes `browser/index.html` the prerendered home
+page, so Pages would serve the home page for every URL. Merging also triggers the GitHub workflow,
+which needs the VPS to be ready. Follow the order below so `main` only changes after the site has
+moved.
 
 ## 1. Prepare the VPS (once)
 
@@ -73,47 +74,16 @@ curl -sk --resolve reviewhood.tech:443:VPS_IP https://reviewhood.tech/p/49 | gre
 curl -skI --resolve reviewhood.tech:443:VPS_IP https://reviewhood.tech/p/999999 | head -1   # 404
 ```
 
-## 5. Stop the old deployments
+## 5. Pause Cloudflare Pages deployments
 
-**Cloudflare Pages.** The live site's headers look like Pages, but the repo has no Pages config, so
-confirm this in the dashboard. If so, in Workers & Pages -> your project:
+In Workers & Pages -> your project -> Settings -> Builds, pause automatic deployments. Do this before
+merging, otherwise the merge publishes the broken fallback described above. Keep the project; it is
+your rollback.
 
-- Settings -> Builds: pause automatic deployments. Do this before merging, otherwise the merge
-  publishes the broken SPA fallback described above.
-- Keep the project; it is your rollback.
-
-**GitHub Actions.** `.github/workflows/deploy-frontend.yml` runs on every push to `main` and only
-copies the browser files. In the PR, replace its build and deploy steps with:
-
-```yaml
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build:ssr
-
-      - name: Copy build to VPS
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ubuntu
-          key: ${{ secrets.VPS_SSH_KEY }}
-          source: dist/tunirate,ecosystem.config.cjs
-          target: /var/www/tunirate-ssr
-
-      - name: Reload SSR server
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ubuntu
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: |
-            cd /var/www/tunirate-ssr
-            pm2 startOrReload ecosystem.config.cjs --update-env
-            pm2 save
-```
-
-This workflow change has not been run. Watch the first deploy.
+`.github/workflows/deploy-frontend.yml` already deploys to `/var/www/tunirate-ssr` on this branch.
+It uses the existing `VPS_HOST` and `VPS_SSH_KEY` secrets, and needs `pm2` on the PATH of a
+non-interactive SSH session (a global install does this; an nvm install may not). This workflow
+change has not been run yet, so watch the first deploy.
 
 ## 6. Switch Cloudflare
 
@@ -128,7 +98,7 @@ This workflow change has not been run. Watch the first deploy.
 6. If the Facebook debugger gets blocked, check Security -> Bots. Bot Fight Mode can challenge link
    preview crawlers.
 
-Then merge the PR.
+Check the live site, then merge. The merge runs the workflow, which redeploys the same code.
 
 ## 7. Check it
 
@@ -154,5 +124,4 @@ pm2 logs reviewhood-ssr --lines 50
 
 ## Rollback
 
-Point DNS back at Pages (or re-enable the old nginx block), resume Pages deployments, and revert the
-merge. `pm2 delete reviewhood-ssr` stops the server.
+Add the custom domains back to the Pages project, resume its deployments, and revert the merge. `pm2 delete reviewhood-ssr` stops the server.
