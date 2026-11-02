@@ -70,19 +70,11 @@ your rollback.
 
 ## 5. Set up the GitHub deploy key, then merge
 
-Create a key that can only run the deploy script. On your laptop:
+Create a key that can only run the deploy script and store it in GitHub, logged in with `gh`:
 
 ```bash
-ssh-keygen -t ed25519 -N '' -C reviewhood-frontend-deploy -f /tmp/frontend_deploy
-ssh tunirate "echo 'restrict,command=\"/home/azureuser/bin/deploy-frontend.sh\" $(cat /tmp/frontend_deploy.pub)' >> ~/.ssh/authorized_keys"
-pbcopy < /tmp/frontend_deploy   # paste into the FRONTEND_DEPLOY_KEY secret below
-rm /tmp/frontend_deploy /tmp/frontend_deploy.pub
+bash deploy/setup-deploy-key.sh
 ```
-
-In the `tunirate-public` repo's Settings -> Secrets and variables -> Actions, set:
-
-- `FRONTEND_DEPLOY_KEY`: the key you just copied
-- `VPS_HOST`: `20.199.121.198`
 
 Check the live site, then merge. The merge runs the workflow for the first time, so watch it.
 
