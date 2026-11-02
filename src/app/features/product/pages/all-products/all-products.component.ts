@@ -6,6 +6,7 @@ import { CategoryNode, CategoryTreeService } from '../../../../core/services/cat
 import { categoryIcon } from '../../../../core/constants/category-icons';
 import {ProductService} from '../../services/productService/product.service';
 import {ProductResponse} from '../../models/productDTO/productResponse.model';
+import {SeoService} from '../../../../core/services/seoService/seo.service';
 
 type SortOption = 'relevance' | 'rating' | 'reviews' | 'newest';
 
@@ -22,7 +23,8 @@ export class AllProductsComponent implements OnInit {
     private productService: ProductService,
     private categoryTreeService: CategoryTreeService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private seo: SeoService
   ) {}
 
   products: ProductResponse[] = [];
@@ -97,6 +99,8 @@ export class AllProductsComponent implements OnInit {
         },
         error: (err) => {
           console.error(err);
+          // Tell crawlers to retry instead of indexing an empty page
+          this.seo.setStatus(503);
           this.loading = false;
           this.loadingMore = false;
         }

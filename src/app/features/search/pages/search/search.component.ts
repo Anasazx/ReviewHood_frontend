@@ -58,7 +58,6 @@ export class SearchComponent implements OnInit {
   suggestProductOpen = false;
 
   ngOnInit(): void {
-    console.log("component init")
     this.route.queryParamMap.subscribe(params => {
       this.query = params.get('q') || '';
       this.updateSeo();
@@ -108,7 +107,6 @@ export class SearchComponent implements OnInit {
       .searchProducts(this.query, 0, this.productPageSize)
       .subscribe({
         next: response => {
-          console.log(response.content)
           this.products = response.content;
           this.totalProducts = response.totalElements;
           this.productsLast = response.last;
@@ -117,6 +115,8 @@ export class SearchComponent implements OnInit {
         },
         error: err => {
           console.error('Product search failed:', err);
+          // Tell crawlers to retry instead of indexing an empty result page
+          this.seo.setStatus(503);
           this.checkInitialSearchFinished();
         }
       });
@@ -126,7 +126,6 @@ export class SearchComponent implements OnInit {
       .searchCompanies(this.query, 0, this.companyPageSize)
       .subscribe({
         next: response => {
-          console.log(response.content)
           this.companies = response.content;
           this.totalCompanies = response.totalElements;
           this.companiesLast = response.last;
@@ -135,6 +134,7 @@ export class SearchComponent implements OnInit {
         },
         error: err => {
           console.error('Company search failed:', err);
+          this.seo.setStatus(503);
           this.checkInitialSearchFinished();
         }
       });
