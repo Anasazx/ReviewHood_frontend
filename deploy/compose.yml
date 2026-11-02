@@ -1,5 +1,6 @@
 # The Angular SSR server. Joins the backend's Docker network so Caddy can reach it; publishes no ports.
-# Lives in /opt/reviewhood-frontend next to dist/tunirate. Set BACKEND_NETWORK in .env beside this file.
+# Lives in /opt/reviewhood-frontend, where deploy-frontend.sh points ./current at the live release.
+# Set BACKEND_NETWORK in .env beside this file.
 services:
   frontend:
     image: node:22-alpine
@@ -12,7 +13,7 @@ services:
       NODE_ENV: production
       PORT: "4000"
     volumes:
-      - ./dist/tunirate:/app:ro
+      - ./current:/app:ro
     # Keeps a traffic spike on the website from starving Spring Boot and Postgres
     mem_limit: 512m
     cpus: 1.0
