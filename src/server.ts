@@ -7,6 +7,7 @@ import {
 import express from 'express';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { getSitemapXml } from './sitemap';
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
@@ -15,25 +16,34 @@ const app = express();
 const angularApp = new AngularNodeAppEngine();
 
 /**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/**', (req, res) => {
- *   // Handle API request
- * });
- * ```
+ * Sitemap built from the backend's public catalog, cached in memory.
  */
+app.get('/sitemap.xml', (req, res) => {
+  getSitemapXml()
+    .then((xml) => {
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      res.type('application/xml').send(xml);
+    })
+    .catch((err) => {
+      console.error('Could not build the sitemap', err);
+      res.status(503).setHeader('Retry-After', '3600').end();
+    });
+});
 
 /**
  * Serve static files from /browser
  */
 app.use(
   express.static(browserDistFolder, {
-    maxAge: '1y',
+    maxAge: '1h',
     index: false,
     redirect: false,
+    // Only files with a content hash in their name are safe to cache for a year
+    setHeaders: (res, path) => {
+      if (/-[A-Z0-9]{8}\.\w+$/.test(path)) {
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      }
+    },
   }),
 );
 
