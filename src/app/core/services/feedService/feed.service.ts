@@ -21,4 +21,9 @@ export class FeedService {
     return this.http.get<FeedResponse>(this.feedUrl);
   }
 
+  // Skips the data embedded in the server-rendered page and always asks the API
+  getFreshFeed(): Observable<FeedResponse> {
+    return this.http.get<FeedResponse>(this.feedUrl, { transferCache: false });
+  }
+
 }

@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import {Component, ElementRef, OnInit, PLATFORM_ID, ViewChild, inject} from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProductCardComponent } from '../../../../core/sharedComponents/product-card/product-card.component';
 import { CategoryNode, CategoryTreeService } from '../../../../core/services/categoryTreeService/category-tree.service';
@@ -131,9 +131,10 @@ export class AllProductsComponent implements OnInit {
 
   @ViewChild('resultsContainer') resultsContainer?: ElementRef<HTMLDivElement>;
   lastResultsHeight = 0;
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   ngAfterViewInit() {
-    if (this.resultsContainer) {
+    if (this.isBrowser && this.resultsContainer) {
       const ro = new ResizeObserver(entries => {
         const h = entries[0].contentRect.height;
         if (h > 0) this.lastResultsHeight = h;

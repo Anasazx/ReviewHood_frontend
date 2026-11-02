@@ -24,46 +24,20 @@ jobs:
 
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
 
       - name: Build Angular
-        run: npm run build -- --configuration production
+        run: npm run build:ssr
 
 
-      - name: Clean old frontend build
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ubuntu
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: |
-            rm -rf /home/ubuntu/frontend-build/*
-
-
-      - name: Copy Angular build to VPS
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ubuntu
-          key: ${{ secrets.VPS_SSH_KEY }}
-          source: dist/**/browser/*
-          target: /home/ubuntu/frontend-build
-          strip_components: 3
-
-
-      - name: Deploy frontend
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ubuntu
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: |
-            sudo rm -rf /var/www/tunirate/browser/*
-            sudo cp -r /home/ubuntu/frontend-build/* /var/www/tunirate/browser/
-
-            sudo chown -R www-data:www-data /var/www/tunirate/browser
-            sudo chmod -R 755 /var/www/tunirate/browser
-
-            sudo nginx -t
-            sudo systemctl reload nginx
+      - name: Deploy to VPS
+        env:
+          DEPLOY_KEY: ${{ secrets.FRONTEND_DEPLOY_KEY }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          install -m 600 /dev/null deploy_key
+          printf '%s\n' "$DEPLOY_KEY" > deploy_key
+          # The key is locked to ~/bin/deploy-frontend.sh, which reads the build from stdin
+          tar -C dist/tunirate -czf - . | ssh -i deploy_key -o BatchMode=yes -o StrictHostKeyChecking=accept-new "azureuser@$VPS_HOST"
+          rm -f deploy_key

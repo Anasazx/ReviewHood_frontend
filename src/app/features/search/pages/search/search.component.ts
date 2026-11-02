@@ -10,6 +10,7 @@ import {ImageUrlPipe} from '../../../../core/pipes/image-url.pipe';
 import {
   SuggestProductModalComponent
 } from '../../../../core/sharedComponents/suggest-product-modal/suggest-product-modal.component';
+import {SeoService} from '../../../../core/services/seoService/seo.service';
 
 type SearchTab = 'all' | 'products' | 'companies';
 
@@ -25,7 +26,8 @@ export class SearchComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private searchService: SearchService
+    private searchService: SearchService,
+    private seo: SeoService
   ) {}
 
   query = '';
@@ -59,7 +61,22 @@ export class SearchComponent implements OnInit {
     console.log("component init")
     this.route.queryParamMap.subscribe(params => {
       this.query = params.get('q') || '';
+      this.updateSeo();
       this.resetAndSearch();
+    });
+  }
+
+  private updateSeo(): void {
+    const query = this.query.trim();
+    // Empty, one-letter, very long or symbol-only queries aren't pages worth indexing
+    const indexable = query.length >= 2 && query.length <= 80 && /[\p{L}\p{N}]/u.test(query);
+
+    this.seo.set(indexable ? {
+      title: `${query}: search results | ReviewHood`,
+      description: `Products and companies matching "${query}" on ReviewHood, with ratings and reviews from real customers.`
+    } : {
+      title: 'Search | ReviewHood',
+      noindex: true
     });
   }
 

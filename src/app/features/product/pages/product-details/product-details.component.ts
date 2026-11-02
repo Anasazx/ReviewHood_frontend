@@ -1,6 +1,6 @@
 import { AvatarComponent } from '../../../../core/sharedComponents/avatar/avatar.component';
-import { CommonModule, Location } from '@angular/common';
-import {Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
+import { CommonModule, Location, isPlatformBrowser } from '@angular/common';
+import {Component, ElementRef, HostListener, OnInit, PLATFORM_ID, ViewChild, inject} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import { ReviewResponse } from '../../../../core/models/dto/reviewDTO/reviewResponse.model';
@@ -19,6 +19,8 @@ import {ConfirmModalComponent} from '../../../../core/sharedComponents/confirm-m
 import {ToastService} from '../../../../core/services/toastService/toast.service';
 import {ProductRatingOverviewComponent} from './components/product-rating-overview/product-rating-overview.component';
 import {ProductImageGalleryComponent} from './components/product-image-gallery/product-image-gallery.component';
+import {SeoService} from '../../../../core/services/seoService/seo.service';
+import {environment} from '../../../../../environments/environment';
 
 
 type ReviewWithComments = ReviewResponse & {
@@ -82,6 +84,8 @@ export class ProductDetailsComponent implements OnInit {
   showDeleteModal = false;
   deleteTarget: DeleteTarget | null = null;
 
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
   // ===================== INIT =====================
   constructor(
     private productService: ProductService,
@@ -92,13 +96,18 @@ export class ProductDetailsComponent implements OnInit {
     private commentService: CommentService,
     protected authService: AuthService,
     private toastService: ToastService,
-    private router: Router
+    private router: Router,
+    private seo: SeoService
   ) {}
 
   ngOnInit() {
-    const productId = this.route.snapshot.paramMap.get('id');
-    if (productId) this.loadProduct(+productId);
-    else this.loadingProduct = false;
+    const productId = Number(this.route.snapshot.paramMap.get('id'));
+    if (Number.isInteger(productId) && productId > 0) {
+      this.loadProduct(productId);
+    } else {
+      this.loadingProduct = false;
+      this.router.navigate(['/not-found'], { skipLocationChange: true });
+    }
   }
 
   // ===================== LOAD PRODUCT =====================
@@ -114,6 +123,7 @@ export class ProductDetailsComponent implements OnInit {
         const mainIndex = data.images?.findIndex(i => i.isMain) ?? -1;
         this.currentImageIndex = mainIndex >= 0 ? mainIndex : 0;
         this.selectedImage = data.images?.[this.currentImageIndex]?.url ?? null;
+        this.updateSeo(data);
 
         this.loadReviews();
       },
@@ -122,9 +132,45 @@ export class ProductDetailsComponent implements OnInit {
         if (err.status === 404) {
           this.router.navigate(['/not-found'], { skipLocationChange: true });
         } else {
+          // Tell crawlers to retry instead of indexing an empty page
+          this.seo.setStatus(503);
           console.error(err);
         }
       }
+    });
+  }
+
+
+  private updateSeo(product: DetailedProduct) {
+    const hasReviews = product.reviewsCount > 0;
+    const rating = (product.averageRating ?? 0).toFixed(1);
+    const by = product.companyName ? ` by ${product.companyName}` : '';
+    const reviews = `${product.reviewsCount} ${product.reviewsCount === 1 ? 'review' : 'reviews'}`;
+
+    this.seo.set({
+      title: `${product.name}: reviews and rating | ReviewHood`,
+      description: hasReviews
+        ? `${product.name}${by} is rated ${rating} out of 5 from ${reviews} on ReviewHood. Read what real customers think.`
+        : `Read and write reviews of ${product.name}${by} on ReviewHood. Be the first to share your experience.`,
+      image: this.selectedImage,
+      type: 'product',
+      // Google rejects Product markup that has no rating
+      jsonLd: hasReviews ? {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: product.name,
+        description: product.description,
+        url: `${environment.siteUrl}/p/${product.id}`,
+        ...(this.selectedImage ? { image: this.seo.absoluteImage(this.selectedImage) } : {}),
+        ...(product.companyName ? { brand: { '@type': 'Brand', name: product.companyName } } : {}),
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: rating,
+          reviewCount: product.reviewsCount,
+          bestRating: 5,
+          worstRating: 1
+        }
+      } : null
     });
   }
 
@@ -306,7 +352,7 @@ export class ProductDetailsComponent implements OnInit {
 
   @ViewChild('descText') set descText(ref: ElementRef<HTMLElement> | undefined) {
     this.descEl = ref?.nativeElement;
-    setTimeout(() => this.measureDescription());
+    if (this.isBrowser) setTimeout(() => this.measureDescription());
   }
 
   @HostListener('window:resize')
@@ -598,7 +644,7 @@ export class ProductDetailsComponent implements OnInit {
   loadMoreTrigger?: ElementRef;
 
   ngAfterViewInit() {
-    if (!this.loadMoreTrigger) return;
+    if (!this.isBrowser || !this.loadMoreTrigger) return;
     this.observer = new IntersectionObserver(
       entries => {
         if (

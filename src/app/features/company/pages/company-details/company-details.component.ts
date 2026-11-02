@@ -1,6 +1,6 @@
 import { SocialLink } from '../../models/socialLink.model';
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, NgZone } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, NgZone, PLATFORM_ID, inject } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -14,6 +14,8 @@ import { CompanyStatus } from '../../enums/companyStatus.enum.model';
 import { ImageUrlPipe } from '../../../../core/pipes/image-url.pipe';
 import { ProductCardComponent } from '../../../../core/sharedComponents/product-card/product-card.component';
 import { FormsModule } from '@angular/forms';
+import { SeoService } from '../../../../core/services/seoService/seo.service';
+import { environment } from '../../../../../environments/environment';
 
 
 @Component({
@@ -49,6 +51,7 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
   @ViewChild('productsContainer') productsContainer?: ElementRef<HTMLDivElement>;
   lastProductsHeight = 0;
   private productsResizeObserver?: ResizeObserver;
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   constructor(
     private route: ActivatedRoute,
@@ -56,7 +59,8 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
     private productService: ProductService,
     private ngZone: NgZone,
     public sharedService: SharedService,
-    private router: Router
+    private router: Router,
+    private seo: SeoService
   ) {}
 
   ngOnInit(): void {
@@ -67,7 +71,10 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
     this.route.paramMap.subscribe(params => {
 
       const id = Number(params.get('id'));
-      if (!id) return;
+      if (!Number.isInteger(id) || id <= 0) {
+        this.router.navigate(['/not-found'], { skipLocationChange: true });
+        return;
+      }
 
       this.companyId = id;
       this.searchTerm = '';
@@ -80,7 +87,7 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   ngAfterViewInit(): void {
-    if (this.productsContainer) {
+    if (this.isBrowser && this.productsContainer) {
       this.productsResizeObserver = new ResizeObserver(entries => {
         const h = entries[0].contentRect.height;
         if (h > 0) {
@@ -101,17 +108,51 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
       .subscribe({
         next: (res) => {
           this.company = res;
+          this.updateSeo(res);
         },
         error: (err) => {
-          console.log(err)
-          console.log(err.status)
-          if (err.status === 403) {
+          if (err.status === 403 || err.status === 404) {
             this.router.navigate(['/not-found'], { skipLocationChange: true });
           } else {
+            // Tell crawlers to retry instead of indexing an empty page
+            this.seo.setStatus(503);
             console.error(err);
           }
         }
       });
+  }
+
+  private updateSeo(company: CompanyDetailResponse): void {
+    const reviewCount = company.reviewCount ?? 0;
+    const hasReviews = reviewCount > 0;
+    const rating = (company.averageRating ?? 0).toFixed(1);
+    const reviews = `${reviewCount} ${reviewCount === 1 ? 'review' : 'reviews'}`;
+
+    this.seo.set({
+      title: `${company.name}: customer reviews | ReviewHood`,
+      description: hasReviews
+        ? `${company.name} is rated ${rating} out of 5 from ${reviews} on ReviewHood. See what customers say about its products.`
+        : `Read and write customer reviews of ${company.name} and its products on ReviewHood.`,
+      image: company.logoUrl,
+      type: 'profile',
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: company.name,
+        url: `${environment.siteUrl}/c/${company.id}`,
+        ...(company.description ? { description: company.description } : {}),
+        ...(company.logoUrl ? { logo: this.seo.absoluteImage(company.logoUrl) } : {}),
+        ...(hasReviews ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: rating,
+            reviewCount,
+            bestRating: 5,
+            worstRating: 1
+          }
+        } : {})
+      }
+    });
   }
 
   onSearchChange(value: string): void {
@@ -139,18 +180,24 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
 
     this.productService
       .getCompanyProducts(this.companyId, this.page, this.size, this.searchTerm || undefined, this.selectedSubcategoryId ?? undefined)
-      .subscribe(res => {
+      .subscribe({
+        next: res => {
 
-        this.products = [
-          ...this.products,
-          ...res.content
-        ];
+          this.products = [
+            ...this.products,
+            ...res.content
+          ];
 
-        this.totalProducts = res.totalElements;
+          this.totalProducts = res.totalElements;
 
-        this.page++;
-        this.last = res.last;
-        this.loading = false;
+          this.page++;
+          this.last = res.last;
+          this.loading = false;
+        },
+        error: err => {
+          console.error(err);
+          this.loading = false;
+        }
       });
 
   }
