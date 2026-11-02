@@ -45,13 +45,10 @@ export class ToastComponent implements OnInit {
 
   type: 'success' | 'error' = 'success';
 
-  constructor(private toast: ToastService) {
-    console.log("ToastComponent initialized");
-  }
+  constructor(private toast: ToastService) {}
 
   ngOnInit() {
     this.toast.toast$.subscribe(data => {
-      console.log("Toast received:", data);
       this.message = data.message;
       this.description = data.description;
       this.type = data.type;

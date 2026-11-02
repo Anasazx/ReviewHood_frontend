@@ -45,12 +45,11 @@ export class AuthService {
     this.loadCurrentUser().subscribe({
 
       next: () => {
-        console.log("USER LOADED", this.currentUserSubject.value);
         this.authReadySubject.next(true);
       },
 
       error: (err) => {
-        console.log("LOAD USER FAILED", err);
+        console.error("LOAD USER FAILED", err);
         this.logout();
         this.authReadySubject.next(true);
       }

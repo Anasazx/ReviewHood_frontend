@@ -5,6 +5,7 @@ import { CompanyResponse } from '../../models/companyDTO/companyResponse.model';
 import { CompanyService } from '../../services/companyService/company.service';
 import { CompanyStatus } from '../../enums/companyStatus.enum.model';
 import { ImageUrlPipe } from '../../../../core/pipes/image-url.pipe';
+import { SeoService } from '../../../../core/services/seoService/seo.service';
 
 @Component({
   selector: 'app-all-companies',
@@ -15,7 +16,7 @@ import { ImageUrlPipe } from '../../../../core/pipes/image-url.pipe';
 })
 export class AllCompaniesComponent implements OnInit {
 
-  constructor(private companyService: CompanyService) {}
+  constructor(private companyService: CompanyService, private seo: SeoService) {}
 
   companies: CompanyResponse[] = [];
   filteredCompanies: CompanyResponse[] = [];
@@ -49,6 +50,8 @@ export class AllCompaniesComponent implements OnInit {
       },
       error: (err) => {
         console.error(err);
+        // Tell crawlers to retry instead of indexing an empty page
+        this.seo.setStatus(503);
         this.loading = false;
         this.loadingMore = false;
       }

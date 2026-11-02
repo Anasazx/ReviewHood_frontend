@@ -10,8 +10,4 @@ import {ToastComponent} from '../../sharedComponents/toast/toast.component';
   templateUrl: './main.component.html',
   styleUrl: './main.component.css'
 })
-export class MainComponent {
-  constructor() {
-    console.log('MAIN COMPONENT LOADED');
-  }
-}
+export class MainComponent {}

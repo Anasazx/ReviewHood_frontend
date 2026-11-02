@@ -35,7 +35,6 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private socialAuthService: SocialAuthService,
   ) {
-    console.log("Login Component Loaded")
   }
 
   ngOnInit(): void {
