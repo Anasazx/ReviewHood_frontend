@@ -44,6 +44,10 @@ exit
 
 Then run the command from step 1 again. It swaps the certificate and reloads.
 
+If the certificate covers `*.reviewhood.tech`, Caddy stops managing the API's Let's Encrypt certificate
+and serves this one instead, which takes the API down. `deploy/fix-api-cert.sh` adds the
+`auto_https ignore_loaded_certs` option that prevents this. It must be in the Caddyfile first.
+
 ## 3. Pause Cloudflare Pages deployments
 
 In Workers & Pages -> your project -> Settings -> Builds, pause automatic deployments. Do this before
