@@ -14,6 +14,8 @@ import { CompanyStatus } from '../../enums/companyStatus.enum.model';
 import { ImageUrlPipe } from '../../../../core/pipes/image-url.pipe';
 import { ProductCardComponent } from '../../../../core/sharedComponents/product-card/product-card.component';
 import { FormsModule } from '@angular/forms';
+import { SeoService } from '../../../../core/services/seoService/seo.service';
+import { environment } from '../../../../../environments/environment';
 
 
 @Component({
@@ -57,7 +59,8 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
     private productService: ProductService,
     private ngZone: NgZone,
     public sharedService: SharedService,
-    private router: Router
+    private router: Router,
+    private seo: SeoService
   ) {}
 
   ngOnInit(): void {
@@ -102,6 +105,7 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
       .subscribe({
         next: (res) => {
           this.company = res;
+          this.updateSeo(res);
         },
         error: (err) => {
           console.log(err)
@@ -113,6 +117,39 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
           }
         }
       });
+  }
+
+  private updateSeo(company: CompanyDetailResponse): void {
+    const reviewCount = company.reviewCount ?? 0;
+    const hasReviews = reviewCount > 0;
+    const rating = (company.averageRating ?? 0).toFixed(1);
+    const reviews = `${reviewCount} ${reviewCount === 1 ? 'review' : 'reviews'}`;
+
+    this.seo.set({
+      title: `${company.name}: customer reviews | ReviewHood`,
+      description: hasReviews
+        ? `${company.name} is rated ${rating} out of 5 from ${reviews} on ReviewHood. See what customers say about its products.`
+        : `Read and write customer reviews of ${company.name} and its products on ReviewHood.`,
+      image: company.logoUrl,
+      type: 'profile',
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: company.name,
+        url: `${environment.siteUrl}/c/${company.id}`,
+        ...(company.description ? { description: company.description } : {}),
+        ...(company.logoUrl ? { logo: this.sharedService.getImageUrl(company.logoUrl) } : {}),
+        ...(hasReviews ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: rating,
+            reviewCount,
+            bestRating: 5,
+            worstRating: 1
+          }
+        } : {})
+      }
+    });
   }
 
   onSearchChange(value: string): void {

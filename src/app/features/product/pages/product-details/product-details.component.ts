@@ -19,6 +19,8 @@ import {ConfirmModalComponent} from '../../../../core/sharedComponents/confirm-m
 import {ToastService} from '../../../../core/services/toastService/toast.service';
 import {ProductRatingOverviewComponent} from './components/product-rating-overview/product-rating-overview.component';
 import {ProductImageGalleryComponent} from './components/product-image-gallery/product-image-gallery.component';
+import {SeoService} from '../../../../core/services/seoService/seo.service';
+import {environment} from '../../../../../environments/environment';
 
 
 type ReviewWithComments = ReviewResponse & {
@@ -94,7 +96,8 @@ export class ProductDetailsComponent implements OnInit {
     private commentService: CommentService,
     protected authService: AuthService,
     private toastService: ToastService,
-    private router: Router
+    private router: Router,
+    private seo: SeoService
   ) {}
 
   ngOnInit() {
@@ -116,6 +119,7 @@ export class ProductDetailsComponent implements OnInit {
         const mainIndex = data.images?.findIndex(i => i.isMain) ?? -1;
         this.currentImageIndex = mainIndex >= 0 ? mainIndex : 0;
         this.selectedImage = data.images?.[this.currentImageIndex]?.url ?? null;
+        this.updateSeo(data);
 
         this.loadReviews();
       },
@@ -127,6 +131,40 @@ export class ProductDetailsComponent implements OnInit {
           console.error(err);
         }
       }
+    });
+  }
+
+
+  private updateSeo(product: DetailedProduct) {
+    const hasReviews = product.reviewsCount > 0;
+    const rating = (product.averageRating ?? 0).toFixed(1);
+    const by = product.companyName ? ` by ${product.companyName}` : '';
+    const reviews = `${product.reviewsCount} ${product.reviewsCount === 1 ? 'review' : 'reviews'}`;
+
+    this.seo.set({
+      title: `${product.name}: reviews and rating | ReviewHood`,
+      description: hasReviews
+        ? `${product.name}${by} is rated ${rating} out of 5 from ${reviews} on ReviewHood. Read what real customers think.`
+        : `Read and write reviews of ${product.name}${by} on ReviewHood. Be the first to share your experience.`,
+      image: this.selectedImage,
+      type: 'product',
+      // Google rejects Product markup that has no rating
+      jsonLd: hasReviews ? {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: product.name,
+        description: product.description,
+        url: `${environment.siteUrl}/p/${product.id}`,
+        ...(this.selectedImage ? { image: this.sharedService.getImageUrl(this.selectedImage) } : {}),
+        ...(product.companyName ? { brand: { '@type': 'Brand', name: product.companyName } } : {}),
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: rating,
+          reviewCount: product.reviewsCount,
+          bestRating: 5,
+          worstRating: 1
+        }
+      } : null
     });
   }
 
