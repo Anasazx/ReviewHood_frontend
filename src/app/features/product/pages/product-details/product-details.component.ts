@@ -101,9 +101,13 @@ export class ProductDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    const productId = this.route.snapshot.paramMap.get('id');
-    if (productId) this.loadProduct(+productId);
-    else this.loadingProduct = false;
+    const productId = Number(this.route.snapshot.paramMap.get('id'));
+    if (Number.isInteger(productId) && productId > 0) {
+      this.loadProduct(productId);
+    } else {
+      this.loadingProduct = false;
+      this.router.navigate(['/not-found'], { skipLocationChange: true });
+    }
   }
 
   // ===================== LOAD PRODUCT =====================
@@ -128,6 +132,8 @@ export class ProductDetailsComponent implements OnInit {
         if (err.status === 404) {
           this.router.navigate(['/not-found'], { skipLocationChange: true });
         } else {
+          // Tell crawlers to retry instead of indexing an empty page
+          this.seo.setStatus(503);
           console.error(err);
         }
       }
@@ -155,7 +161,7 @@ export class ProductDetailsComponent implements OnInit {
         name: product.name,
         description: product.description,
         url: `${environment.siteUrl}/p/${product.id}`,
-        ...(this.selectedImage ? { image: this.sharedService.getImageUrl(this.selectedImage) } : {}),
+        ...(this.selectedImage ? { image: this.seo.absoluteImage(this.selectedImage) } : {}),
         ...(product.companyName ? { brand: { '@type': 'Brand', name: product.companyName } } : {}),
         aggregateRating: {
           '@type': 'AggregateRating',

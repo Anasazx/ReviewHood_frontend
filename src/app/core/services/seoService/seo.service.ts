@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Injectable, inject } from '@angular/core';
+import { Injectable, RESPONSE_INIT, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { Router, TitleStrategy } from '@angular/router';
 import { environment } from '../../../../environments/environment';
@@ -33,6 +33,7 @@ export class SeoService {
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
   private readonly titleStrategy = inject(TitleStrategy);
+  private readonly responseInit = inject(RESPONSE_INIT, { optional: true });
 
   private lastPath: string | null = null;
 
@@ -77,6 +78,16 @@ export class SeoService {
     this.set({ title: this.titleStrategy.buildTitle(this.router.routerState.snapshot) ?? DEFAULT_TITLE });
   }
 
+  // Status of the server-rendered response; does nothing in the browser
+  setStatus(status: number): void {
+    if (this.responseInit) this.responseInit.status = status;
+  }
+
+  absoluteImage(image?: string | null): string {
+    if (!image) return environment.siteUrl + DEFAULT_IMAGE;
+    return /^https?:\/\//.test(image) ? image : `${environment.imageUrl}/${image}`;
+  }
+
   private canonicalUrl(): string {
     const tree = this.router.parseUrl(this.router.url);
     const params = CANONICAL_PARAMS
@@ -85,11 +96,6 @@ export class SeoService {
 
     const path = this.router.url.split(/[?#]/)[0];
     return environment.siteUrl + path + (params.length ? `?${params.join('&')}` : '');
-  }
-
-  private absoluteImage(image?: string | null): string {
-    if (!image) return environment.siteUrl + DEFAULT_IMAGE;
-    return /^https?:\/\//.test(image) ? image : `${environment.imageUrl}/${image}`;
   }
 
   private shorten(text: string): string {

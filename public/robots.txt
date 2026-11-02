@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /auth/
+Disallow: /account/
+
+Sitemap: https://reviewhood.tech/sitemap.xml

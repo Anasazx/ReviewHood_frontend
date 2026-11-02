@@ -71,7 +71,10 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
     this.route.paramMap.subscribe(params => {
 
       const id = Number(params.get('id'));
-      if (!id) return;
+      if (!Number.isInteger(id) || id <= 0) {
+        this.router.navigate(['/not-found'], { skipLocationChange: true });
+        return;
+      }
 
       this.companyId = id;
       this.searchTerm = '';
@@ -108,11 +111,11 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
           this.updateSeo(res);
         },
         error: (err) => {
-          console.log(err)
-          console.log(err.status)
-          if (err.status === 403) {
+          if (err.status === 403 || err.status === 404) {
             this.router.navigate(['/not-found'], { skipLocationChange: true });
           } else {
+            // Tell crawlers to retry instead of indexing an empty page
+            this.seo.setStatus(503);
             console.error(err);
           }
         }
@@ -138,7 +141,7 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
         name: company.name,
         url: `${environment.siteUrl}/c/${company.id}`,
         ...(company.description ? { description: company.description } : {}),
-        ...(company.logoUrl ? { logo: this.sharedService.getImageUrl(company.logoUrl) } : {}),
+        ...(company.logoUrl ? { logo: this.seo.absoluteImage(company.logoUrl) } : {}),
         ...(hasReviews ? {
           aggregateRating: {
             '@type': 'AggregateRating',
@@ -177,18 +180,24 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
 
     this.productService
       .getCompanyProducts(this.companyId, this.page, this.size, this.searchTerm || undefined, this.selectedSubcategoryId ?? undefined)
-      .subscribe(res => {
+      .subscribe({
+        next: res => {
 
-        this.products = [
-          ...this.products,
-          ...res.content
-        ];
+          this.products = [
+            ...this.products,
+            ...res.content
+          ];
 
-        this.totalProducts = res.totalElements;
+          this.totalProducts = res.totalElements;
 
-        this.page++;
-        this.last = res.last;
-        this.loading = false;
+          this.page++;
+          this.last = res.last;
+          this.loading = false;
+        },
+        error: err => {
+          console.error(err);
+          this.loading = false;
+        }
       });
 
   }

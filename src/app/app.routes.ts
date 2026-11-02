@@ -38,13 +38,10 @@ export const routes: Routes = [
       { path: 'auth/register', title: title('Sign up'), canActivate: [guestGuard], loadComponent: () => import('./features/auth/pages/register/register.component').then(m => m.RegisterComponent) },
       { path: 'auth/verify', title: title('Verify your email'), canActivate: [emailVerificationGuard], loadComponent: () => import('./features/auth/pages/verify-email/verify-email.component').then(m => m.VerifyEmailComponent) },
       { path: 'not-found', title: title('Page not found'), loadComponent: () => import('./core/sharedComponents/not-found/not-found.component').then(m => m.NotFoundComponent) },
-      { path: 'about', title: title('About'), loadComponent: () => import('./features/about/about/about.component').then(m => m.AboutComponent) }
+      { path: 'about', title: title('About'), loadComponent: () => import('./features/about/about/about.component').then(m => m.AboutComponent) },
+      // Rendered in place instead of redirecting, so unknown URLs answer with a 404 at their own address
+      { path: '**', title: title('Page not found'), loadComponent: () => import('./core/sharedComponents/not-found/not-found.component').then(m => m.NotFoundComponent) }
     ]
-  },
-
-  {
-    path: '**',
-    redirectTo: 'not-found'
   }
 
 ];
