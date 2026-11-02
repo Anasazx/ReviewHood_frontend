@@ -1,0 +1,16 @@
+
+www.reviewhood.tech {
+	tls /data/origin-certs/reviewhood.tech.pem /data/origin-certs/reviewhood.tech.key
+	redir https://reviewhood.tech{uri} permanent
+}
+
+reviewhood.tech {
+	tls /data/origin-certs/reviewhood.tech.pem /data/origin-certs/reviewhood.tech.key
+	encode zstd gzip
+	reverse_proxy reviewhood-frontend:4000 {
+		# Angular logs a warning for every untrusted X-Forwarded-* header, and it doesn't need them
+		header_up -X-Forwarded-For
+		header_up -X-Forwarded-Host
+		header_up -X-Forwarded-Proto
+	}
+}

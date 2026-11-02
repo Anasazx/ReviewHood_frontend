@@ -35,19 +35,19 @@ jobs:
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
-          username: ubuntu
+          username: azureuser
           key: ${{ secrets.VPS_SSH_KEY }}
-          source: dist/tunirate,ecosystem.config.cjs
-          target: /var/www/tunirate-ssr
+          source: dist/tunirate
+          target: /opt/reviewhood-frontend
 
 
-      - name: Reload SSR server
+      - name: Restart frontend container
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.VPS_HOST }}
-          username: ubuntu
+          username: azureuser
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /var/www/tunirate-ssr
-            pm2 startOrReload ecosystem.config.cjs --update-env
-            pm2 save
+            cd /opt/reviewhood-frontend
+            docker compose up -d
+            docker compose restart frontend
