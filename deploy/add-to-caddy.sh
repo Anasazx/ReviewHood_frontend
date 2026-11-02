@@ -18,6 +18,10 @@ BLOCKS=/tmp/Caddyfile.frontend
 docker exec "$CADDY" mkdir -p /data/origin-certs
 if sudo test -f "$CERTS/reviewhood.tech.pem" && sudo test -f "$CERTS/reviewhood.tech.key"; then
   echo "==> Installing the certificate from $CERTS"
+  # Caddy would refuse to start on a certificate and key that don't belong together, so check first
+  CERT_KEY=$(sudo openssl x509 -in "$CERTS/reviewhood.tech.pem" -noout -pubkey | sha256sum)
+  PRIVATE_KEY=$(sudo openssl pkey -in "$CERTS/reviewhood.tech.key" -pubout | sha256sum)
+  [ "$CERT_KEY" = "$PRIVATE_KEY" ] || { echo "The certificate and key don't match, nothing was changed"; exit 1; }
   sudo docker cp -q "$CERTS/reviewhood.tech.pem" "$CADDY:/data/origin-certs/reviewhood.tech.pem"
   sudo docker cp -q "$CERTS/reviewhood.tech.key" "$CADDY:/data/origin-certs/reviewhood.tech.key"
 elif docker exec "$CADDY" test -f /data/origin-certs/reviewhood.tech.pem; then
@@ -33,6 +37,7 @@ else
 fi
 docker exec "$CADDY" chmod 600 /data/origin-certs/reviewhood.tech.key
 
+APPENDED=false
 if grep -q '^reviewhood.tech {' "$DIR/Caddyfile"; then
   echo "==> The site is already in the Caddyfile"
 else
@@ -44,13 +49,16 @@ else
   cp "$DIR/Caddyfile" "$DIR/Caddyfile.bak-before-frontend"
   # Append instead of replacing the file: it is bind-mounted as a single file, so a new file wouldn't reach the container
   cat "$BLOCKS" >> "$DIR/Caddyfile"
+  APPENDED=true
 fi
 
 echo "==> Reloading Caddy"
-if ! docker exec "$CADDY" caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null 2>&1; then
-  # A rejected reload leaves the old config running, so only the file needs restoring
-  [ -f "$DIR/Caddyfile.bak-before-frontend" ] && cat "$DIR/Caddyfile.bak-before-frontend" > "$DIR/Caddyfile"
-  echo "Reload failed, the Caddyfile was restored and Caddy kept its old config"
+# --force because a swapped certificate leaves the config text unchanged, and Caddy skips unchanged reloads.
+# It is still a graceful reload, not a restart.
+if ! docker exec "$CADDY" caddy reload --force --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null 2>&1; then
+  # A rejected reload leaves the old config running, so only an edit from this run needs restoring
+  [ "$APPENDED" = true ] && cat "$DIR/Caddyfile.bak-before-frontend" > "$DIR/Caddyfile"
+  echo "Reload failed, Caddy kept its old config"
   exit 1
 fi
 sleep 2
