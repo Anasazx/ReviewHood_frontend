@@ -9,10 +9,12 @@ import { routes } from './app.routes';
 
 import {
   provideHttpClient,
+  withFetch,
   withInterceptors
 } from '@angular/common/http';
 
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
 
 import {
@@ -40,7 +42,10 @@ export const appConfig: ApplicationConfig = {
 
     provideRouter(routes),
 
+    provideClientHydration(withEventReplay()),
+
     provideHttpClient(
+      withFetch(),
       withInterceptors([
         authInterceptor
       ])
