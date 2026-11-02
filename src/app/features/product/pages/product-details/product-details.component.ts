@@ -1,6 +1,6 @@
 import { AvatarComponent } from '../../../../core/sharedComponents/avatar/avatar.component';
-import { CommonModule, Location } from '@angular/common';
-import {Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
+import { CommonModule, Location, isPlatformBrowser } from '@angular/common';
+import {Component, ElementRef, HostListener, OnInit, PLATFORM_ID, ViewChild, inject} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import { ReviewResponse } from '../../../../core/models/dto/reviewDTO/reviewResponse.model';
@@ -81,6 +81,8 @@ export class ProductDetailsComponent implements OnInit {
   // ===================== DELETE (shared for review + comment) =====================
   showDeleteModal = false;
   deleteTarget: DeleteTarget | null = null;
+
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   // ===================== INIT =====================
   constructor(
@@ -306,7 +308,7 @@ export class ProductDetailsComponent implements OnInit {
 
   @ViewChild('descText') set descText(ref: ElementRef<HTMLElement> | undefined) {
     this.descEl = ref?.nativeElement;
-    setTimeout(() => this.measureDescription());
+    if (this.isBrowser) setTimeout(() => this.measureDescription());
   }
 
   @HostListener('window:resize')
@@ -598,7 +600,7 @@ export class ProductDetailsComponent implements OnInit {
   loadMoreTrigger?: ElementRef;
 
   ngAfterViewInit() {
-    if (!this.loadMoreTrigger) return;
+    if (!this.isBrowser || !this.loadMoreTrigger) return;
     this.observer = new IntersectionObserver(
       entries => {
         if (

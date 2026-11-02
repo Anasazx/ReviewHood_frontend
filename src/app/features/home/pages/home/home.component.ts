@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, OnInit, afterNextRender } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { ProductResponse } from '../../../product/models/productDTO/productResponse.model';
 import { ProductCardComponent } from '../../../../core/sharedComponents/product-card/product-card.component';
 import { AuthService } from '../../../auth/services/authService/auth.service';
@@ -8,6 +8,7 @@ import { MinimizedReviewResponse } from '../../../../core/models/dto/reviewDTO/m
 import { categoryIcon } from '../../../../core/constants/category-icons';
 import { CategoryNode, CategoryTreeService, SubcategoryNode } from '../../../../core/services/categoryTreeService/category-tree.service';
 import { FeedService } from '../../../../core/services/feedService/feed.service';
+import { FeedResponse } from '../../../../core/models/dto/feedResponse';
 import { SearchBarComponent } from '../../../../core/layout/search-bar/search-bar.component';
 import { CompanyResponse } from '../../../company/models/companyDTO/companyResponse.model';
 import { AvatarComponent } from '../../../../core/sharedComponents/avatar/avatar.component';
@@ -24,8 +25,19 @@ export class HomeComponent implements OnInit {
   constructor(
     private feedService: FeedService,
     private categoryTreeService: CategoryTreeService,
-    public authService: AuthService
-  ) {}
+    public authService: AuthService,
+    private router: Router
+  ) {
+    // The home page is prerendered at build time, so its feed is as old as the last deploy.
+    // After a full page load the browser swaps in the current feed; in-app visits are already fresh.
+    afterNextRender(() => {
+      if (this.router.lastSuccessfulNavigation?.previousNavigation) return;
+      this.feedService.getFreshFeed().subscribe({
+        next: response => this.applyFeed(response),
+        error: err => console.error(err)
+      });
+    });
+  }
 
   products: ProductResponse[] = [];
   reviews: MinimizedReviewResponse[] = [];
@@ -123,20 +135,22 @@ export class HomeComponent implements OnInit {
   // ========================== DATA LOADING ==========================
   loadFeed() {
     this.feedService.getFeed().subscribe({
-      next: (response) => {
-        this.reviews = response.reviews;
-        this.products = response.products;
-        this.companies = response.companies;
-
-        this.productPages = this.paginate(this.products);
-        this.reviewPages = this.paginate(this.reviews);
-        this.companyPages = this.paginate(this.companies);
-        this.feedLoaded = true;
-      },
+      next: (response) => this.applyFeed(response),
       error: err => {
         this.feedLoaded = true;
         console.error(err);
       }
     });
+  }
+
+  private applyFeed(response: FeedResponse) {
+    this.reviews = response.reviews;
+    this.products = response.products;
+    this.companies = response.companies;
+
+    this.productPages = this.paginate(this.products);
+    this.reviewPages = this.paginate(this.reviews);
+    this.companyPages = this.paginate(this.companies);
+    this.feedLoaded = true;
   }
 }

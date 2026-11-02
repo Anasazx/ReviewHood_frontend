@@ -1,6 +1,6 @@
 import { SocialLink } from '../../models/socialLink.model';
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, NgZone } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, NgZone, PLATFORM_ID, inject } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -49,6 +49,7 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
   @ViewChild('productsContainer') productsContainer?: ElementRef<HTMLDivElement>;
   lastProductsHeight = 0;
   private productsResizeObserver?: ResizeObserver;
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   constructor(
     private route: ActivatedRoute,
@@ -80,7 +81,7 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   ngAfterViewInit(): void {
-    if (this.productsContainer) {
+    if (this.isBrowser && this.productsContainer) {
       this.productsResizeObserver = new ResizeObserver(entries => {
         const h = entries[0].contentRect.height;
         if (h > 0) {

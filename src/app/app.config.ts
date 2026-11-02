@@ -14,6 +14,7 @@ import {
 } from '@angular/common/http';
 
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { serverTimeoutInterceptor } from './core/interceptors/server-timeout.interceptor';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
 
@@ -47,7 +48,8 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withFetch(),
       withInterceptors([
-        authInterceptor
+        authInterceptor,
+        serverTimeoutInterceptor
       ])
     ),
 
