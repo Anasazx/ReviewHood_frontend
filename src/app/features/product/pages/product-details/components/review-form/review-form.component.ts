@@ -21,18 +21,20 @@ export class ReviewFormComponent implements OnChanges{
   @Input() loggedIn = false;
 
   @Output() reviewSubmitted = new EventEmitter<ReviewRequest>();
-  @Output() loginRequested = new EventEmitter<void>();
 
   readonly stars = [1, 2, 3, 4, 5];
   readonly ratingLabels = ['', 'Terrible', 'Poor', 'Okay', 'Good', 'Excellent'];
 
   reviewContent = '';
+  guestName = '';
   selectedRating = 0;
   hoveredRating = 0;
 
   editing = false;
 
   private originalContent = '';
+
+  private originalGuestName = '';
 
   private originalRating = 0;
 
@@ -43,10 +45,14 @@ export class ReviewFormComponent implements OnChanges{
       this.reviewContent = this.myReview.content ?? '';
       this.selectedRating = this.myReview.rating ?? 0;
       this.originalContent = this.reviewContent;
+      this.guestName = !this.myReview.user.id && this.myReview.user.name !== 'Guest' ? this.myReview.user.name : '';
+      this.originalGuestName = this.guestName;
       this.originalRating = this.selectedRating;
       this.editing = false;
     } else {
       this.reviewContent = '';
+      this.guestName = '';
+      this.originalGuestName = '';
       this.selectedRating = 0;
       this.editing = true;
     }
@@ -59,7 +65,8 @@ export class ReviewFormComponent implements OnChanges{
     const request: ReviewRequest = {
       productId: this.productId,
       rating: this.selectedRating,
-      content: this.reviewContent || null
+      content: this.reviewContent || null,
+      guestName: this.loggedIn ? null : this.guestName || null
     };
     this.reviewSubmitted.emit(request);
   }
@@ -91,12 +98,15 @@ export class ReviewFormComponent implements OnChanges{
 
   cancelEdit() {
     this.reviewContent = this.originalContent;
+    this.guestName = this.originalGuestName;
     this.selectedRating = this.originalRating;
     this.editing = false;
   }
 
   get hasChanges(): boolean {
-    return this.reviewContent !== this.originalContent || this.selectedRating !== this.originalRating;
+    return this.reviewContent !== this.originalContent
+      || this.guestName !== this.originalGuestName
+      || this.selectedRating !== this.originalRating;
   }
 
 }

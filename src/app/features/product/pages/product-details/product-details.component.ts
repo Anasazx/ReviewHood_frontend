@@ -186,10 +186,6 @@ export class ProductDetailsComponent implements OnInit {
   // ===================== REVIEW CRUD =====================
   submitReview(request: ReviewRequest) {
 
-    if (this.showAuthModelIfNoAuthUser()) {
-      return;
-    }
-
     this.submittingReview = true;
 
     const request$ = this.myReview
@@ -230,8 +226,8 @@ export class ProductDetailsComponent implements OnInit {
 
   }
 
-  reviewIsMine(id: number): boolean {
-    return id === this.authService.getCurrentUser?.id;
+  reviewIsMine(review: ReviewResponse): boolean {
+    return review.id === this.myReview?.id;
   }
 
   // ===================== DELETE MODAL CONTROL =====================
@@ -596,6 +592,11 @@ export class ProductDetailsComponent implements OnInit {
 
           this.product!.reviews = this.reviews;
 
+          // Guests: the server can't know this browser, so the review comes from its own request
+          if (this.page === 0 && this.isBrowser && !this.myReview) {
+            this.loadGuestReview();
+          }
+
           this.page++;
           this.last = response.reviews.last;
 
@@ -606,6 +607,22 @@ export class ProductDetailsComponent implements OnInit {
       });
   }
 
+
+  private loadGuestReview() {
+    this.reviewService.getGuestReview(this.productId).subscribe({
+      next: (review) => {
+        if (!review) return;
+
+        const current = this.reviews.find(r => r.id === review.id);
+        const others = this.reviews.filter(r => r.id !== review.id);
+
+        this.myReview = review;
+        this.reviews = [{ showComments: false, comments: [], commentsPage: 0, commentsTotal: review.commentsCount ?? 0, ...current, ...review }, ...others];
+        this.product!.reviews = this.reviews;
+      },
+      error: err => console.error(err)
+    });
+  }
 
   toggleReviewLike(review: ReviewResponse) {
     if (this.showAuthModelIfNoAuthUser()) return;

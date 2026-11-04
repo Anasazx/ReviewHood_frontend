@@ -70,20 +70,8 @@
         </p>
       </div>
 
-      <!-- Guests: ask to log in before they invest time writing -->
-      @if (!loggedIn) {
-        <div class="mt-4 rounded-xl border border-slate-200 p-4 text-center">
-          <p class="text-sm font-medium text-slate-700">Log in to post your review</p>
-          <p class="mt-0.5 text-xs text-slate-500">It takes a few seconds and keeps reviews honest.</p>
-          <button type="button" (click)="loginRequested.emit()"
-                  class="mt-3 w-full rounded-full bg-brand-600 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">
-            Log in to review
-          </button>
-        </div>
-      }
-
       <!-- Writing area appears once there's a rating, so the form never starts as a wall of fields -->
-      @if (loggedIn && selectedRating) {
+      @if (selectedRating) {
         <div class="mt-4">
           <label for="review-content" class="flex items-baseline justify-between text-xs font-medium text-slate-600">
             {{ contentPrompt }}
@@ -105,6 +93,23 @@
             }
           </p>
         </div>
+
+        @if (!loggedIn && (!myReview || !myReview.user.id)) {
+          <div class="mt-3">
+            <label for="review-guest-name" class="flex items-baseline justify-between text-xs font-medium text-slate-600">
+              Your name
+              <span class="font-normal text-slate-400">Optional</span>
+            </label>
+            <input
+              id="review-guest-name"
+              name="guestName"
+              type="text"
+              maxlength="60"
+              [(ngModel)]="guestName"
+              placeholder="Shown as Guest if you leave it empty"
+              class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 placeholder-slate-400 outline-none transition focus:border-brand-600/40 focus:ring-2 focus:ring-brand-100" />
+          </div>
+        }
 
         <div class="mt-3 flex gap-2">
           <button

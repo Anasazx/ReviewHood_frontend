@@ -5,7 +5,8 @@ export interface ReviewResponse {
   id: number;
   rating: number;
   content: string;
-  user: MinimizedUserResponse;
+  // Guests have an author without an id
+  user: Omit<MinimizedUserResponse, 'id'> & { id: number | null };
   commentsCount: number;
   previewComment?: CommentResponse;
   likeCount: number,
