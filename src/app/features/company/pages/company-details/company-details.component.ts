@@ -7,6 +7,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { CompanyService } from '../../services/companyService/company.service';
 import { SharedService } from '../../../../core/services/sharedService/shared.service';
 import { CompanyDetailResponse } from '../../models/companyDTO/companyDetailResponse.model';
+import { SubcategoryResponse } from '../../../../core/models/dto/subcategoryDTO/subcategoryResponse.model';
 import { ProductResponse } from '../../../product/models/productDTO/productResponse.model';
 import { SOCIAL_ICON_MAP } from '../../../../core/mapping/social-icon-map';
 import { ProductService } from '../../../product/services/productService/product.service';
@@ -17,6 +18,14 @@ import { FormsModule } from '@angular/forms';
 import { SeoService } from '../../../../core/services/seoService/seo.service';
 import { environment } from '../../../../../environments/environment';
 
+interface CompanyCategory {
+  id: number;
+  name: string;
+  subcategories: SubcategoryResponse[];
+}
+
+// How many subcategory chips show before "+N more"
+const SUBCATEGORY_CHIP_LIMIT = 8;
 
 @Component({
   selector: 'app-company-details',
@@ -43,7 +52,10 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
 
   // FILTERS
   searchTerm = '';
+  categories: CompanyCategory[] = [];
+  selectedCategoryId: number | null = null;
   selectedSubcategoryId: number | null = null;
+  subcategoriesExpanded = false;
 
   private searchSubject = new Subject<string>();
 
@@ -78,7 +90,10 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
 
       this.companyId = id;
       this.searchTerm = '';
+      this.categories = [];
+      this.selectedCategoryId = null;
       this.selectedSubcategoryId = null;
+      this.subcategoriesExpanded = false;
 
       this.loadCompany();
       this.resetAndLoadProducts();
@@ -108,6 +123,7 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
       .subscribe({
         next: (res) => {
           this.company = res;
+          this.categories = this.groupByCategory(res.subcategories ?? []);
           this.updateSeo(res);
         },
         error: (err) => {
@@ -159,6 +175,43 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
     this.searchSubject.next(value);
   }
 
+  private groupByCategory(subcategories: SubcategoryResponse[]): CompanyCategory[] {
+    const categories = new Map<number, CompanyCategory>();
+    for (const sub of subcategories) {
+      const category = categories.get(sub.categoryId);
+      if (category) {
+        category.subcategories.push(sub);
+      } else {
+        categories.set(sub.categoryId, { id: sub.categoryId, name: sub.categoryName ?? sub.name, subcategories: [sub] });
+      }
+    }
+    return [...categories.values()].sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  // The subcategory row: for the selected category, or the only one when the company has just one
+  get activeCategory(): CompanyCategory | undefined {
+    return this.categories.length === 1
+      ? this.categories[0]
+      : this.categories.find(c => c.id === this.selectedCategoryId);
+  }
+
+  get visibleSubcategories(): SubcategoryResponse[] {
+    const subcategories = this.activeCategory?.subcategories ?? [];
+    return this.subcategoriesExpanded ? subcategories : subcategories.slice(0, SUBCATEGORY_CHIP_LIMIT);
+  }
+
+  get hiddenSubcategoryCount(): number {
+    return (this.activeCategory?.subcategories.length ?? 0) - this.visibleSubcategories.length;
+  }
+
+  selectCategory(id: number | null): void {
+    if (this.selectedCategoryId === id && this.selectedSubcategoryId === null) return;
+    this.selectedCategoryId = id;
+    this.selectedSubcategoryId = null;
+    this.subcategoriesExpanded = false;
+    this.resetAndLoadProducts();
+  }
+
   selectSubcategory(id: number | null): void {
     if (this.selectedSubcategoryId === id) return;
     this.selectedSubcategoryId = id;
@@ -179,7 +232,7 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
     this.loading = true;
 
     this.productService
-      .getCompanyProducts(this.companyId, this.page, this.size, this.searchTerm || undefined, this.selectedSubcategoryId ?? undefined)
+      .getCompanyProducts(this.companyId, this.page, this.size, this.searchTerm || undefined, this.selectedCategoryId ?? undefined, this.selectedSubcategoryId ?? undefined)
       .subscribe({
         next: res => {
 

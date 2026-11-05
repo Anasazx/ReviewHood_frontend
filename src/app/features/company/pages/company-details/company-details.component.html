@@ -141,35 +141,79 @@
       </div>
     </div>
 
-    <!-- SUBCATEGORY FILTER CHIPS -->
-    <div *ngIf="company?.subcategories?.length" class="mb-5 flex flex-wrap gap-2">
+    <!-- CATEGORY FILTER CHIPS (skipped when the company has a single category) -->
+    <div *ngIf="categories.length > 1" class="flex flex-wrap gap-2" [ngClass]="activeCategory ? 'mb-3' : 'mb-5'">
       <button
-        (click)="selectSubcategory(null)"
+        type="button"
+        (click)="selectCategory(null)"
         class="rounded-full border px-3.5 py-1.5 text-xs font-medium transition"
-        [class.bg-slate-900]="selectedSubcategoryId === null"
-        [class.text-white]="selectedSubcategoryId === null"
-        [class.border-slate-900]="selectedSubcategoryId === null"
-        [class.border-slate-200]="selectedSubcategoryId !== null"
-        [class.text-slate-600]="selectedSubcategoryId !== null"
-        [class.hover:border-slate-300]="selectedSubcategoryId !== null"
+        [class.bg-slate-900]="selectedCategoryId === null"
+        [class.text-white]="selectedCategoryId === null"
+        [class.border-slate-900]="selectedCategoryId === null"
+        [class.border-slate-200]="selectedCategoryId !== null"
+        [class.text-slate-600]="selectedCategoryId !== null"
+        [class.hover:border-slate-300]="selectedCategoryId !== null"
       >
         All
       </button>
 
       <button
-        *ngFor="let sub of company?.subcategories"
-        (click)="selectSubcategory(sub.id)"
+        *ngFor="let category of categories"
+        type="button"
+        (click)="selectCategory(category.id)"
         class="rounded-full border px-3.5 py-1.5 text-xs font-medium transition"
-        [class.bg-slate-900]="selectedSubcategoryId === sub.id"
-        [class.text-white]="selectedSubcategoryId === sub.id"
-        [class.border-slate-900]="selectedSubcategoryId === sub.id"
+        [class.bg-slate-900]="selectedCategoryId === category.id"
+        [class.text-white]="selectedCategoryId === category.id"
+        [class.border-slate-900]="selectedCategoryId === category.id"
+        [class.border-slate-200]="selectedCategoryId !== category.id"
+        [class.text-slate-600]="selectedCategoryId !== category.id"
+        [class.hover:border-slate-300]="selectedCategoryId !== category.id"
+      >
+        {{ category.name }}
+      </button>
+    </div>
+
+    <!-- SUBCATEGORY FILTER CHIPS (only for the active category) -->
+    <div *ngIf="activeCategory as category" class="mb-5 flex flex-wrap items-center gap-2">
+      <button
+        type="button"
+        (click)="selectSubcategory(null)"
+        class="rounded-full border px-3 py-1 text-xs font-medium transition"
+        [class.bg-brand-50]="selectedSubcategoryId === null"
+        [class.text-brand-700]="selectedSubcategoryId === null"
+        [class.border-brand-300]="selectedSubcategoryId === null"
+        [class.border-slate-200]="selectedSubcategoryId !== null"
+        [class.text-slate-600]="selectedSubcategoryId !== null"
+        [class.hover:border-slate-300]="selectedSubcategoryId !== null"
+      >
+        {{ categories.length > 1 ? 'All ' + category.name : 'All' }}
+      </button>
+
+      <button
+        *ngFor="let sub of visibleSubcategories"
+        type="button"
+        (click)="selectSubcategory(sub.id)"
+        class="rounded-full border px-3 py-1 text-xs font-medium transition"
+        [class.bg-brand-50]="selectedSubcategoryId === sub.id"
+        [class.text-brand-700]="selectedSubcategoryId === sub.id"
+        [class.border-brand-300]="selectedSubcategoryId === sub.id"
         [class.border-slate-200]="selectedSubcategoryId !== sub.id"
         [class.text-slate-600]="selectedSubcategoryId !== sub.id"
         [class.hover:border-slate-300]="selectedSubcategoryId !== sub.id"
       >
         {{ sub.name }}
       </button>
+
+      <button
+        *ngIf="hiddenSubcategoryCount > 0"
+        type="button"
+        (click)="subcategoriesExpanded = true"
+        class="px-1 text-xs font-semibold text-brand-700 hover:text-brand-800"
+      >
+        +{{ hiddenSubcategoryCount }} more
+      </button>
     </div>
+
 
     <!-- HEIGHT-STABILIZED RESULTS AREA -->
     <div #productsContainer [style.minHeight.px]="lastProductsHeight">
@@ -185,8 +229,8 @@
 
       <!-- EMPTY -->
       <div *ngIf="products.length === 0 && !loading" class="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
-        <span *ngIf="searchTerm || selectedSubcategoryId">No products match your filters.</span>
-        <span *ngIf="!searchTerm && !selectedSubcategoryId">This company has no products yet.</span>
+        <span *ngIf="searchTerm || selectedCategoryId || selectedSubcategoryId">No products match your filters.</span>
+        <span *ngIf="!searchTerm && !selectedCategoryId && !selectedSubcategoryId">This company has no products yet.</span>
       </div>
 
     </div>
