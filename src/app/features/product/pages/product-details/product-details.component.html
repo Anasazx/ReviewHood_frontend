@@ -162,8 +162,10 @@
                   <div class="min-w-0">
                     <div class="flex flex-wrap items-center gap-1.5">
                       <span class="truncate text-sm font-semibold text-slate-900">{{ review.user.name }}</span>
-                      @if (!review.user.id) {
-                        <span class="shrink-0 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-500">Guest</span>
+                      @if (review.user.id) {
+                        <span class="inline-flex shrink-0 items-center gap-1 text-[11px] font-medium text-brand-700" title="Written from a signed-in TuniRate account">
+                          <i class="fa-solid fa-circle-check text-[10px]" aria-hidden="true"></i>
+                        </span>
                       }
                       @if (reviewIsMine(review)) {
                         <span class="shrink-0 rounded-full bg-brand-50 px-1.5 py-0.5 text-[10px] font-semibold text-brand-700">You</span>
