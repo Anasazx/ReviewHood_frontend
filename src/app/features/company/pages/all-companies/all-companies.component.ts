@@ -7,6 +7,17 @@ import { CompanyStatus } from '../../enums/companyStatus.enum.model';
 import { ImageUrlPipe } from '../../../../core/pipes/image-url.pipe';
 import { SeoService } from '../../../../core/services/seoService/seo.service';
 
+// Same rules as the backend's search_normalize: ignores case, accents, spaces and punctuation
+function normalizeSearchText(value: string): string {
+  return value
+    .normalize('NFKD')
+    .replace(/\p{M}/gu, '')
+    .toLowerCase()
+    .replace(/œ/g, 'oe')
+    .replace(/æ/g, 'ae')
+    .replace(/[\p{P}\p{S}\s]+/gu, '');
+}
+
 @Component({
   selector: 'app-all-companies',
   standalone: true,
@@ -66,10 +77,10 @@ export class AllCompaniesComponent implements OnInit {
   }
 
   applyFilters() {
-    const term = this.searchTerm.trim().toLowerCase();
+    const term = normalizeSearchText(this.searchTerm);
 
     this.filteredCompanies = this.companies.filter(c => {
-      const matchesTerm = !term || c.name.toLowerCase().includes(term);
+      const matchesTerm = !term || normalizeSearchText(c.name).includes(term);
       const matchesVerified = !this.verifiedOnly || c.verified;
       return matchesTerm && matchesVerified;
     });
