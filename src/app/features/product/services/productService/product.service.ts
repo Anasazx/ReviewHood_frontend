@@ -42,11 +42,12 @@ export class ProductService {
     return this.http.get<DetailedProduct>(`${this.productUrl.toString()}/${productId}/details`);
   }
 
-  getCompanyProducts(companyId: number, page: number = 0, size: number = 20, name?: string, subcategoryId?: number): Observable<PageResponse<ProductResponse>> {
+  getCompanyProducts(companyId: number, page: number = 0, size: number = 20, name?: string, categoryId?: number, subcategoryId?: number): Observable<PageResponse<ProductResponse>> {
     let params = new HttpParams()
       .set('page', page)
       .set('size', size);
     if (name) {params = params.set('name', name);}
+    if (categoryId != null) {params = params.set('categoryId', categoryId);}
     if (subcategoryId != null) {params = params.set('subcategoryId', subcategoryId);}
     return this.http.get<PageResponse<ProductResponse>>(`${this.productUrl}/company/${companyId}`, { params });
   }
