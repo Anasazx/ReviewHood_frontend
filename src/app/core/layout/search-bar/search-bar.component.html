@@ -8,7 +8,7 @@
       [(ngModel)]="searchQuery"
       (input)="onInput()"
       (keydown.enter)="goToSearch()"
-      placeholder="Search products, brands..."
+      placeholder="Rechercher un produit, une marque…"
       autocomplete="off"
       class="w-full rounded-full border border-slate-200 bg-slate-50 py-2.5 pl-4 pr-11 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-brand-600 focus:bg-white focus:ring-2 focus:ring-brand-600/20"
     />
@@ -68,7 +68,7 @@
           </div>
 
           <div class="mt-0.5 text-[11px] font-medium uppercase tracking-wide text-slate-400">
-            {{ item.type === 'COMPANY' ? 'Company' : 'Product' }}
+            {{ item.type === 'COMPANY' ? 'Entreprise' : 'Produit' }}
           </div>
 
         </div>
@@ -104,7 +104,7 @@
         [(ngModel)]="searchQuery"
         (input)="onInput()"
         (keydown.enter)="goToSearch()"
-        placeholder="Search products, brands..."
+        placeholder="Rechercher un produit, une marque…"
         autocomplete="off"
         class="w-full rounded-full bg-transparent py-3.5 pl-11 pr-4 text-base text-slate-800 outline-none placeholder:text-slate-400"
       />
@@ -117,7 +117,7 @@
       (click)="goToSearch()"
       class="flex-shrink-0 rounded-full bg-brand-600 px-6 py-3.5 text-base font-semibold text-white transition duration-150 hover:bg-brand-700 active:scale-95"
     >
-      Search
+      Rechercher
     </button>
 
   </div>
@@ -169,7 +169,7 @@
         <div
           class="mt-0.5 text-[11px] font-medium uppercase tracking-wide text-slate-400"
         >
-          {{ item.type === 'COMPANY' ? 'Company' : 'Product' }}
+          {{ item.type === 'COMPANY' ? 'Entreprise' : 'Produit' }}
         </div>
 
       </div>
@@ -198,7 +198,7 @@
     [(ngModel)]="searchQuery"
     (input)="onInput()"
     (keydown.enter)="goToSearch()"
-    placeholder="Search products, brands..."
+    placeholder="Rechercher un produit, une marque…"
     autocomplete="off"
     autofocus
     class="w-full rounded-full border border-slate-200 bg-slate-50 py-2.5 pl-4 pr-11 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-brand-600 focus:bg-white focus:ring-2 focus:ring-brand-600/20"
@@ -256,7 +256,7 @@
         </div>
 
         <div class="mt-0.5 text-[11px] font-medium uppercase tracking-wide text-slate-400">
-          {{ item.type === 'COMPANY' ? 'Company' : 'Product' }}
+          {{ item.type === 'COMPANY' ? 'Entreprise' : 'Produit' }}
         </div>
 
       </div>

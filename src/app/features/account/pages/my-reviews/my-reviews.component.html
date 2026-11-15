@@ -1,8 +1,8 @@
 <div class="space-y-6">
 
   <div>
-    <h2 class="text-xl font-semibold tracking-tight text-ink">My reviews</h2>
-    <p class="mt-1 text-sm text-slate-500">Everything you've reviewed{{ reviews.length ? ' · ' + reviews.length + (last ? '' : '+') : '' }}</p>
+    <h2 class="text-xl font-semibold tracking-tight text-ink">Mes avis</h2>
+    <p class="mt-1 text-sm text-slate-500">Tout ce que vous avez évalué{{ reviews.length ? ' · ' + reviews.length + (last ? '' : '+') : '' }}</p>
   </div>
 
   @if (!loading && !reviews.length) {
@@ -10,9 +10,9 @@
       <span class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-brand-600">
         <i class="fa-regular fa-star text-lg"></i>
       </span>
-      <p class="mt-3 font-medium text-slate-800">No reviews yet</p>
-      <p class="mt-1 text-sm text-slate-500">Bought something lately? Your review helps others decide.</p>
-      <a routerLink="/products" class="mt-4 inline-flex rounded-full bg-brand-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Find a product to review</a>
+      <p class="mt-3 font-medium text-slate-800">Pas encore d’avis</p>
+      <p class="mt-1 text-sm text-slate-500">Vous avez acheté quelque chose récemment ? Votre avis aide les autres à choisir.</p>
+      <a routerLink="/products" class="mt-4 inline-flex rounded-full bg-brand-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Trouver un produit à évaluer</a>
     </div>
   }
 
@@ -25,13 +25,13 @@
             <div class="min-w-0">
               <p class="truncate font-semibold text-slate-900 group-hover:text-brand-700">{{ review.productName }}</p>
               <div class="mt-1 flex items-center gap-2">
-                <span class="flex gap-0.5 text-xs" [attr.aria-label]="review.rating + ' out of 5'">
+                <span class="flex gap-0.5 text-xs" [attr.aria-label]="review.rating + ' sur 5'">
                   @for (i of [1, 2, 3, 4, 5]; track i) {
                     <i class="fa-solid fa-star" [ngClass]="i <= review.rating ? 'text-rating' : 'text-slate-200'"></i>
                   }
                 </span>
                 <span class="text-slate-300">·</span>
-                <time class="text-xs text-slate-400" [attr.datetime]="review.createdAt">{{ review.createdAt | date: 'MMM d, y' }}</time>
+                <time class="text-xs text-slate-400" [attr.datetime]="review.createdAt">{{ review.createdAt | date: 'd MMM y' }}</time>
               </div>
             </div>
             <i class="fa-solid fa-chevron-right mt-1 shrink-0 text-xs text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-brand-600"></i>
@@ -39,7 +39,7 @@
           @if (review.content) {
             <p class="mt-3 line-clamp-3 whitespace-pre-line text-sm leading-relaxed text-slate-600">{{ review.content }}</p>
           } @else {
-            <p class="mt-3 text-sm italic text-slate-400">Rating only, no written review</p>
+            <p class="mt-3 text-sm italic text-slate-400">Note uniquement, sans avis écrit</p>
           }
         </a>
       </li>

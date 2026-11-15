@@ -60,9 +60,8 @@ export class VerifyEmailComponent implements OnInit{
               this.startResendCooldown();
             },
 
-            error: err => {
-              this.error =
-                err.error?.message ?? 'Verification failed';
+            error: () => {
+              this.error = 'Impossible d’envoyer le code. Utilisez « Renvoyer » dans un instant.';
             }
 
           });
@@ -138,7 +137,7 @@ export class VerifyEmailComponent implements OnInit{
   verify() {
 
     if (this.code.length !== 6) {
-      this.error = 'Please enter the 6 digit code';
+      this.error = 'Veuillez saisir le code à 6 chiffres';
       return;
     }
 
@@ -157,7 +156,7 @@ export class VerifyEmailComponent implements OnInit{
         error: err => {
           this.loading = false;
           this.error =
-            err.error?.message ?? 'Verification failed';
+            'Code incorrect ou expiré. Veuillez réessayer.';
         }
       });
 
@@ -175,7 +174,7 @@ export class VerifyEmailComponent implements OnInit{
           this.startResendCooldown();
         },
         error: err => {
-          this.error = err.error?.message ?? 'Unable to resend';
+          this.error = 'Impossible de renvoyer le code. Veuillez patienter un peu.';
         }
       });
   }

@@ -1,3 +1,4 @@
+import { FrLabelPipe } from '../../../../core/pipes/fr-label.pipe';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -17,7 +18,7 @@ type SearchTab = 'all' | 'products' | 'companies';
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [CommonModule, RouterLink, ProductCardComponent, ImageUrlPipe, SuggestProductModalComponent],
+  imports: [CommonModule, RouterLink, ProductCardComponent, ImageUrlPipe, SuggestProductModalComponent, FrLabelPipe],
   templateUrl: './search.component.html',
   styleUrl: './search.component.css'
 })
@@ -71,10 +72,10 @@ export class SearchComponent implements OnInit {
     const indexable = query.length >= 2 && query.length <= 80 && /[\p{L}\p{N}]/u.test(query);
 
     this.seo.set(indexable ? {
-      title: `${query}: search results | ReviewHood`,
-      description: `Products and companies matching "${query}" on ReviewHood, with ratings and reviews from real customers.`
+      title: `${query} : résultats de recherche | ReviewHood`,
+      description: `Produits et entreprises correspondant à « ${query} » sur ReviewHood, avec les notes et avis de vrais clients.`
     } : {
-      title: 'Search | ReviewHood',
+      title: 'Recherche | ReviewHood',
       noindex: true
     });
   }

@@ -1,3 +1,4 @@
+import { frLabel } from '../../../../core/pipes/fr-label.pipe';
 import { SocialLink } from '../../models/socialLink.model';
 import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, NgZone, PLATFORM_ID, inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
@@ -276,12 +277,7 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
     return (this.company?.socialLinks ?? []).filter(l => l.platform !== 'WEBSITE');
   }
 
-  // "SAUDI_ARABIA" -> "Saudi arabia"
-  label(value: string | null | undefined): string {
-    if (!value) return '';
-    const text = value.replace(/_/g, ' ').toLowerCase();
-    return text.charAt(0).toUpperCase() + text.slice(1);
-  }
+  readonly label = frLabel;
 
   initials(name: string | null | undefined): string {
     const parts = (name ?? '').trim().split(/\s+/).filter(Boolean);

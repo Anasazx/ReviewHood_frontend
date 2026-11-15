@@ -39,20 +39,25 @@ export class SecurityComponent implements OnInit {
   save() {
     this.error = null;
     if ((this.hasPassword && !this.currentPassword) || this.newPassword.length < 8 || this.newPassword !== this.confirmPassword) {
-      this.error = 'Check the fields above.';
+      this.error = 'Vérifiez les champs ci-dessus.';
       return;
     }
     this.saving = true;
     this.userService.changePassword(this.hasPassword ? this.currentPassword : null, this.newPassword).subscribe({
       next: () => {
         this.saving = false;
-        this.toast.show(this.hasPassword ? 'Password changed.' : 'Password set. You can now also sign in with your email.', 'success');
+        this.toast.show(this.hasPassword ? 'Mot de passe modifié.' : 'Mot de passe défini. Vous pouvez aussi vous connecter avec votre e-mail.', 'success');
         this.hasPassword = true;
         this.currentPassword = this.newPassword = this.confirmPassword = '';
       },
       error: (err: HttpErrorResponse) => {
         this.saving = false;
-        this.error = err.error?.detail || 'Could not change your password. Please try again.';
+        // The API's messages are in English, so the user sees ours
+        this.error = err.status === 400 && /current password/i.test(err.error?.detail ?? '')
+          ? 'Votre mot de passe actuel est incorrect.'
+          : err.status === 400
+            ? 'Le nouveau mot de passe doit contenir au moins 8 caractères.'
+            : 'Impossible de modifier votre mot de passe. Veuillez réessayer.';
       }
     });
   }

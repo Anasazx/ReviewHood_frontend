@@ -23,7 +23,7 @@ export class ReviewFormComponent implements OnChanges{
   @Output() reviewSubmitted = new EventEmitter<ReviewRequest>();
 
   readonly stars = [1, 2, 3, 4, 5];
-  readonly ratingLabels = ['', 'Terrible', 'Poor', 'Okay', 'Good', 'Excellent'];
+  readonly ratingLabels = ['', 'Très mauvais', 'Mauvais', 'Moyen', 'Bien', 'Excellent'];
 
   reviewContent = '';
   guestName = '';
@@ -45,7 +45,7 @@ export class ReviewFormComponent implements OnChanges{
       this.reviewContent = this.myReview.content ?? '';
       this.selectedRating = this.myReview.rating ?? 0;
       this.originalContent = this.reviewContent;
-      this.guestName = !this.myReview.user.id && this.myReview.user.name !== 'Guest' ? this.myReview.user.name : '';
+      this.guestName = !this.myReview.user.id && !['Guest', 'Invité'].includes(this.myReview.user.name) ? this.myReview.user.name : '';
       this.originalGuestName = this.guestName;
       this.originalRating = this.selectedRating;
       this.editing = false;
@@ -81,15 +81,15 @@ export class ReviewFormComponent implements OnChanges{
 
   // The writing prompt follows the rating, so people know what's worth saying
   get contentPrompt(): string {
-    if (this.selectedRating <= 2) return 'What went wrong?';
-    if (this.selectedRating === 3) return 'What could be better?';
-    return 'What did you like most?';
+    if (this.selectedRating <= 2) return 'Qu’est-ce qui n’a pas été ?';
+    if (this.selectedRating === 3) return 'Qu’est-ce qui pourrait être mieux ?';
+    return 'Qu’avez-vous le plus apprécié ?';
   }
 
   get contentPlaceholder(): string {
-    if (this.selectedRating <= 2) return 'Quality, delivery, did it match the description...';
-    if (this.selectedRating === 3) return 'What was fine, and what let you down?';
-    return 'Quality, value for money, how long you have used it...';
+    if (this.selectedRating <= 2) return 'Qualité, livraison, conforme à la description…';
+    if (this.selectedRating === 3) return 'Ce qui allait, et ce qui vous a déçu…';
+    return 'Qualité, rapport qualité-prix, depuis combien de temps vous l’utilisez…';
   }
 
   startEdit() {

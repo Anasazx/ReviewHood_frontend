@@ -54,13 +54,13 @@
     <div class="mt-6 text-center">
 
       <h1 class="text-2xl font-bold tracking-tight text-slate-900">
-        {{ success ? 'Email verified!' : 'Verify your email' }}
+        {{ success ? 'E-mail vérifié !' : 'Vérifiez votre e-mail' }}
       </h1>
 
       <ng-container *ngIf="!success">
 
         <p class="mt-2 text-sm leading-relaxed text-slate-500">
-          We sent a verification code to
+          Nous avons envoyé un code de vérification à
         </p>
 
         <p class="mt-1 break-all text-sm font-semibold text-slate-700">
@@ -73,11 +73,11 @@
       <ng-container *ngIf="success">
 
         <p class="mt-3 text-sm leading-relaxed text-slate-500">
-          Your email has been successfully verified.
+          Votre adresse e-mail a bien été vérifiée.
         </p>
 
         <p class="mt-1 text-sm text-slate-400">
-          Redirecting...
+          Redirection…
         </p>
 
       </ng-container>
@@ -129,7 +129,7 @@
       <span
         *ngIf="!loading"
       >
-        Verify email
+        Vérifier l’e-mail
       </span>
 
       <span
@@ -160,7 +160,7 @@
 
         </svg>
 
-        Verifying…
+        Vérification…
 
       </span>
 
@@ -175,7 +175,7 @@
       [disabled]="loading"
       class="mt-3 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 font-medium text-slate-700 transition-all duration-200 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
     >
-      Skip for now
+      Plus tard
     </button>
 
 
@@ -184,7 +184,7 @@
       *ngIf="!success"
       class="mt-3 text-center text-xs leading-relaxed text-slate-400"
     >
-      You can verify your email later from your account settings.
+      Vous pourrez vérifier votre e-mail plus tard depuis les paramètres de votre compte.
     </p>
 
 
@@ -194,7 +194,7 @@
       class="mt-6 text-center text-sm text-slate-500"
     >
 
-      Didn't receive the code?
+      Vous n’avez pas reçu le code ?
 
       <button
         type="button"
@@ -202,7 +202,7 @@
         [disabled]="!canResend"
         class="ml-1 font-semibold text-brand-600 transition-colors hover:text-brand-700 disabled:cursor-not-allowed disabled:text-slate-400"
       >
-        {{ canResend ? 'Resend' : 'Resend in ' + resendCooldown + 's' }}
+        {{ canResend ? 'Renvoyer' : 'Renvoyer dans ' + resendCooldown + ' s' }}
       </button>
 
     </div>
@@ -248,13 +248,13 @@
 
 
     <h2 class="mt-5 text-center text-xl font-bold text-slate-900">
-      Skip email verification?
+      Ignorer la vérification de l’e-mail ?
     </h2>
 
 
     <p class="mt-3 text-center text-sm leading-relaxed text-slate-500">
-      You can continue without verifying your email, but some features may be
-      unavailable until you verify it later from your account settings.
+      Vous pouvez continuer sans vérifier votre e-mail, mais certaines fonctionnalités
+      resteront indisponibles tant que vous ne l’aurez pas vérifié depuis les paramètres de votre compte.
     </p>
 
 
@@ -265,7 +265,7 @@
         (click)="closeSkipConfirm()"
         class="flex-1 rounded-xl border border-slate-300 bg-white px-4 py-2.5 font-medium text-slate-700 transition hover:bg-slate-50"
       >
-        Cancel
+        Annuler
       </button>
 
 
@@ -274,7 +274,7 @@
         (click)="confirmSkip()"
         class="flex-1 rounded-xl bg-ink px-4 py-2.5 font-semibold text-white transition hover:bg-ink-light"
       >
-        Skip anyway
+        Ignorer quand même
       </button>
 
     </div>

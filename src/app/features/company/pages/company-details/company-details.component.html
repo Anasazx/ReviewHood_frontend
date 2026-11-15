@@ -21,7 +21,7 @@
       <!-- IDENTITY -->
       <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
         @if (company?.logoUrl) {
-          <img [src]="company?.logoUrl | imageUrl" alt="{{ company?.name }} logo"
+          <img [src]="company?.logoUrl | imageUrl" alt="Logo {{ company?.name }}"
                class="relative z-10 -mt-12 h-24 w-24 shrink-0 rounded-2xl bg-white object-cover shadow-md ring-4 ring-white sm:-mt-14 sm:h-28 sm:w-28" />
         } @else {
           <span class="relative z-10 -mt-12 flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-brand-50 text-3xl font-semibold text-brand-700 shadow-md ring-4 ring-white sm:-mt-14 sm:h-28 sm:w-28">
@@ -34,8 +34,8 @@
             <h1 id="company-name" class="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">{{ company?.name }}</h1>
             @if (company?.verified) {
               <span class="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700"
-                    title="This company's identity was checked by ReviewHood">
-                <i class="fa-solid fa-circle-check"></i> Verified
+                    title="L’identité de cette entreprise a été vérifiée par ReviewHood">
+                <i class="fa-solid fa-circle-check"></i> Vérifiée
               </span>
             }
           </div>
@@ -62,7 +62,7 @@
             @if (websiteLink; as site) {
               <a [href]="formatUrl(site.url)" target="_blank" rel="noopener noreferrer"
                  class="inline-flex items-center gap-2 rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">
-                <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i> Visit website
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i> Visiter le site
               </a>
             }
             @for (social of otherLinks; track social.id) {
@@ -79,42 +79,42 @@
       <!-- REPUTATION -->
       <dl class="mt-6 grid grid-cols-3 divide-x divide-slate-100 rounded-2xl border border-slate-200">
         <div class="px-3 py-4 text-center sm:px-6">
-          <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Rating</dt>
+          <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Note</dt>
           <dd class="mt-1.5">
             @if (company?.reviewCount) {
               <span class="text-2xl font-semibold text-ink sm:text-3xl">{{ company?.averageRating | number: '1.1-1' }}</span>
-              <span class="mt-1 flex justify-center gap-0.5 text-xs text-rating sm:text-sm" [attr.aria-label]="(company?.averageRating | number: '1.1-1') + ' out of 5'">
+              <span class="mt-1 flex justify-center gap-0.5 text-xs text-rating sm:text-sm" [attr.aria-label]="(company?.averageRating | number: '1.1-1') + ' sur 5'">
                 @for (star of [1, 2, 3, 4, 5]; track star) {
                   <i class="fa-solid" [ngClass]="starIcon(star)"></i>
                 }
               </span>
             } @else {
-              <span class="block pt-1 text-2xl font-semibold text-slate-300 sm:hidden" aria-label="No ratings yet">–</span><span class="hidden pt-1.5 text-sm text-slate-400 sm:block">No ratings yet</span>
+              <span class="block pt-1 text-2xl font-semibold text-slate-300 sm:hidden" aria-label="Pas encore de note">–</span><span class="hidden pt-1.5 text-sm text-slate-400 sm:block">Pas encore de note</span>
             }
           </dd>
         </div>
         <div class="px-3 py-4 text-center sm:px-6">
-          <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Reviews</dt>
+          <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Avis</dt>
           <dd class="mt-1.5 text-2xl font-semibold text-ink sm:text-3xl">{{ (company?.reviewCount ?? 0) | number }}</dd>
         </div>
         <div class="px-3 py-4 text-center sm:px-6">
-          <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Products</dt>
+          <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Produits</dt>
           <dd class="mt-1.5 text-2xl font-semibold text-ink sm:text-3xl">{{ (company?.productCount ?? 0) | number }}</dd>
         </div>
       </dl>
 
       <!-- ABOUT -->
       <div class="mt-6">
-        <h2 class="text-sm font-semibold text-slate-900">About {{ company?.name }}</h2>
+        <h2 class="text-sm font-semibold text-slate-900">À propos de {{ company?.name }}</h2>
         @if (company?.description) {
           <p class="mt-2 max-w-3xl whitespace-pre-line text-[15px] leading-relaxed text-slate-600" [class.line-clamp-4]="!descriptionExpanded">{{ company?.description }}</p>
           @if ((company?.description?.length ?? 0) > 280) {
             <button type="button" (click)="descriptionExpanded = !descriptionExpanded" class="mt-1 text-sm font-semibold text-brand-700 hover:text-brand-800">
-              {{ descriptionExpanded ? 'Show less' : 'Read more' }}
+              {{ descriptionExpanded ? 'Voir moins' : 'Lire la suite' }}
             </button>
           }
         } @else {
-          <p class="mt-2 text-sm text-slate-400">This company hasn't added a description yet.</p>
+          <p class="mt-2 text-sm text-slate-400">Cette entreprise n’a pas encore ajouté de description.</p>
         }
       </div>
     </div>
@@ -125,7 +125,7 @@
 
     <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
       <h2 class="text-base font-semibold">
-        Products ({{ totalProducts }})
+        Produits ({{ totalProducts }})
       </h2>
 
       <!-- SEARCH -->
@@ -135,7 +135,7 @@
           type="text"
           [(ngModel)]="searchTerm"
           (ngModelChange)="onSearchChange($event)"
-          placeholder="Search products..."
+          placeholder="Rechercher un produit…"
           class="w-full rounded-full border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-sm text-slate-700 outline-none transition focus:border-brand-600/40 focus:bg-white"
         />
       </div>
@@ -154,7 +154,7 @@
         [class.text-slate-600]="selectedCategoryId !== null"
         [class.hover:border-slate-300]="selectedCategoryId !== null"
       >
-        All
+        Tout
       </button>
 
       <button
@@ -186,7 +186,7 @@
         [class.text-slate-600]="selectedSubcategoryId !== null"
         [class.hover:border-slate-300]="selectedSubcategoryId !== null"
       >
-        {{ categories.length > 1 ? 'All ' + category.name : 'All' }}
+        {{ categories.length > 1 ? 'Tout ' + category.name : 'Tout' }}
       </button>
 
       <button
@@ -210,7 +210,7 @@
         (click)="subcategoriesExpanded = true"
         class="px-1 text-xs font-semibold text-brand-700 hover:text-brand-800"
       >
-        +{{ hiddenSubcategoryCount }} more
+        +{{ hiddenSubcategoryCount }} de plus
       </button>
     </div>
 
@@ -229,8 +229,8 @@
 
       <!-- EMPTY -->
       <div *ngIf="products.length === 0 && !loading" class="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
-        <span *ngIf="searchTerm || selectedCategoryId || selectedSubcategoryId">No products match your filters.</span>
-        <span *ngIf="!searchTerm && !selectedCategoryId && !selectedSubcategoryId">This company has no products yet.</span>
+        <span *ngIf="searchTerm || selectedCategoryId || selectedSubcategoryId">Aucun produit ne correspond à vos filtres.</span>
+        <span *ngIf="!searchTerm && !selectedCategoryId && !selectedSubcategoryId">Cette entreprise n’a pas encore de produits.</span>
       </div>
 
     </div>
@@ -243,14 +243,14 @@
         class="inline-flex items-center gap-2 rounded-full border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-brand-600/30 hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
       >
         <i *ngIf="loading" class="fa-solid fa-spinner animate-spin text-xs"></i>
-        <span *ngIf="!loading">Load more products</span>
-        <span *ngIf="loading">Loading...</span>
+        <span *ngIf="!loading">Voir plus de produits</span>
+        <span *ngIf="loading">Chargement…</span>
       </button>
     </div>
 
     <!-- END OF LIST -->
     <p *ngIf="last && products.length > 0" class="mt-6 text-center text-sm text-slate-400">
-      Showing all {{ totalProducts }} products
+      Les {{ totalProducts }} produits sont affichés
     </p>
 
   </div>

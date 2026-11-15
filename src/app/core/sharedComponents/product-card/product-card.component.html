@@ -8,7 +8,7 @@
       class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
     />
     <div class="absolute left-3 top-3 inline-flex items-center rounded-lg bg-white/95 px-2.5 py-1 text-[11px] font-medium uppercase tracking-wider text-slate-600 shadow-sm backdrop-blur-sm">
-      {{ product.subcategory || 'Other' }}
+      {{ product.subcategory || 'Autre' }}
     </div>
   </div>
 
@@ -54,7 +54,7 @@
     </p>
 
     <p *ngIf="product.description === ''" class="mt-3 text-sm leading-6 text-slate-500">
-      No description yet!
+      Pas encore de description
     </p>
 
     <!-- FOOTER: rating + button share the bottom row, rating is now a real anchor point -->
@@ -70,7 +70,7 @@
         <span class="text-xs text-slate-400">({{ product.reviewCount }})</span>
       </div>
       <ng-template #noReviews>
-        <span class="flex-shrink-0 text-xs font-medium text-slate-400">No reviews yet</span>
+        <span class="flex-shrink-0 text-xs font-medium text-slate-400">Pas encore d’avis</span>
       </ng-template>
 
       <!-- BUTTON — now shares the row instead of being a full-width slab -->
@@ -78,7 +78,7 @@
       [routerLink]="'/p/' + product.id"
       class="ml-auto inline-flex items-center gap-1.5 rounded-xl bg-ink px-4 py-2.5 text-sm font-medium text-white transition hover:bg-ink-light"
       >
-      View details
+      Voir le détail
       </a>
 
     </div>

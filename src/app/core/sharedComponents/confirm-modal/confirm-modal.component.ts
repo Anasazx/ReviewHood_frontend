@@ -10,7 +10,7 @@ export class ConfirmModalComponent {
 
   @Input() title = '';
   @Input() message = '';
-  @Input() confirmText = 'Confirm';
+  @Input() confirmText = 'Confirmer';
   @Input() loading = false;
 
   @Output() confirm = new EventEmitter<void>();

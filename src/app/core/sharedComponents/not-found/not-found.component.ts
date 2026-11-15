@@ -17,7 +17,7 @@ export class NotFoundComponent implements OnInit {
 
   ngOnInit() {
     this.seo.setStatus(404);
-    this.seo.set({ title: 'Page not found · ReviewHood', noindex: true });
+    this.seo.set({ title: 'Page introuvable · ReviewHood', noindex: true });
   }
 
   goHome() {

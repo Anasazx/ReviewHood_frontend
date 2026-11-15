@@ -15,10 +15,10 @@ export interface SeoData {
 }
 
 const SITE_NAME = 'ReviewHood';
-const DEFAULT_TITLE = 'ReviewHood · Honest reviews from real customers';
-const DEFAULT_DESCRIPTION = 'Read honest reviews and ratings of products and companies in Tunisia, written by real customers on ReviewHood.';
+const DEFAULT_TITLE = 'ReviewHood · Avis honnêtes de vrais clients en Tunisie';
+const DEFAULT_DESCRIPTION = 'Lisez les avis et les notes de vrais clients sur les produits et les entreprises en Tunisie, sur ReviewHood.';
 const DEFAULT_IMAGE = '/assets/og-default.png';
-const LOCALE = 'en_US';
+const LOCALE = 'fr_TN';
 const HREFLANG = 'fr-TN';
 // Google shows about this much in results
 const MAX_TITLE_LENGTH = 60;

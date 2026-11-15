@@ -1,3 +1,4 @@
+import { FrLabelPipe } from '../../../../core/pipes/fr-label.pipe';
 import { AvatarComponent } from '../../../../core/sharedComponents/avatar/avatar.component';
 import { Component, OnInit } from '@angular/core';
 import { SharedService } from '../../../../core/services/sharedService/shared.service';
@@ -13,7 +14,7 @@ import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-profile-card',
-  imports: [AvatarComponent, CommonModule, FormsModule],
+  imports: [AvatarComponent, CommonModule, FormsModule, FrLabelPipe],
   templateUrl: './profile-card.component.html',
   styleUrl: './profile-card.component.css'
 })
@@ -79,11 +80,11 @@ export class ProfileCardComponent implements OnInit {
         this.user = res;
         this.editing = false;
         this.saving = false;
-        this.toast.show('Profile updated.');
+        this.toast.show('Profil mis à jour.');
       },
       error: () => {
         this.saving = false;
-        this.toast.show('Could not save your changes. Please try again.', 'error');
+        this.toast.show('Impossible d’enregistrer vos modifications. Veuillez réessayer.', 'error');
       }
     });
   }
@@ -99,12 +100,12 @@ export class ProfileCardComponent implements OnInit {
         this.user = updatedUser; // instant UI update
         this.uploadingAvatar = false;
         this.authService.loadCurrentUser().subscribe(); // header + greeting pick up the new photo
-        this.toast.show('Photo updated.');
+        this.toast.show('Photo mise à jour.');
       },
       error: (err) => {
         console.error('Avatar upload failed', err);
         this.uploadingAvatar = false;
-        this.toast.show('Could not upload that photo. Try another image.', 'error');
+        this.toast.show('Impossible d’envoyer cette photo. Essayez une autre image.', 'error');
       }
     });
   }

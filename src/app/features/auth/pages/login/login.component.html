@@ -5,11 +5,11 @@
 <div class="mb-7 text-center">
 
   <h1 class="text-2xl font-bold tracking-tight text-slate-900">
-    Welcome back
+    Bon retour parmi nous
   </h1>
 
   <p class="mt-2 text-sm text-slate-500">
-    Sign in to continue to your account.
+    Connectez-vous pour accéder à votre compte.
   </p>
 
 </div>
@@ -28,7 +28,7 @@
       for="login-email"
       class="mb-2 block text-sm font-medium text-slate-700"
     >
-      Email address
+      Adresse e-mail
     </label>
 
     <input
@@ -36,7 +36,7 @@
       type="email"
       id="login-email"
       name="email"
-      placeholder="you@example.com"
+      placeholder="vous@exemple.com"
       required
       autocomplete="email"
       class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition-all duration-200 placeholder-slate-400 focus:border-brand-600 focus:ring-4 focus:ring-brand-600/10"
@@ -54,14 +54,14 @@
         for="login-password"
         class="text-sm font-medium text-slate-700"
       >
-        Password
+        Mot de passe
       </label>
 
       <button
         type="button"
         class="text-sm font-medium text-brand-600 transition-colors hover:text-brand-700"
       >
-        Forgot password?
+        Mot de passe oublié ?
       </button>
 
     </div>
@@ -86,7 +86,7 @@
         type="button"
         (click)="showPassword = !showPassword"
         class="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-        aria-label="Toggle password visibility"
+        aria-label="Afficher ou masquer le mot de passe"
       >
 
         <!-- Eye -->
@@ -157,7 +157,7 @@
       *ngIf="!loading"
       class="flex items-center justify-center"
     >
-      Sign in
+      Se connecter
     </span>
 
     <span
@@ -188,7 +188,7 @@
 
       </svg>
 
-      Signing in…
+      Connexion…
 
     </span>
 
@@ -203,7 +203,7 @@
   <div class="h-px flex-1 bg-slate-200"></div>
 
   <span class="text-xs font-medium uppercase tracking-wide text-slate-400">
-    Or
+    Ou
   </span>
 
   <div class="h-px flex-1 bg-slate-200"></div>
@@ -225,13 +225,13 @@
 <!-- Register -->
 <p class="mt-6 text-center text-sm text-slate-500">
 
-  Don't have an account?
+  Vous n’avez pas de compte ?
 
   <a
     routerLink="/auth/register"
     class="font-semibold text-brand-600 transition-colors hover:text-brand-700"
   >
-    Sign up
+    S’inscrire
   </a>
 
 </p>

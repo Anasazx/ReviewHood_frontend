@@ -1,3 +1,4 @@
+import { FrLabelPipe } from '../../../../core/pipes/fr-label.pipe';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, afterNextRender } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
@@ -16,7 +17,7 @@ import { AvatarComponent } from '../../../../core/sharedComponents/avatar/avatar
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, ProductCardComponent, RouterLink, SearchBarComponent, AvatarComponent],
+  imports: [CommonModule, ProductCardComponent, RouterLink, SearchBarComponent, AvatarComponent, FrLabelPipe],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })

@@ -78,7 +78,7 @@ export class AllProductsComponent implements OnInit {
   }
 
   get pageTitle(): string {
-    return this.activeSubcategoryName ?? this.activeCategory?.name ?? 'All products';
+    return this.activeSubcategoryName ?? this.activeCategory?.name ?? 'Tous les produits';
   }
 
   // A category page is worth indexing only if the category exists and has live products (the tree keeps only those)
@@ -87,7 +87,7 @@ export class AllProductsComponent implements OnInit {
     const name = filtered ? this.activeSubcategoryName ?? (this.selectedSubcategoryId ? undefined : this.activeCategory?.name) : undefined;
 
     if (filtered && !name) {
-      this.seo.set({ title: 'Products · ReviewHood', noindex: true });
+      this.seo.set({ title: 'Produits · ReviewHood', noindex: true });
       return;
     }
 

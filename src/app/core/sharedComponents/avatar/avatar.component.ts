@@ -9,7 +9,7 @@ import { ImageUrlPipe } from '../../pipes/image-url.pipe';
   imports: [ImageUrlPipe],
   template: `
     @if (url() && !failed()) {
-      <img [src]="url() | imageUrl" [alt]="name() || 'Profile'" (error)="failed.set(true)"
+      <img [src]="url() | imageUrl" [alt]="name() || 'Profil'" (error)="failed.set(true)"
            class="h-full w-full rounded-full border border-slate-200 object-cover" />
     } @else {
       <span class="flex h-full w-full items-center justify-center rounded-full font-semibold"
