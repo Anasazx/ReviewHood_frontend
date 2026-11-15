@@ -19,7 +19,10 @@ const DEFAULT_TITLE = 'ReviewHood · Honest reviews from real customers';
 const DEFAULT_DESCRIPTION = 'Read honest reviews and ratings of products and companies in Tunisia, written by real customers on ReviewHood.';
 const DEFAULT_IMAGE = '/assets/og-default.png';
 const LOCALE = 'en_US';
-const MAX_DESCRIPTION_LENGTH = 160;
+const HREFLANG = 'fr-TN';
+// Google shows about this much in results
+const MAX_TITLE_LENGTH = 60;
+const MAX_DESCRIPTION_LENGTH = 155;
 
 // Query params that change what a page shows; anything else (utm_*, sort, ...) stays out of the canonical URL
 const CANONICAL_PARAMS = ['q', 'categoryId', 'subcategoryId'];
@@ -58,14 +61,22 @@ export class SeoService {
     this.meta.updateTag({ name: 'twitter:description', content: description });
     this.meta.updateTag({ name: 'twitter:image', content: image });
 
-    if (data.noindex) {
-      this.meta.updateTag({ name: 'robots', content: 'noindex, follow' });
-    } else {
-      this.meta.removeTag('name="robots"');
-    }
+    // Thin pages stay reachable and pass on their links, but stay out of the index
+    this.meta.updateTag({ name: 'robots', content: data.noindex ? 'noindex, follow' : 'index, follow' });
 
-    this.setCanonical(data.noindex ? null : url);
+    this.setCanonical(url);
+    this.setAlternates(data.noindex ? null : url);
     this.setJsonLd(data.jsonLd ?? null);
+  }
+
+  // "{name}{suffix}" with the longest suffix that fits the title limit; the name is cut only if the shortest doesn't fit
+  fitTitle(name: string, suffixes: string[]): string {
+    const clean = name.replace(/\s+/g, ' ').trim();
+    for (const suffix of suffixes) {
+      if (clean.length + suffix.length <= MAX_TITLE_LENGTH) return clean + suffix;
+    }
+    const shortest = suffixes[suffixes.length - 1];
+    return clean.slice(0, MAX_TITLE_LENGTH - shortest.length - 1).trimEnd() + '…' + shortest;
   }
 
   // Each page starts from the defaults, so a product's tags never outlive it during in-app navigation.
@@ -105,13 +116,8 @@ export class SeoService {
       : clean;
   }
 
-  private setCanonical(url: string | null): void {
+  private setCanonical(url: string): void {
     let link = this.document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-
-    if (!url) {
-      link?.remove();
-      return;
-    }
 
     if (!link) {
       link = this.document.createElement('link');
@@ -119,6 +125,20 @@ export class SeoService {
       this.document.head.appendChild(link);
     }
     link.setAttribute('href', url);
+  }
+
+  // There is one language version, so every alternate points back at the page itself
+  private setAlternates(url: string | null): void {
+    this.document.head.querySelectorAll('link[rel="alternate"][hreflang]').forEach(link => link.remove());
+    if (!url) return;
+
+    for (const hreflang of [HREFLANG, 'x-default']) {
+      const link = this.document.createElement('link');
+      link.setAttribute('rel', 'alternate');
+      link.setAttribute('hreflang', hreflang);
+      link.setAttribute('href', url);
+      this.document.head.appendChild(link);
+    }
   }
 
   private setJsonLd(data: object | null): void {

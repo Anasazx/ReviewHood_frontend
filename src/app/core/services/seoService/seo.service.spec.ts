@@ -39,17 +39,32 @@ describe('SeoService', () => {
     expect(meta.getTag('property="og:title"')!.content).toBe('two');
   });
 
-  it('removes the canonical link and adds robots for noindex pages', () => {
+  it('switches robots and hreflang links between indexable and noindex pages', () => {
+    const alternates = () => document.head.querySelectorAll('link[rel="alternate"][hreflang]');
+
     service.set({ title: 'indexable' });
-    expect(canonical()).not.toBeNull();
+    expect(meta.getTag('name="robots"')!.content).toBe('index, follow');
+    expect(Array.from(alternates()).map(link => link.getAttribute('hreflang'))).toEqual(['fr-TN', 'x-default']);
 
     service.set({ title: 'hidden', noindex: true });
-    expect(canonical()).toBeNull();
     expect(meta.getTag('name="robots"')!.content).toBe('noindex, follow');
+    expect(alternates().length).toBe(0);
+    expect(canonical()).not.toBeNull();
 
     service.set({ title: 'indexable again' });
-    expect(canonical()).not.toBeNull();
-    expect(meta.getTag('name="robots"')).toBeNull();
+    expect(meta.getTag('name="robots"')!.content).toBe('index, follow');
+    expect(alternates().length).toBe(2);
+  });
+
+  it('picks the longest title suffix that fits and cuts the name only as a last resort', () => {
+    const suffixes = [' – Avis, prix et notes en Tunisie | ReviewHood', ' – Avis en Tunisie'];
+
+    expect(service.fitTitle('Gel', suffixes)).toBe('Gel – Avis, prix et notes en Tunisie | ReviewHood');
+    expect(service.fitTitle('Crème hydratante visage', suffixes)).toBe('Crème hydratante visage – Avis en Tunisie');
+
+    const cut = service.fitTitle('x'.repeat(80), suffixes);
+    expect(cut.length).toBeLessThanOrEqual(60);
+    expect(cut).toMatch(/… – Avis en Tunisie$/);
   });
 
   it('removes JSON-LD when the next page has none', () => {
@@ -68,7 +83,7 @@ describe('SeoService', () => {
   it('shortens long descriptions for search results', () => {
     service.set({ title: 'x', description: 'a'.repeat(300) });
 
-    expect(meta.getTag('name="description"')!.content.length).toBeLessThanOrEqual(160);
+    expect(meta.getTag('name="description"')!.content.length).toBeLessThanOrEqual(155);
   });
 
   it('sets the response status when rendering on the server', () => {
