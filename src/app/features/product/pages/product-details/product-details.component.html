@@ -42,11 +42,20 @@
 
         <div class="flex min-w-0 flex-1 flex-col md:py-2">
 
+          <!-- Brand + name: the heading search engines read as the page's subject -->
           <h1 id="product-name" class="break-words text-2xl font-semibold leading-tight tracking-tight text-ink sm:text-[28px] lg:text-[32px]">
+            @if (product.companyName) {
+              <a [routerLink]="['/c', product.companyId]" class="mb-1.5 flex w-fit items-center gap-1 text-sm font-semibold uppercase tracking-wider text-brand-700 hover:text-brand-800 hover:underline">
+                {{ product.companyName }}
+                @if (product.companyIsVerified) {
+                  <i class="fa-solid fa-circle-check text-xs text-brand-600" title="Verified company" aria-label="Verified company"></i>
+                }
+              </a>
+            }
             {{ product.name }}
           </h1>
 
-          <!-- Rating + company on one line (wraps on narrow screens) -->
+          <!-- Rating -->
           <div class="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
             @if (product.reviewsCount > 0) {
               <button type="button" (click)="scrollToReviews()" class="group inline-flex items-center gap-1.5"
@@ -63,32 +72,20 @@
                 <i class="fa-regular fa-star text-xs text-slate-400"></i>No reviews yet
               </span>
             }
-
-            <span class="text-slate-300" aria-hidden="true">·</span>
-
-            <span class="text-slate-500">
-              by
-              <a [routerLink]="['/c', product.companyId]" class="font-semibold text-slate-900 hover:text-brand-700 hover:underline">{{ product.companyName }}</a>
-              @if (product.companyIsVerified) {
-                <i class="fa-solid fa-circle-check ml-0.5 text-brand-600" title="Verified company" aria-label="Verified company"></i>
-              }
-            </span>
           </div>
 
           <!-- Description -->
+          @if (product.description) {
           <div class="mt-5 border-t border-slate-100 pt-5">
             <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400">About this product</h2>
-            @if (product.description) {
               <p #descText class="mt-2 whitespace-pre-line text-[15px] leading-relaxed text-slate-700" [class.line-clamp-5]="!descExpanded">{{ product.description }}</p>
               @if (descOverflows || descExpanded) {
                 <button type="button" (click)="descExpanded = !descExpanded" class="mt-1 text-sm font-semibold text-brand-700 hover:text-brand-800">
                   {{ descExpanded ? 'Show less' : 'Read more' }}
                 </button>
               }
-            } @else {
-              <p class="mt-2 text-sm text-slate-400">No description yet.</p>
-            }
           </div>
+          }
 
           <!-- Actions -->
           <div class="mt-6 flex flex-col gap-2 sm:flex-row">
@@ -121,11 +118,17 @@
           [reviewsCount]="product.reviewsCount">
         </app-product-rating-overview>
       } @else {
-        <div class="flex h-full flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-10 text-center">
-          <div class="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-slate-50 text-slate-300">
+        <div class="flex h-full flex-col items-center justify-center rounded-2xl border border-dashed border-brand-200 bg-white px-4 py-10 text-center">
+          <div class="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-brand-50 text-brand-600">
             <i class="fa-regular fa-comments text-lg"></i>
           </div>
-          <p class="text-sm font-medium text-slate-600">No reviews yet</p>
+          <h2 class="text-base font-semibold text-ink">Be the first to review {{ product.name }}</h2>
+          <p class="mt-1 max-w-sm text-sm text-slate-500">Used it? Your honest opinion helps other shoppers in Tunisia decide.</p>
+          <button type="button" (click)="scrollToReviewForm()"
+                  class="mt-4 inline-flex items-center gap-2 rounded-full bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">
+            <i class="fa-solid fa-pen text-xs"></i>
+            Write the first review
+          </button>
         </div>
       }
 
@@ -316,11 +319,97 @@
             <i class="fa-solid fa-spinner animate-spin"></i> Loading reviews...
           </div>
         }
-    </section>
-  }
 
-  <!-- Infinite scroll trigger: kept outside the @if so it exists when the observer is set up -->
-  <div #loadMoreTrigger class="h-10"></div>
+        <!-- Infinite scroll trigger for the next page of reviews -->
+        <div #loadMoreTrigger class="h-4"></div>
+    </section>
+
+    <!-- CURATED CONTENT: each block only when it has data -->
+    @if (product.seoDescription) {
+      <section class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-6" aria-labelledby="overview-heading">
+        <h2 id="overview-heading" class="text-lg font-semibold text-ink">In detail</h2>
+        <p class="mt-3 whitespace-pre-line text-[15px] leading-relaxed text-slate-700">{{ product.seoDescription }}</p>
+      </section>
+    }
+
+    @if (product.pros?.length || product.cons?.length) {
+      <section class="grid gap-5 sm:grid-cols-2" aria-label="Pros and cons">
+        @if (product.pros?.length) {
+          <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-6">
+            <h2 class="text-lg font-semibold text-ink">Pros</h2>
+            <ul class="mt-3 space-y-2">
+              @for (pro of product.pros; track $index) {
+                <li class="flex gap-2.5 text-[15px] leading-relaxed text-slate-700">
+                  <i class="fa-solid fa-circle-check mt-1 text-sm text-brand-600" aria-hidden="true"></i>{{ pro }}
+                </li>
+              }
+            </ul>
+          </div>
+        }
+        @if (product.cons?.length) {
+          <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-6">
+            <h2 class="text-lg font-semibold text-ink">Cons</h2>
+            <ul class="mt-3 space-y-2">
+              @for (con of product.cons; track $index) {
+                <li class="flex gap-2.5 text-[15px] leading-relaxed text-slate-700">
+                  <i class="fa-solid fa-circle-minus mt-1 text-sm text-slate-400" aria-hidden="true"></i>{{ con }}
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      </section>
+    }
+
+    @if (product.priceTnd != null || product.whereToBuy) {
+      <section class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-6" aria-labelledby="price-heading">
+        <h2 id="price-heading" class="text-lg font-semibold text-ink">Price in Tunisia</h2>
+        <div class="mt-3 flex flex-col gap-4 sm:flex-row sm:gap-10">
+          @if (product.priceTnd != null) {
+            <div>
+              <p class="text-2xl font-semibold text-ink">{{ product.priceTnd | number: '1.0-3' }} <span class="text-base font-medium text-slate-500">TND</span></p>
+              <p class="mt-0.5 text-xs text-slate-400">Indicative price, may vary by shop</p>
+            </div>
+          }
+          @if (product.whereToBuy) {
+            <div class="min-w-0">
+              <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400">Where to buy</h3>
+              <p class="mt-1 whitespace-pre-line break-words text-[15px] leading-relaxed text-slate-700">{{ product.whereToBuy }}</p>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    @if (product.faq?.length) {
+      <!-- <details> keeps every answer in the HTML for crawlers, closed or open -->
+      <section class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-6" aria-labelledby="faq-heading">
+        <h2 id="faq-heading" class="text-lg font-semibold text-ink">Frequently asked questions</h2>
+        <div class="mt-2 divide-y divide-slate-100">
+          @for (item of product.faq; track $index) {
+            <details class="group py-3">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-slate-900 hover:text-brand-700 [&::-webkit-details-marker]:hidden">
+                {{ item.question }}
+                <i class="fa-solid fa-chevron-down text-xs text-slate-400 transition group-open:rotate-180" aria-hidden="true"></i>
+              </summary>
+              <p class="mt-2 whitespace-pre-line text-[15px] leading-relaxed text-slate-700">{{ item.answer }}</p>
+            </details>
+          }
+        </div>
+      </section>
+    }
+
+    @if (relatedProducts.length) {
+      <section class="space-y-3 pt-2" aria-labelledby="related-heading">
+        <h2 id="related-heading" class="px-0.5 text-lg font-semibold text-ink">Related products</h2>
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          @for (related of relatedProducts; track related.id) {
+            <app-product-card [product]="related"></app-product-card>
+          }
+        </div>
+      </section>
+    }
+  }
 </div>
 
 <app-auth-required

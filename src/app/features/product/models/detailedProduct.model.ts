@@ -18,6 +18,21 @@ export interface DetailedProduct {
   reviews: ReviewResponse[];
   images: ProductImageResponse[];
   ratingDistribution?: Record<number, number>;
+
+  // false for thin pages, which are noindexed
+  indexable?: boolean;
+  // Hand-written content for priority products; empty lists when there is none
+  seoDescription?: string | null;
+  pros?: string[];
+  cons?: string[];
+  faq?: FaqItem[];
+  priceTnd?: number | null;
+  whereToBuy?: string | null;
+}
+
+export interface FaqItem {
+  question: string;
+  answer: string;
 }
 
 
