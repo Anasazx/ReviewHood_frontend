@@ -91,11 +91,11 @@
               <select id="country" [(ngModel)]="editModel.country"
                       class="w-full max-w-sm rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20">
                 @for (c of countries; track c) {
-                  <option [ngValue]="c">{{ c | titlecase }}</option>
+                  <option [ngValue]="c">{{ c | frLabel }}</option>
                 }
               </select>
             } @else {
-              <span [ngClass]="user.country ? 'font-medium text-slate-900' : 'text-slate-400'">{{ user.country ? (user.country | titlecase) : 'Not added' }}</span>
+              <span [ngClass]="user.country ? 'font-medium text-slate-900' : 'text-slate-400'">{{ user.country ? (user.country | frLabel) : 'Non renseigné' }}</span>
             }
           </dd>
         </div>

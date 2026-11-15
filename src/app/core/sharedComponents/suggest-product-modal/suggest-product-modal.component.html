@@ -4,11 +4,11 @@
   <div class="w-full max-w-md bg-white rounded-2xl shadow-xl p-6">
 
     <h2 class="text-lg font-semibold text-slate-900">
-      Didn't find a product?
+      Vous ne trouvez pas un produit ?
     </h2>
 
     <p class="mt-1 text-sm text-slate-500">
-      Tell us what you are looking for and we will add it.
+      Dites-nous ce que vous cherchez et nous l’ajouterons.
     </p>
 
 
@@ -16,7 +16,7 @@
 
       <input
         [(ngModel)]="suggestion.name"
-        placeholder="Product name (ex: Air Max 95)"
+        placeholder="Nom du produit (ex. : Air Max 95)"
         class="
           w-full
           border
@@ -30,7 +30,7 @@
 
       <input
         [(ngModel)]="suggestion.companyName"
-        placeholder="Company (ex: Nike)"
+        placeholder="Marque ou entreprise (ex. : Nike)"
         class="
           w-full
           border
@@ -44,7 +44,7 @@
 
       <textarea
         [(ngModel)]="suggestion.description"
-        placeholder="More details (optional)"
+        placeholder="Plus de détails (facultatif)"
         class="
           w-full
           border
@@ -75,7 +75,7 @@
           hover:bg-slate-200
           transition
         ">
-        Cancel
+        Annuler
       </button>
 
 
@@ -92,7 +92,7 @@
           hover:bg-slate-800
           transition
         ">
-        Suggest
+        Envoyer
       </button>
 
     </div>

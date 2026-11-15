@@ -12,7 +12,7 @@ import {RouterLink} from '@angular/router';
 export class AuthRequiredComponent {
 
   @Input()
-  message = 'You need an account to perform this action.';
+  message = 'Vous devez avoir un compte pour effectuer cette action.';
 
   @Output()
   close = new EventEmitter<void>();

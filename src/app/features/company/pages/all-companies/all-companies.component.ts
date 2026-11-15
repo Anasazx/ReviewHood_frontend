@@ -1,3 +1,4 @@
+import { FrLabelPipe } from '../../../../core/pipes/fr-label.pipe';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
@@ -21,7 +22,7 @@ function normalizeSearchText(value: string): string {
 @Component({
   selector: 'app-all-companies',
   standalone: true,
-  imports: [CommonModule, RouterLink, ImageUrlPipe],
+  imports: [CommonModule, RouterLink, ImageUrlPipe, FrLabelPipe],
   templateUrl: './all-companies.component.html',
   styleUrl: './all-companies.component.css'
 })

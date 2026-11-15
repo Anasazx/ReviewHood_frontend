@@ -5,26 +5,26 @@
     <aside class="absolute left-0 top-0 flex h-full w-80 max-w-[85vw] flex-col bg-white shadow-xl" aria-label="Menu">
       <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
         <img src="/logo.png" alt="ReviewHood" class="h-7 w-auto" />
-        <button type="button" (click)="close.emit()" class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100" aria-label="Close menu">
+        <button type="button" (click)="close.emit()" class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100" aria-label="Fermer le menu">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
 
       <div class="flex-1 overflow-y-auto px-3 py-4">
-        <nav class="space-y-0.5" aria-label="Main">
+        <nav class="space-y-0.5" aria-label="Principal">
           <a routerLink="/" (click)="close.emit()" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100">
-            <i class="fa-solid fa-house w-4 text-center text-slate-400"></i> Home
+            <i class="fa-solid fa-house w-4 text-center text-slate-400"></i> Accueil
           </a>
           <a routerLink="/products" (click)="close.emit()" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100">
-            <i class="fa-solid fa-border-all w-4 text-center text-slate-400"></i> All products
+            <i class="fa-solid fa-border-all w-4 text-center text-slate-400"></i> Tous les produits
           </a>
           <a routerLink="/companies" (click)="close.emit()" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100">
-            <i class="fa-solid fa-building w-4 text-center text-slate-400"></i> Companies
+            <i class="fa-solid fa-building w-4 text-center text-slate-400"></i> Entreprises
           </a>
         </nav>
 
-        <p class="mb-1 mt-6 px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Categories</p>
-        <nav class="space-y-0.5" aria-label="Categories">
+        <p class="mb-1 mt-6 px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Catégories</p>
+        <nav class="space-y-0.5" aria-label="Catégories">
           @for (c of categories; track c.id) {
             <div>
               <button type="button" (click)="toggle(c.id)" [attr.aria-expanded]="expanded === c.id"
@@ -40,7 +40,7 @@
                     <a [routerLink]="['/products']" [queryParams]="{ categoryId: c.id }" (click)="close.emit()"
                        class="block rounded-md px-2 py-1.5 text-sm"
                        [ngClass]="currentCategoryId === c.id && !currentSubcategoryId ? 'bg-brand-600 font-medium text-white' : 'font-medium text-brand-700 hover:bg-brand-50'">
-                      All {{ c.name }} <span class="text-xs opacity-70">{{ c.productCount }}</span>
+                      Tout {{ c.name }} <span class="text-xs opacity-70">{{ c.productCount }}</span>
                     </a>
                   </li>
                   @for (s of c.subcategories; track s.id) {
@@ -60,7 +60,7 @@
       </div>
 
       <div class="border-t border-slate-100 px-5 py-3">
-        <a routerLink="/categories" (click)="close.emit()" class="text-sm font-semibold text-brand-700">Browse all categories →</a>
+        <a routerLink="/categories" (click)="close.emit()" class="text-sm font-semibold text-brand-700">Voir toutes les catégories →</a>
       </div>
     </aside>
   </div>

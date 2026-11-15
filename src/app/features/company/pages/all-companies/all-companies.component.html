@@ -63,7 +63,7 @@
           <circle cx="12" cy="12" r="10"/><path d="M10 12.5 8.5 11 7 12.5 10 15.5 17 8.5 15.5 7z" fill="white"/>
         </svg>
       </div>
-      <p class="mt-0.5 truncate text-xs text-slate-500">{{ company.description || company.country }}</p>
+      <p class="mt-0.5 truncate text-xs text-slate-500">{{ company.description || (company.country | frLabel) }}</p>
     </div>
     <i class="fa-solid fa-chevron-right flex-shrink-0 text-xs text-slate-300 transition group-hover:text-brand-600"></i>
     </a>

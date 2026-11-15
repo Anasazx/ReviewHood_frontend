@@ -16,7 +16,7 @@
         type="button"
         (click)="toggleMobileMenu()"
         class="mr-1 rounded-lg p-2 transition hover:bg-slate-100 lg:hidden"
-        aria-label="Open menu"
+        aria-label="Ouvrir le menu"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -69,17 +69,17 @@
         routerLink="/products"
         routerLinkActive="!bg-brand-50 !text-brand-700"
         class="rounded-full px-3.5 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
-      >Products</a>
+      >Produits</a>
       <a
         routerLink="/companies"
         routerLinkActive="!bg-brand-50 !text-brand-700"
         class="rounded-full px-3.5 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
-      >Companies</a>
+      >Entreprises</a>
       <a
         routerLink="/categories"
         routerLinkActive="!bg-brand-50 !text-brand-700"
         class="rounded-full px-3.5 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
-      >Categories</a>
+      >Catégories</a>
     </nav>
 
 
@@ -94,7 +94,7 @@
           type="button"
           (click)="mobileSearchOpen = true"
           class="rounded-full p-2 transition hover:bg-slate-100"
-          aria-label="Search"
+          aria-label="Rechercher"
         >
           <i class="fa-solid fa-magnifying-glass text-lg text-slate-700"></i>
         </button>
@@ -123,7 +123,7 @@
             (click)="openLogin()"
             class="rounded-full bg-brand-600 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-brand-700"
           >
-            Sign in
+            Se connecter
           </button>
 
         </ng-template>
@@ -166,7 +166,7 @@
                 routerLink="/account"
                 class="block px-4 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50"
               >
-                My account
+                Mon compte
               </a>
 
               <button
@@ -174,7 +174,7 @@
                 (click)="logoutConfirmOpen = true"
                 class="w-full px-4 py-2.5 text-left text-sm text-red-600 transition hover:bg-red-50"
               >
-                Logout
+                Se déconnecter
               </button>
 
             </div>
@@ -192,7 +192,7 @@
             (click)="openLogin()"
             class="rounded-full bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700"
           >
-            Log in
+            Se connecter
           </button>
 
         </ng-template>
@@ -220,9 +220,9 @@
 <!-- LOGOUT CONFIRMATION MODAL -->
 <app-confirm-modal
   *ngIf="logoutConfirmOpen"
-  title="Sign out?"
-  message="You will need to login again to access your account."
-  confirmText="Sign out"
+  title="Se déconnecter ?"
+  message="Vous devrez vous reconnecter pour accéder à votre compte."
+  confirmText="Se déconnecter"
   (cancel)="logoutConfirmOpen = false"
   (confirm)="confirmLogout()"
 >
@@ -259,7 +259,7 @@
       type="button"
       (click)="mobileSearchOpen = false"
       class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full hover:bg-slate-100"
-      aria-label="Close search"
+      aria-label="Fermer la recherche"
     >
       <i class="fa-solid fa-arrow-left text-slate-700"></i>
     </button>

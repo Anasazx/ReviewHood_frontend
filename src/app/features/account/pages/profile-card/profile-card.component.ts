@@ -1,3 +1,4 @@
+import { FrLabelPipe } from '../../../../core/pipes/fr-label.pipe';
 import { AvatarComponent } from '../../../../core/sharedComponents/avatar/avatar.component';
 import { Component, OnInit } from '@angular/core';
 import { SharedService } from '../../../../core/services/sharedService/shared.service';
@@ -13,7 +14,7 @@ import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-profile-card',
-  imports: [AvatarComponent, CommonModule, FormsModule],
+  imports: [AvatarComponent, CommonModule, FormsModule, FrLabelPipe],
   templateUrl: './profile-card.component.html',
   styleUrl: './profile-card.component.css'
 })

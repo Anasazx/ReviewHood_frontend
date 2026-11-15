@@ -1,3 +1,4 @@
+import { FrLabelPipe } from '../../../../core/pipes/fr-label.pipe';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -17,7 +18,7 @@ type SearchTab = 'all' | 'products' | 'companies';
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [CommonModule, RouterLink, ProductCardComponent, ImageUrlPipe, SuggestProductModalComponent],
+  imports: [CommonModule, RouterLink, ProductCardComponent, ImageUrlPipe, SuggestProductModalComponent, FrLabelPipe],
   templateUrl: './search.component.html',
   styleUrl: './search.component.css'
 })
