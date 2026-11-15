@@ -37,42 +37,6 @@
     </div>
   </section>
 
-  <!-- CATEGORIES -->
-  <section aria-labelledby="categories-title">
-    <div class="mb-5 flex items-end justify-between gap-3">
-      <div>
-        <h2 id="categories-title" class="text-xl font-semibold tracking-tight text-slate-900 md:text-2xl">Browse by category</h2>
-        <p class="mt-1 text-sm text-slate-500">Jump straight to what you need</p>
-      </div>
-      <a routerLink="/categories" class="flex shrink-0 items-center gap-1.5 text-sm font-semibold text-brand-700 transition hover:text-brand-600">
-        <span class="hidden sm:inline">All categories</span><span class="sm:hidden">All</span>
-        <i class="fa-solid fa-arrow-right text-xs"></i>
-      </a>
-    </div>
-
-    <!-- Compact pills: wrap on desktop, single swipeable row on mobile -->
-    @if (categoryTree === null) {
-      <div class="flex gap-2 overflow-hidden sm:flex-wrap">
-        @for (i of [1, 2, 3, 4, 5, 6]; track i) {
-          <div class="h-11 w-36 shrink-0 animate-pulse rounded-full bg-slate-100"></div>
-        }
-      </div>
-    } @else if (categoryTree.length) {
-      <div class="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        @for (category of categoryTree.slice(0, 10); track category.id) {
-          <a [routerLink]="['/products']" [queryParams]="{ categoryId: category.id, category: category.name }"
-             class="group flex shrink-0 items-center gap-2.5 rounded-full border border-slate-200 bg-white py-1.5 pl-1.5 pr-4 transition hover:border-brand-600/30 hover:bg-brand-50/50">
-            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-brand-50 text-sm text-brand-600 transition group-hover:bg-brand-600 group-hover:text-white">
-              <i class="fa-solid" [ngClass]="categoryIcon(category.name)"></i>
-            </span>
-            <span class="whitespace-nowrap text-sm font-semibold text-slate-800">{{ category.name }}</span>
-            <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500 transition group-hover:bg-white">{{ category.productCount | number }}</span>
-          </a>
-        }
-      </div>
-    }
-  </section>
-
   <!-- PRODUCTS -->
   @if (!feedLoaded || products.length) {
     <section aria-labelledby="products-title">
@@ -128,6 +92,42 @@
       }
     </section>
   }
+
+  <!-- CATEGORIES -->
+  <section aria-labelledby="categories-title">
+    <div class="mb-5 flex items-end justify-between gap-3">
+      <div>
+        <h2 id="categories-title" class="text-xl font-semibold tracking-tight text-slate-900 md:text-2xl">Browse by category</h2>
+        <p class="mt-1 text-sm text-slate-500">Jump straight to what you need</p>
+      </div>
+      <a routerLink="/categories" class="flex shrink-0 items-center gap-1.5 text-sm font-semibold text-brand-700 transition hover:text-brand-600">
+        <span class="hidden sm:inline">All categories</span><span class="sm:hidden">All</span>
+        <i class="fa-solid fa-arrow-right text-xs"></i>
+      </a>
+    </div>
+
+    <!-- Compact pills: wrap on desktop, single swipeable row on mobile -->
+    @if (categoryTree === null) {
+      <div class="flex gap-2 overflow-hidden sm:flex-wrap">
+        @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+          <div class="h-11 w-36 shrink-0 animate-pulse rounded-full bg-slate-100"></div>
+        }
+      </div>
+    } @else if (categoryTree.length) {
+      <div class="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        @for (category of categoryTree.slice(0, 10); track category.id) {
+          <a [routerLink]="['/products']" [queryParams]="{ categoryId: category.id, category: category.name }"
+             class="group flex shrink-0 items-center gap-2.5 rounded-full border border-slate-200 bg-white py-1.5 pl-1.5 pr-4 transition hover:border-brand-600/30 hover:bg-brand-50/50">
+            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-brand-50 text-sm text-brand-600 transition group-hover:bg-brand-600 group-hover:text-white">
+              <i class="fa-solid" [ngClass]="categoryIcon(category.name)"></i>
+            </span>
+            <span class="whitespace-nowrap text-sm font-semibold text-slate-800">{{ category.name }}</span>
+            <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500 transition group-hover:bg-white">{{ category.productCount | number }}</span>
+          </a>
+        }
+      </div>
+    }
+  </section>
 
   <!-- RECENT REVIEWS -->
   @if (!feedLoaded || reviews.length) {
