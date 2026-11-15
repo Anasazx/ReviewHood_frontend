@@ -22,7 +22,7 @@
       </div>
 
       <div class="mt-2 flex items-center gap-2">
-        <span class="flex gap-0.5 text-base" [attr.aria-label]="selectedRating + ' out of 5'">
+        <span class="flex gap-0.5 text-base" [attr.aria-label]="selectedRating + ' sur 5'">
           @for (i of stars; track i) {
             <i class="fa-solid fa-star" [ngClass]="i <= selectedRating ? 'text-rating' : 'text-slate-200'"></i>
           }

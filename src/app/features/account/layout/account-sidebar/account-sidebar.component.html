@@ -1,4 +1,4 @@
-<nav aria-label="Account"
+<nav aria-label="Compte"
      class="flex gap-1 overflow-x-auto px-4 [scrollbar-width:none] md:flex-col md:overflow-visible md:px-0 [&::-webkit-scrollbar]:hidden">
 
   @for (item of items; track item.path) {
@@ -16,15 +16,15 @@
   <button type="button" (click)="logoutConfirmOpen = true"
           class="flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium text-slate-500 transition hover:bg-red-50 hover:text-red-600 md:rounded-xl md:py-2.5">
     <i class="fa-solid fa-arrow-right-from-bracket w-4 text-center text-[13px]"></i>
-    Log out
+    Se déconnecter
   </button>
 </nav>
 
 @if (logoutConfirmOpen) {
   <app-confirm-modal
-    title="Log out?"
-    message="You will need to log in again to access your account."
-    confirmText="Log out"
+    title="Se déconnecter ?"
+    message="Vous devrez vous reconnecter pour accéder à votre compte."
+    confirmText="Se déconnecter"
     (cancel)="logoutConfirmOpen = false"
     (confirm)="logout()">
   </app-confirm-modal>

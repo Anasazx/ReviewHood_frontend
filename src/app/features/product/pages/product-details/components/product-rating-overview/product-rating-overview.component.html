@@ -4,7 +4,7 @@
     <!-- Overall rating -->
     <div class="shrink-0 text-center sm:w-32">
       <div class="text-4xl font-semibold leading-none text-ink">{{ averageRating | number: '1.1-1' }}</div>
-      <div class="mt-2 flex justify-center gap-0.5 text-sm text-rating" [attr.aria-label]="(averageRating | number: '1.1-1') + ' out of 5'">
+      <div class="mt-2 flex justify-center gap-0.5 text-sm text-rating" [attr.aria-label]="(averageRating | number: '1.1-1') + ' sur 5'">
         @for (star of [1, 2, 3, 4, 5]; track star) {
           <i class="fa-solid" [ngClass]="starIcon(star)"></i>
         }

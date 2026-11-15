@@ -1,7 +1,7 @@
 <div class="space-y-6">
   <div>
-    <h2 class="text-xl font-semibold tracking-tight text-ink">My comments</h2>
-    <p class="mt-1 text-sm text-slate-500">Replies you wrote under reviews{{ total ? ' · ' + total : '' }}</p>
+    <h2 class="text-xl font-semibold tracking-tight text-ink">Mes commentaires</h2>
+    <p class="mt-1 text-sm text-slate-500">Vos réponses sous les avis{{ total ? ' · ' + total : '' }}</p>
   </div>
 
   @if (!loading && !error && !comments.length) {
@@ -9,9 +9,9 @@
       <span class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-brand-600">
         <i class="fa-regular fa-comments text-lg"></i>
       </span>
-      <p class="mt-3 font-medium text-slate-800">No comments yet</p>
-      <p class="mt-1 text-sm text-slate-500">Join a conversation under any review.</p>
-      <a routerLink="/products" class="mt-4 inline-flex rounded-full bg-brand-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Browse products</a>
+      <p class="mt-3 font-medium text-slate-800">Pas encore de commentaires</p>
+      <p class="mt-1 text-sm text-slate-500">Participez à la discussion sous n’importe quel avis.</p>
+      <a routerLink="/products" class="mt-4 inline-flex rounded-full bg-brand-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Parcourir les produits</a>
     </div>
   }
 
@@ -24,16 +24,16 @@
             <div class="min-w-0">
               <p class="truncate font-semibold text-slate-900 group-hover:text-brand-700">{{ c.productName }}</p>
               <p class="mt-1 text-xs text-slate-500">
-                <i class="fa-solid fa-reply mr-1 text-[10px] text-slate-400"></i>{{ c.repliedToName ? 'Reply to ' + c.repliedToName : 'Comment on a review' }}
+                <i class="fa-solid fa-reply mr-1 text-[10px] text-slate-400"></i>{{ c.repliedToName ? 'Réponse à ' + c.repliedToName : 'Commentaire sur un avis' }}
                 <span class="text-slate-300">·</span>
-                <time [attr.datetime]="c.createdAt">{{ c.createdAt | date: 'MMM d, y' }}</time>
+                <time [attr.datetime]="c.createdAt">{{ c.createdAt | date: 'd MMM y' }}</time>
               </p>
             </div>
             <i class="fa-solid fa-chevron-right mt-1 shrink-0 text-xs text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-brand-600"></i>
           </div>
           <p class="mt-3 line-clamp-3 whitespace-pre-line rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-700">{{ c.content }}</p>
           @if (c.likeCount) {
-            <p class="mt-2 text-xs text-slate-400"><i class="fa-regular fa-thumbs-up mr-1"></i>{{ c.likeCount }} {{ c.likeCount === 1 ? 'person found' : 'people found' }} this helpful</p>
+            <p class="mt-2 text-xs text-slate-400"><i class="fa-regular fa-thumbs-up mr-1"></i>{{ c.likeCount }} {{ c.likeCount === 1 ? 'personne a trouvé' : 'personnes ont trouvé' }} ce commentaire utile</p>
           }
         </a>
       </li>
@@ -41,7 +41,7 @@
   </ul>
 
   @if (error) {
-    <p class="text-center text-sm text-red-600">Could not load your comments. <button type="button" class="font-semibold underline" (click)="loadMore()">Retry</button></p>
+    <p class="text-center text-sm text-red-600">Impossible de charger vos commentaires. <button type="button" class="font-semibold underline" (click)="loadMore()">Réessayer</button></p>
   }
   @if (loading) {
     <div class="space-y-3">
@@ -51,7 +51,7 @@
     </div>
   } @else if (!last && comments.length) {
     <div class="flex justify-center">
-      <button type="button" class="rounded-full border border-slate-200 px-5 py-2 text-sm font-semibold text-slate-700 hover:border-brand-600/30 hover:text-brand-700" (click)="loadMore()">Load more</button>
+      <button type="button" class="rounded-full border border-slate-200 px-5 py-2 text-sm font-semibold text-slate-700 hover:border-brand-600/30 hover:text-brand-700" (click)="loadMore()">Voir plus</button>
     </div>
   }
 </div>

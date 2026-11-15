@@ -60,10 +60,7 @@ export class LoginComponent implements OnInit {
 
           console.error('Google login failed:', err);
 
-          this.error =
-            err?.error?.message ||
-            err?.message ||
-            'Google login failed';
+          this.error = 'La connexion avec Google a échoué. Veuillez réessayer.';
         }
 
       });
@@ -83,7 +80,7 @@ export class LoginComponent implements OnInit {
     this.error = null;
 
     if (!email || !password) {
-      this.error = 'Email and password are required.';
+      this.error = 'L’e-mail et le mot de passe sont obligatoires.';
       return;
     }
 
@@ -105,10 +102,10 @@ export class LoginComponent implements OnInit {
 
         this.loading = false;
 
-        this.error =
-          err?.error?.message ||
-          err?.message ||
-          'Login failed';
+        // The API's messages are in English, so the user sees ours
+        this.error = err?.status === 401
+          ? 'E-mail ou mot de passe incorrect.'
+          : 'La connexion a échoué. Veuillez réessayer.';
 
       }
 

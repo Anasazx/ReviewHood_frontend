@@ -13,11 +13,11 @@ import { ConfirmModalComponent } from '../../../../core/sharedComponents/confirm
 export class AccountSidebarComponent {
 
   readonly items = [
-    { path: '/account/profile', label: 'Profile', icon: 'fa-user' },
-    { path: '/account/reviews', label: 'Reviews', icon: 'fa-star' },
-    { path: '/account/comments', label: 'Comments', icon: 'fa-comment' },
+    { path: '/account/profile', label: 'Profil', icon: 'fa-user' },
+    { path: '/account/reviews', label: 'Avis', icon: 'fa-star' },
+    { path: '/account/comments', label: 'Commentaires', icon: 'fa-comment' },
     { path: '/account/suggestions', label: 'Suggestions', icon: 'fa-lightbulb' },
-    { path: '/account/security', label: 'Security', icon: 'fa-shield-halved' },
+    { path: '/account/security', label: 'Sécurité', icon: 'fa-shield-halved' },
   ];
 
   logoutConfirmOpen = false;

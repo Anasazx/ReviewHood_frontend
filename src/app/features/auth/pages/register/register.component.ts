@@ -41,24 +41,24 @@ export class RegisterComponent {
     this.error = null;
 
     if (!username || !email || !password || !confirm) {
-      this.error = 'All fields are required.';
+      this.error = 'Tous les champs sont obligatoires.';
       return;
     }
 
     if (password !== confirm) {
-      this.error = 'Passwords do not match.';
+      this.error = 'Les mots de passe ne correspondent pas.';
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailRegex.test(email)) {
-      this.error = 'Please enter a valid email address.';
+      this.error = 'Veuillez saisir une adresse e-mail valide.';
       return;
     }
 
     if (password.length < 8) {
-      this.error = 'Password must contain at least 8 characters.';
+      this.error = 'Le mot de passe doit contenir au moins 8 caractères.';
       return;
     }
 
@@ -77,7 +77,10 @@ export class RegisterComponent {
       },
       error: (err) => {
         this.loading = false;
-        this.error = err?.error?.message || 'Registration failed';
+        // The API's messages are in English, so the user sees ours
+        this.error = err?.status === 409
+          ? 'Un compte existe déjà avec cette adresse e-mail.'
+          : 'L’inscription a échoué. Veuillez réessayer.';
       }
     });
   }

@@ -1,8 +1,8 @@
 <div class="space-y-6">
 
   <div>
-    <h2 class="text-xl font-semibold tracking-tight text-ink">My suggestions</h2>
-    <p class="mt-1 text-sm text-slate-500">Products you asked us to add to ReviewHood.</p>
+    <h2 class="text-xl font-semibold tracking-tight text-ink">Mes suggestions</h2>
+    <p class="mt-1 text-sm text-slate-500">Les produits que vous nous avez demandé d’ajouter à ReviewHood.</p>
   </div>
 
   @if (loading) {
@@ -16,9 +16,9 @@
       <span class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-brand-600">
         <i class="fa-regular fa-lightbulb text-lg"></i>
       </span>
-      <p class="mt-3 font-medium text-slate-800">No suggestions yet</p>
-      <p class="mt-1 text-sm text-slate-500">Can't find a product? Search for it and suggest it from the results page.</p>
-      <a routerLink="/search" class="mt-4 inline-flex rounded-full bg-brand-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Search products</a>
+      <p class="mt-3 font-medium text-slate-800">Pas encore de suggestions</p>
+      <p class="mt-1 text-sm text-slate-500">Un produit introuvable ? Recherchez-le et suggérez-le depuis la page de résultats.</p>
+      <a routerLink="/search" class="mt-4 inline-flex rounded-full bg-brand-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Rechercher un produit</a>
     </div>
   } @else {
     <ul class="space-y-3">
@@ -30,7 +30,7 @@
               <p class="mt-0.5 text-xs text-slate-500">
                 {{ suggestion.companyName }}
                 <span class="text-slate-300">·</span>
-                <time [attr.datetime]="suggestion.createdAt">{{ suggestion.createdAt | date: 'MMM d, y' }}</time>
+                <time [attr.datetime]="suggestion.createdAt">{{ suggestion.createdAt | date: 'd MMM y' }}</time>
               </p>
             </div>
             <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold" [ngClass]="status(suggestion.status).classes">
@@ -47,7 +47,7 @@
             <a [routerLink]="['/p', suggestion.productId]"
                class="group mt-4 flex items-center justify-between gap-3 rounded-xl bg-brand-50 px-4 py-3 text-sm transition hover:bg-brand-100">
               <span class="min-w-0 truncate text-brand-800">
-                It's live: <span class="font-semibold">{{ suggestion.productName }}</span>
+                En ligne : <span class="font-semibold">{{ suggestion.productName }}</span>
               </span>
               <i class="fa-solid fa-arrow-right shrink-0 text-xs text-brand-700 transition group-hover:translate-x-0.5"></i>
             </a>

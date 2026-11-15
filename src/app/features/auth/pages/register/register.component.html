@@ -4,11 +4,11 @@
   <div class="mb-7 text-center">
 
     <h1 class="text-2xl font-bold tracking-tight text-slate-900">
-      Create your account
+      Créez votre compte
     </h1>
 
     <p class="mt-2 text-sm text-slate-500">
-      Join ReviewHood and start sharing your opinions.
+      Rejoignez ReviewHood et commencez à partager vos avis.
     </p>
 
   </div>
@@ -27,7 +27,7 @@
         for="register-username"
         class="mb-2 block text-sm font-medium text-slate-700"
       >
-        Username
+        Nom d’utilisateur
       </label>
 
       <input
@@ -35,7 +35,7 @@
         type="text"
         id="register-username"
         name="username"
-        placeholder="your username"
+        placeholder="votre nom d’utilisateur"
         required
         autocomplete="username"
         class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition-all duration-200 placeholder-slate-400 focus:border-brand-600 focus:ring-4 focus:ring-brand-600/10"
@@ -51,7 +51,7 @@
         for="register-email"
         class="mb-2 block text-sm font-medium text-slate-700"
       >
-        Email address
+        Adresse e-mail
       </label>
 
       <input
@@ -59,7 +59,7 @@
         type="email"
         id="register-email"
         name="email"
-        placeholder="you@example.com"
+        placeholder="vous@exemple.com"
         required
         autocomplete="email"
         class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition-all duration-200 placeholder-slate-400 focus:border-brand-600 focus:ring-4 focus:ring-brand-600/10"
@@ -75,7 +75,7 @@
         for="register-password"
         class="mb-2 block text-sm font-medium text-slate-700"
       >
-        Password
+        Mot de passe
       </label>
 
       <div class="relative">
@@ -96,7 +96,7 @@
           type="button"
           (click)="showPassword = !showPassword"
           class="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-          aria-label="Toggle password visibility"
+          aria-label="Afficher ou masquer le mot de passe"
         >
 
           <!-- Eye -->
@@ -153,7 +153,7 @@
         for="register-confirm-password"
         class="mb-2 block text-sm font-medium text-slate-700"
       >
-        Confirm password
+        Confirmer le mot de passe
       </label>
 
       <div class="relative">
@@ -174,7 +174,7 @@
           type="button"
           (click)="showPassword = !showPassword"
           class="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-          aria-label="Toggle password visibility"
+          aria-label="Afficher ou masquer le mot de passe"
         >
 
           <!-- Eye -->
@@ -227,14 +227,14 @@
         *ngIf="confirmPasswordValue && passwordValue !== confirmPasswordValue"
         class="mt-2 text-sm text-red-600"
       >
-        Passwords do not match.
+        Les mots de passe ne correspondent pas.
       </p>
 
       <p
         *ngIf="confirmPasswordValue && passwordValue === confirmPasswordValue"
         class="mt-2 text-sm text-green-600"
       >
-        Passwords match.
+        Les mots de passe correspondent.
       </p>
 
     </div>
@@ -260,7 +260,7 @@
         *ngIf="!loading"
         class="flex items-center justify-center"
       >
-        Create account
+        Créer mon compte
       </span>
 
       <span
@@ -291,7 +291,7 @@
 
         </svg>
 
-        Creating account…
+        Création du compte…
 
       </span>
 
@@ -303,13 +303,13 @@
   <!-- Sign In -->
   <p class="mt-6 text-center text-sm text-slate-500">
 
-    Already have an account?
+    Vous avez déjà un compte ?
 
     <a
       routerLink="/auth/login"
       class="font-semibold text-brand-600 transition-colors hover:text-brand-700"
     >
-      Sign in
+      Se connecter
     </a>
 
   </p>
