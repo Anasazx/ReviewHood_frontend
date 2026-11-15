@@ -86,6 +86,12 @@ describe('SeoService', () => {
     expect(meta.getTag('name="description"')!.content.length).toBeLessThanOrEqual(155);
   });
 
+  it('cuts long descriptions between words', () => {
+    service.set({ title: 'x', description: 'mot '.repeat(60) });
+
+    expect(meta.getTag('name="description"')!.content).toMatch(/ mot…$/);
+  });
+
   it('sets the response status when rendering on the server', () => {
     TestBed.resetTestingModule();
     const responseInit: ResponseInit = {};

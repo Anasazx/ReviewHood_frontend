@@ -111,9 +111,12 @@ export class SeoService {
 
   private shorten(text: string): string {
     const clean = text.replace(/\s+/g, ' ').trim();
-    return clean.length > MAX_DESCRIPTION_LENGTH
-      ? clean.slice(0, MAX_DESCRIPTION_LENGTH - 1).trimEnd() + '…'
-      : clean;
+    if (clean.length <= MAX_DESCRIPTION_LENGTH) return clean;
+
+    // Cut at the last word that fits, unless that throws away most of the text
+    const cut = clean.slice(0, MAX_DESCRIPTION_LENGTH - 1);
+    const lastSpace = cut.lastIndexOf(' ');
+    return (lastSpace > MAX_DESCRIPTION_LENGTH / 2 ? cut.slice(0, lastSpace) : cut).replace(/[\s,.;:–-]+$/, '') + '…';
   }
 
   private setCanonical(url: string): void {
