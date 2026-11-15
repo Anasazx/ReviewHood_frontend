@@ -246,7 +246,7 @@ export class ProductDetailsComponent implements OnInit {
     }
 
     const crumbs = [
-      { name: 'Products', url: `${environment.siteUrl}/products` },
+      { name: 'Produits', url: `${environment.siteUrl}/products` },
       ...(product.categoryId ? [{ name: product.category, url: `${environment.siteUrl}/products?categoryId=${product.categoryId}` }] : []),
       ...(product.subcategoryId ? [{ name: product.subcategory, url: `${environment.siteUrl}/products?subcategoryId=${product.subcategoryId}` }] : []),
       { name: product.name, url }
@@ -300,12 +300,12 @@ export class ProductDetailsComponent implements OnInit {
         this.myReview = saved;
         this.product!.reviews = this.reviews;
         this.submittingReview = false;
-        this.toastService.show('Thanks! Your review is live', 'success');
+        this.toastService.show('Merci ! Votre avis est en ligne', 'success');
       },
       error: err => {
         console.error(err);
         this.submittingReview = false;
-        this.toastService.show('Could not save your review', 'error');
+        this.toastService.show('Impossible d’enregistrer votre avis', 'error');
       }
     });
 
@@ -354,14 +354,14 @@ export class ProductDetailsComponent implements OnInit {
         if (this.myReview?.id === review.id) this.myReview = null;
 
         this.closeDeleteModal();
-        this.toastService.show('Review deleted', 'success');
+        this.toastService.show('Avis supprimé', 'success');
         this.deletingReviewId = null;
       },
       error: err => {
         console.error(err);
         this.closeDeleteModal();
         this.deletingReviewId = null;
-        this.toastService.show('Could not delete review', 'error');
+        this.toastService.show('Impossible de supprimer l’avis', 'error');
       }
     });
   }
@@ -378,24 +378,24 @@ export class ProductDetailsComponent implements OnInit {
         }
 
         this.closeDeleteModal();
-        this.toastService.show('Comment deleted', 'success');
+        this.toastService.show('Commentaire supprimé', 'success');
         this.deletingCommentId = null;
       },
       error: err => {
         console.error(err);
         this.closeDeleteModal();
         this.deletingCommentId = null;
-        this.toastService.show('Could not delete comment', 'error');
+        this.toastService.show('Impossible de supprimer le commentaire', 'error');
       }
     });
   }
 
   get deleteModalTitle(): string {
-    return this.deleteTarget?.type === 'comment' ? 'Delete comment?' : 'Delete review?';
+    return this.deleteTarget?.type === 'comment' ? 'Supprimer le commentaire ?' : 'Supprimer l’avis ?';
   }
 
   get deleteModalMessage(): string {
-    return `Are you sure you want to delete this ${this.deleteTarget?.type ?? 'review'}? This action cannot be undone.`;
+    return `Voulez-vous vraiment supprimer ${this.deleteTarget?.type === 'comment' ? 'ce commentaire' : 'cet avis'} ? Cette action est irréversible.`;
   }
 
   get deleting(): boolean {
@@ -481,7 +481,7 @@ export class ProductDetailsComponent implements OnInit {
 
       error: err => {
         console.error(err);
-        this.toastService.show('Could not post your comment', 'error');
+        this.toastService.show('Impossible de publier votre commentaire', 'error');
       }
     });
   }
@@ -590,7 +590,7 @@ export class ProductDetailsComponent implements OnInit {
 
         error: err => {
           console.error(err);
-          this.toastService.show('Could not post your reply', 'error');
+          this.toastService.show('Impossible de publier votre réponse', 'error');
         }
 
       });

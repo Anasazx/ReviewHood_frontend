@@ -72,10 +72,10 @@ export class SearchComponent implements OnInit {
     const indexable = query.length >= 2 && query.length <= 80 && /[\p{L}\p{N}]/u.test(query);
 
     this.seo.set(indexable ? {
-      title: `${query}: search results | ReviewHood`,
-      description: `Products and companies matching "${query}" on ReviewHood, with ratings and reviews from real customers.`
+      title: `${query} : résultats de recherche | ReviewHood`,
+      description: `Produits et entreprises correspondant à « ${query} » sur ReviewHood, avec les notes et avis de vrais clients.`
     } : {
-      title: 'Search | ReviewHood',
+      title: 'Recherche | ReviewHood',
       noindex: true
     });
   }

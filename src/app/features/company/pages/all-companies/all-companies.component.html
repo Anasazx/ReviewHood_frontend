@@ -3,11 +3,11 @@
   <div class="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
     <div>
       <h1 class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-        All companies
+        Toutes les entreprises
       </h1>
       <p class="mt-1.5 text-sm text-slate-500">
-        <span *ngIf="!loading">{{ totalElements }} companies building trust on ReviewHood</span>
-        <span *ngIf="loading">Loading companies...</span>
+        <span *ngIf="!loading">{{ totalElements }} entreprises qui bâtissent la confiance sur ReviewHood</span>
+        <span *ngIf="loading">Chargement des entreprises…</span>
       </p>
     </div>
 
@@ -18,7 +18,7 @@
         type="text"
         [value]="searchTerm"
         (input)="onSearchChange($any($event.target).value)"
-        placeholder="Filter by name..."
+        placeholder="Filtrer par nom…"
         class="w-full rounded-full border border-slate-200 bg-white py-2.5 pl-9 pr-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-brand-600/40"
       />
     </div>
@@ -38,7 +38,7 @@
         <path *ngIf="verifiedOnly" d="M10 12.5 8.5 11 7 12.5 10 15.5 17 8.5 15.5 7z" fill="white"/>
         <path *ngIf="!verifiedOnly" stroke-linecap="round" stroke-linejoin="round" d="M9 12.5l2 2 4-4"/>
       </svg>
-      Verified only
+      Vérifiées uniquement
     </button>
   </div>
 
@@ -78,29 +78,29 @@
       class="inline-flex items-center gap-2 rounded-full border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-brand-600/30 hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-50 sm:px-6 sm:py-3"
     >
       <i *ngIf="loadingMore" class="fa-solid fa-spinner animate-spin text-xs"></i>
-      <span *ngIf="!loadingMore">Load more companies</span>
-      <span *ngIf="loadingMore">Loading...</span>
+      <span *ngIf="!loadingMore">Voir plus d’entreprises</span>
+      <span *ngIf="loadingMore">Chargement…</span>
     </button>
   </div>
 
   <!-- END OF LIST -->
   <p *ngIf="!loading && isLastPage && filteredCompanies.length > 0 && !searchTerm && !verifiedOnly" class="mt-8 text-center text-sm text-slate-400 sm:mt-10">
-    You've reached the end · {{ companies.length }} of {{ totalElements }} companies
+    Vous avez tout vu · {{ companies.length }} sur {{ totalElements }} entreprises
   </p>
 
   <!-- NO MATCHES (filter active, but nothing found in loaded results) -->
   <div *ngIf="!loading && filteredCompanies.length === 0 && companies.length > 0" class="flex flex-col items-center px-4 py-14 text-center sm:py-16">
     <i class="fa-solid fa-filter-circle-xmark mb-3 text-2xl text-slate-300"></i>
-    <h3 class="font-semibold text-slate-900">No companies match your filter</h3>
-    <p class="mt-1 text-sm text-slate-500">Try a different name, or turn off "Verified only".</p>
+    <h3 class="font-semibold text-slate-900">Aucune entreprise ne correspond à votre filtre</h3>
+    <p class="mt-1 text-sm text-slate-500">Essayez un autre nom, ou désactivez « Vérifiées uniquement ».</p>
   </div>
 
   <!-- EMPTY STATE (no companies at all) -->
   <div *ngIf="!loading && companies.length === 0" class="flex flex-col items-center px-4 py-16 text-center sm:py-20">
     <i class="fa-solid fa-building mb-4 text-3xl text-slate-300"></i>
-    <h2 class="text-lg font-semibold text-slate-900">No companies yet</h2>
+    <h2 class="text-lg font-semibold text-slate-900">Pas encore d’entreprises</h2>
     <p class="mt-1 max-w-sm text-sm text-slate-500">
-      Check back soon — new companies are added regularly.
+      Revenez bientôt : de nouvelles entreprises sont ajoutées régulièrement.
     </p>
   </div>
 

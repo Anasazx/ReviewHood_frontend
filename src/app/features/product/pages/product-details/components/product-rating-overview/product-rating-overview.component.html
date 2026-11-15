@@ -9,7 +9,7 @@
           <i class="fa-solid" [ngClass]="starIcon(star)"></i>
         }
       </div>
-      <div class="mt-1 text-xs text-slate-500">{{ reviewsCount | number }} {{ reviewsCount === 1 ? 'review' : 'reviews' }}</div>
+      <div class="mt-1 text-xs text-slate-500">{{ reviewsCount | number }} avis</div>
     </div>
 
     <!-- Rating distribution -->
@@ -32,12 +32,12 @@
       <i class="fa-regular fa-star"></i>
     </span>
     <div class="flex-1">
-      <p class="text-sm font-semibold text-slate-900">No ratings yet</p>
-      <p class="mt-0.5 text-xs text-slate-500">Used this product? Your review helps others decide.</p>
+      <p class="text-sm font-semibold text-slate-900">Pas encore de note</p>
+      <p class="mt-0.5 text-xs text-slate-500">Vous avez utilisé ce produit ? Votre avis aide les autres à choisir.</p>
     </div>
     <button type="button" (click)="writeReview.emit()"
             class="shrink-0 rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">
-      Be the first to review
+      Soyez le premier à donner votre avis
     </button>
   </div>
 }
