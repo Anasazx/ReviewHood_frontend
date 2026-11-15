@@ -47,11 +47,15 @@ export class AllProductsComponent implements OnInit {
   isLastPage = false;
 
   ngOnInit(): void {
-    this.categoryTreeService.tree$.subscribe(tree => this.categories = tree);
+    this.categoryTreeService.tree$.subscribe(tree => {
+      this.categories = tree;
+      this.updateSeo();
+    });
 
     this.route.queryParamMap.subscribe(params => {
       this.selectedSubcategoryId = params.get('subcategoryId') ? Number(params.get('subcategoryId')) : undefined;
       this.selectedCategoryId = params.get('categoryId') ? Number(params.get('categoryId')) : undefined;
+      this.updateSeo();
 
       this.products = [];
       this.currentPage = 0;
@@ -75,6 +79,25 @@ export class AllProductsComponent implements OnInit {
 
   get pageTitle(): string {
     return this.activeSubcategoryName ?? this.activeCategory?.name ?? 'All products';
+  }
+
+  // A category page is worth indexing only if the category exists and has live products (the tree keeps only those)
+  private updateSeo(): void {
+    const filtered = !!(this.selectedCategoryId || this.selectedSubcategoryId);
+    const name = filtered ? this.activeSubcategoryName ?? (this.selectedSubcategoryId ? undefined : this.activeCategory?.name) : undefined;
+
+    if (filtered && !name) {
+      this.seo.set({ title: 'Products · ReviewHood', noindex: true });
+      return;
+    }
+
+    const subject = name ?? 'Tous les produits';
+    this.seo.set({
+      title: this.seo.fitTitle(subject, [' – Avis et notes en Tunisie | ReviewHood', ' – Avis et notes en Tunisie', ' – Avis en Tunisie']),
+      description: name
+        ? `${name} en Tunisie : comparez les produits grâce aux notes et avis de vrais clients sur ReviewHood.`
+        : 'Tous les produits notés en Tunisie : comparez-les grâce aux notes et avis de vrais clients sur ReviewHood.'
+    });
   }
 
   get sortParam(): string | undefined {
