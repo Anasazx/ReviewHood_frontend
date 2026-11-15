@@ -142,15 +142,17 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy, AfterViewInit
     const reviewCount = company.reviewCount ?? 0;
     const hasReviews = reviewCount > 0;
     const rating = (company.averageRating ?? 0).toFixed(1);
-    const reviews = `${reviewCount} ${reviewCount === 1 ? 'review' : 'reviews'}`;
+    const lead = hasReviews
+      ? `${company.name} : noté ${rating.replace('.', ',')}/5 sur ${reviewCount} avis clients en Tunisie.`
+      : `Avis clients sur ${company.name} et ses produits en Tunisie. Partagez votre expérience sur ReviewHood.`;
 
     this.seo.set({
-      title: `${company.name}: customer reviews | ReviewHood`,
-      description: hasReviews
-        ? `${company.name} is rated ${rating} out of 5 from ${reviews} on ReviewHood. See what customers say about its products.`
-        : `Read and write customer reviews of ${company.name} and its products on ReviewHood.`,
+      title: this.seo.fitTitle(company.name, [' – Avis clients en Tunisie | ReviewHood', ' – Avis clients en Tunisie', ' – Avis en Tunisie']),
+      description: company.description ? `${lead} ${company.description}` : lead,
       image: company.logoUrl,
       type: 'profile',
+      // Same rule as the sitemap: only active companies are indexed
+      noindex: company.status !== CompanyStatus.ACTIVE,
       jsonLd: {
         '@context': 'https://schema.org',
         '@type': 'Organization',

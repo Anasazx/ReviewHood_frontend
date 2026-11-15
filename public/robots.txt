@@ -3,5 +3,8 @@ Allow: /
 Disallow: /admin
 Disallow: /auth/
 Disallow: /account/
+Disallow: /api/
+# Search results are endless near-duplicate pages; categories (/products?categoryId=) stay crawlable
+Disallow: /search?
 
 Sitemap: https://reviewhood.tech/sitemap.xml

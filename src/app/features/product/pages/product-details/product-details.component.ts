@@ -21,6 +21,13 @@ import {ProductRatingOverviewComponent} from './components/product-rating-overvi
 import {ProductImageGalleryComponent} from './components/product-image-gallery/product-image-gallery.component';
 import {SeoService} from '../../../../core/services/seoService/seo.service';
 import {environment} from '../../../../../environments/environment';
+import {ProductCardComponent} from '../../../../core/sharedComponents/product-card/product-card.component';
+import {ProductResponse} from '../../models/productDTO/productResponse.model';
+
+// Longest first: SeoService.fitTitle keeps the longest one that fits. "prix" only when there is a price to show.
+const TITLE_SUFFIXES_WITH_PRICE = [' – Avis, prix et notes en Tunisie | ReviewHood', ' – Avis, prix et notes en Tunisie', ' – Avis et prix en Tunisie', ' – Avis en Tunisie'];
+const TITLE_SUFFIXES = [' – Avis et notes en Tunisie | ReviewHood', ' – Avis et notes en Tunisie', ' – Avis en Tunisie'];
+const JSON_LD_REVIEWS = 5;
 
 
 type ReviewWithComments = ReviewResponse & {
@@ -42,7 +49,7 @@ type DeleteTarget =
 @Component({
   selector: 'app-product-details',
   standalone: true,
-  imports: [AvatarComponent, CommonModule, FormsModule, RouterLink, ReviewFormComponent, AuthRequiredComponent, ConfirmModalComponent, ProductRatingOverviewComponent, ProductImageGalleryComponent],
+  imports: [AvatarComponent, CommonModule, FormsModule, RouterLink, ReviewFormComponent, AuthRequiredComponent, ConfirmModalComponent, ProductRatingOverviewComponent, ProductImageGalleryComponent, ProductCardComponent],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.css',
 })
@@ -54,6 +61,8 @@ export class ProductDetailsComponent implements OnInit {
   product?: DetailedProduct;
 
   reviews: ReviewWithComments[] = [];
+
+  relatedProducts: ProductResponse[] = [];
 
   myReview: ReviewResponse | null = null;
 
@@ -126,6 +135,7 @@ export class ProductDetailsComponent implements OnInit {
         this.updateSeo(data);
 
         this.loadReviews();
+        this.loadRelatedProducts(id);
       },
       error: (err) => {
         this.loadingProduct = false;
@@ -141,37 +151,112 @@ export class ProductDetailsComponent implements OnInit {
   }
 
 
+  private loadRelatedProducts(id: number) {
+    this.productService.getRelatedProducts(id).subscribe({
+      next: products => this.relatedProducts = products,
+      error: err => console.error(err)
+    });
+  }
+
+  // Runs again once the first reviews are in, so the server-rendered JSON-LD includes them
   private updateSeo(product: DetailedProduct) {
-    const hasReviews = product.reviewsCount > 0;
-    const rating = (product.averageRating ?? 0).toFixed(1);
-    const by = product.companyName ? ` by ${product.companyName}` : '';
-    const reviews = `${product.reviewsCount} ${product.reviewsCount === 1 ? 'review' : 'reviews'}`;
+    const hasPrice = product.priceTnd != null;
 
     this.seo.set({
-      title: `${product.name}: reviews and rating | ReviewHood`,
-      description: hasReviews
-        ? `${product.name}${by} is rated ${rating} out of 5 from ${reviews} on ReviewHood. Read what real customers think.`
-        : `Read and write reviews of ${product.name}${by} on ReviewHood. Be the first to share your experience.`,
+      title: this.seo.fitTitle(product.name, hasPrice ? TITLE_SUFFIXES_WITH_PRICE : TITLE_SUFFIXES),
+      description: this.metaDescription(product),
       image: this.selectedImage,
       type: 'product',
-      // Google rejects Product markup that has no rating
-      jsonLd: hasReviews ? {
-        '@context': 'https://schema.org',
+      // Thin pages stay reachable but out of the index. A missing flag (older API) keeps the page indexed.
+      noindex: product.indexable === false,
+      jsonLd: this.jsonLd(product)
+    });
+  }
+
+  private metaDescription(product: DetailedProduct): string {
+    const count = product.reviewsCount;
+    const rating = (product.averageRating ?? 0).toFixed(1).replace('.', ',');
+    const name = product.companyName ? `${product.name} de ${product.companyName}` : product.name;
+
+    const lead = count > 0
+      ? `${name} : noté ${rating}/5 sur ${count} avis en Tunisie.`
+      : `${name} : avis${product.priceTnd != null ? ', prix' : ''} et notes en Tunisie. Soyez le premier à donner votre avis.`;
+
+    const topReview = [...this.reviews]
+      .filter(review => review.content?.trim())
+      .sort((a, b) => b.likeCount - a.likeCount || b.rating - a.rating)[0];
+    const snippet = product.seoDescription || topReview?.content || product.description;
+
+    // SeoService cuts it to length
+    return snippet ? `${lead} ${snippet}` : lead;
+  }
+
+  private jsonLd(product: DetailedProduct): object {
+    const url = `${environment.siteUrl}/p/${product.id}`;
+    const hasReviews = product.reviewsCount > 0;
+    const hasPrice = product.priceTnd != null;
+    const graph: object[] = [];
+
+    // Google rejects Product markup with no rating, review or offer, so a page with none of them gets none
+    if (hasReviews || hasPrice) {
+      const latestReviews = [...this.reviews]
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+        .slice(0, JSON_LD_REVIEWS);
+
+      graph.push({
         '@type': 'Product',
         name: product.name,
-        description: product.description,
-        url: `${environment.siteUrl}/p/${product.id}`,
+        description: product.seoDescription || product.description,
+        url,
         ...(this.selectedImage ? { image: this.seo.absoluteImage(this.selectedImage) } : {}),
         ...(product.companyName ? { brand: { '@type': 'Brand', name: product.companyName } } : {}),
-        aggregateRating: {
-          '@type': 'AggregateRating',
-          ratingValue: rating,
-          reviewCount: product.reviewsCount,
-          bestRating: 5,
-          worstRating: 1
-        }
-      } : null
+        ...(product.subcategory || product.category ? { category: product.subcategory || product.category } : {}),
+        // Only real ratings: no reviews, no aggregateRating
+        ...(hasReviews ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: (product.averageRating ?? 0).toFixed(1),
+            reviewCount: product.reviewsCount,
+            bestRating: 5,
+            worstRating: 1
+          },
+          review: latestReviews.map(review => ({
+            '@type': 'Review',
+            author: { '@type': 'Person', name: review.user.name },
+            datePublished: review.createdAt.slice(0, 10),
+            reviewRating: { '@type': 'Rating', ratingValue: review.rating, bestRating: 5, worstRating: 1 },
+            ...(review.content?.trim() ? { reviewBody: review.content } : {})
+          }))
+        } : {}),
+        ...(hasPrice ? {
+          offers: { '@type': 'Offer', price: product.priceTnd, priceCurrency: 'TND', url }
+        } : {})
+      });
+    }
+
+    if (product.faq?.length) {
+      graph.push({
+        '@type': 'FAQPage',
+        mainEntity: product.faq.map(item => ({
+          '@type': 'Question',
+          name: item.question,
+          acceptedAnswer: { '@type': 'Answer', text: item.answer }
+        }))
+      });
+    }
+
+    const crumbs = [
+      { name: 'Products', url: `${environment.siteUrl}/products` },
+      ...(product.categoryId ? [{ name: product.category, url: `${environment.siteUrl}/products?categoryId=${product.categoryId}` }] : []),
+      ...(product.subcategoryId ? [{ name: product.subcategory, url: `${environment.siteUrl}/products?subcategoryId=${product.subcategoryId}` }] : []),
+      { name: product.name, url }
+    ];
+    graph.push({
+      '@type': 'BreadcrumbList',
+      itemListElement: crumbs.map((crumb, i) => ({ '@type': 'ListItem', position: i + 1, name: crumb.name, item: crumb.url }))
     });
+
+    return { '@context': 'https://schema.org', '@graph': graph };
   }
 
 
@@ -591,6 +676,7 @@ export class ProductDetailsComponent implements OnInit {
           }
 
           this.product!.reviews = this.reviews;
+          if (this.page === 0) this.updateSeo(this.product!);
 
           // Guests: the server can't know this browser, so the review comes from its own request
           if (this.page === 0 && this.isBrowser && !this.myReview) {
@@ -657,11 +743,11 @@ export class ProductDetailsComponent implements OnInit {
 
   @ViewChild(ReviewFormComponent) reviewForm?: ReviewFormComponent;
 
+  // The trigger sits right after the reviews, so it only exists once the product is shown
   @ViewChild('loadMoreTrigger')
-  loadMoreTrigger?: ElementRef;
-
-  ngAfterViewInit() {
-    if (!this.isBrowser || !this.loadMoreTrigger) return;
+  set loadMoreTrigger(ref: ElementRef<HTMLElement> | undefined) {
+    this.observer?.disconnect();
+    if (!this.isBrowser || !ref) return;
     this.observer = new IntersectionObserver(
       entries => {
         if (
@@ -676,9 +762,7 @@ export class ProductDetailsComponent implements OnInit {
         rootMargin: '100px'
       }
     );
-    this.observer.observe(
-      this.loadMoreTrigger.nativeElement
-    );
+    this.observer.observe(ref.nativeElement);
   }
 
 

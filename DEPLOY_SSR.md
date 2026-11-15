@@ -106,7 +106,9 @@ COPYFILE_DISABLE=1 tar -C dist/tunirate -czf - . | ssh tunirate bin/deploy-front
 - **The prerendered home page** is as fresh as the last deploy for crawlers. Browsers refresh the
   feed after loading, but the category counts stay at their build-time values. If the API is down
   during the build, the home page is prerendered without its data, so redeploy once it is back.
-- **The sitemap** is cached in memory for 6 hours. Restarting the container clears it.
+- **The sitemap** comes from the backend's `GET /public/sitemap` and lists only indexable pages. It is
+  cached in memory for 1 hour; restarting the container clears it. If the backend lacks that endpoint,
+  `/sitemap.xml` answers 503 rather than listing every product.
 
 ## Rollback
 

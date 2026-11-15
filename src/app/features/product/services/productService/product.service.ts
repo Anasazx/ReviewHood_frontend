@@ -42,6 +42,10 @@ export class ProductService {
     return this.http.get<DetailedProduct>(`${this.productUrl.toString()}/${productId}/details`);
   }
 
+  getRelatedProducts(productId: number): Observable<ProductResponse[]> {
+    return this.http.get<ProductResponse[]>(`${this.productUrl}/${productId}/related`);
+  }
+
   getCompanyProducts(companyId: number, page: number = 0, size: number = 20, name?: string, categoryId?: number, subcategoryId?: number): Observable<PageResponse<ProductResponse>> {
     let params = new HttpParams()
       .set('page', page)
